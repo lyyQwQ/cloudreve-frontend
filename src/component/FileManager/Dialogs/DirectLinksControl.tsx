@@ -40,14 +40,12 @@ const DirectLinksControl = () => {
   const open = useAppSelector((state) => state.globalState.directLinkManagementDialogOpen);
   const target = useAppSelector((state) => state.globalState.directLinkManagementDialogFile);
   const highlight = useAppSelector((state) => state.globalState.directLinkHighlight);
+  const extendedInfo = fileExtended?.extended_info;
+  const directLinksFromFile = extendedInfo?.direct_links;
 
   const hilightButNotFound = useMemo(() => {
-    return (
-      highlight &&
-      fileExtended?.extended_info &&
-      !fileExtended?.extended_info?.direct_links?.some((link) => link.id == highlight)
-    );
-  }, [highlight, fileExtended?.extended_info?.direct_links]);
+    return highlight && extendedInfo && !directLinksFromFile?.some((link) => String(link.id) === String(highlight));
+  }, [highlight, extendedInfo, directLinksFromFile]);
 
   const onClose = useCallback(() => {
     if (!loading) {
@@ -63,18 +61,20 @@ const DirectLinksControl = () => {
           uri: target.path,
           extended: true,
         }),
-      ).then((res) => setFileExtended(res));
+      )
+        .then((res) => setFileExtended(res))
+        .catch(() => undefined);
     }
-  }, [target, open]);
+  }, [target, open, dispatch]);
 
   const directLinks = useMemo(() => {
-    return fileExtended?.extended_info?.direct_links?.map((link) => {
+    return directLinksFromFile?.map((link) => {
       return {
         ...link,
         url: forceDownload ? link.url.replace("/f/", "/f/d/") : link.url,
       };
     });
-  }, [fileExtended?.extended_info?.direct_links, forceDownload]);
+  }, [directLinksFromFile, forceDownload]);
 
   const handleRowClick = useCallback((directLink: DirectLink) => {
     window.open(directLink.url, "_blank");
@@ -94,28 +94,33 @@ const DirectLinksControl = () => {
         return;
       }
 
-      dispatch(confirmOperation(t("fileManager.deleteLinkConfirm"))).then(() => {
-        setLoading(true);
-        dispatch(sendDeleteDirectLink(actionTarget.id))
-          .then(() => {
-            setFileExtended((prev) =>
-              prev
-                ? {
-                    ...prev,
-                    extended_info: prev.extended_info
-                      ? {
-                          ...prev.extended_info,
-                          direct_links: prev.extended_info.direct_links?.filter((link) => link.id !== actionTarget.id),
-                        }
-                      : undefined,
-                  }
-                : undefined,
-            );
-          })
-          .finally(() => {
-            setLoading(false);
-          });
-      });
+      dispatch(confirmOperation(t("fileManager.deleteLinkConfirm")))
+        .then(() => {
+          setLoading(true);
+          dispatch(sendDeleteDirectLink(actionTarget.id))
+            .then(() => {
+              setFileExtended((prev) =>
+                prev
+                  ? {
+                      ...prev,
+                      extended_info: prev.extended_info
+                        ? {
+                            ...prev.extended_info,
+                            direct_links: prev.extended_info.direct_links?.filter(
+                              (link) => link.id !== actionTarget.id,
+                            ),
+                          }
+                        : undefined,
+                    }
+                  : undefined,
+              );
+            })
+            .catch(() => undefined)
+            .finally(() => {
+              setLoading(false);
+            });
+        })
+        .catch(() => undefined);
     },
     [t, target, dispatch],
   );
@@ -138,7 +143,7 @@ const DirectLinksControl = () => {
               {t("application:fileManager.directLinkNotFound")}
             </Alert>
           )}
-          <TableContainer component={StyledTableContainerPaper}>
+          <TableContainer component={StyledTableContainerPaper} data-testid="direct-links-control-table-wrapper">
             <Table sx={{ width: "100%" }} size="small">
               <TableHead>
                 <TableRow>
@@ -171,46 +176,65 @@ const DirectLinksControl = () => {
                   </TableRow>
                 )}
                 {directLinks &&
-                  directLinks.map((link) => (
-                    <TableRow
-                      key={link.id}
-                      hover
-                      selected={highlight == link.id}
-                      sx={{
-                        boxShadow: (theme) =>
-                          highlight == link.id ? `inset 0 0 0 2px ${theme.palette.primary.light}` : "none",
-                        "&:last-child td, &:last-child th": { border: 0 },
-                      }}
-                    >
-                      <NoWrapTableCell component="th" scope="row">
-                        <IconButton onClick={() => copyURL(link)} size={"small"}>
-                          <CopyOutlined fontSize={"small"} />
-                        </IconButton>
-                        <IconButton disabled={loading} onClick={() => deleteDirectLink(link)} size={"small"}>
-                          <DeleteOutlined fontSize={"small"} />
-                        </IconButton>
-                      </NoWrapTableCell>
-                      <TableCell
+                  directLinks.map((link) => {
+                    const isHighlighted = highlight && String(highlight) === String(link.id);
+
+                    return (
+                      <TableRow
+                        key={link.id}
+                        hover
+                        selected={Boolean(isHighlighted)}
+                        data-testid={`direct-links-control-row-container-${link.id}`}
                         sx={{
-                          maxWidth: 300,
-                          overflow: "hidden",
-                          textOverflow: "ellipsis",
-                          whiteSpace: "nowrap",
+                          boxShadow: (theme) =>
+                            isHighlighted ? `inset 0 0 0 2px ${theme.palette.primary.light}` : "none",
+                          "&:last-child td, &:last-child th": { border: 0 },
                         }}
-                        onClick={(event) => event.stopPropagation()}
                       >
-                        <Typography variant="body2" sx={{ cursor: "text" }}>
-                          <Link href={link.url} target="_blank" underline="hover">
-                            {link.url}
-                          </Link>
-                        </Typography>
-                      </TableCell>
-                      <NoWrapTableCell>{link.downloaded}</NoWrapTableCell>
-                      <NoWrapTableCell>
-                        <TimeBadge variant={"body2"} datetime={link.created_at} />
-                      </NoWrapTableCell>
-                    </TableRow>
-                  ))}
+                        <NoWrapTableCell component="th" scope="row">
+                          <IconButton
+                            onClick={() => copyURL(link)}
+                            size={"small"}
+                            data-testid={`direct-links-control-row-copy-button-${link.id}`}
+                          >
+                            <CopyOutlined fontSize={"small"} />
+                          </IconButton>
+                          <IconButton
+                            disabled={loading}
+                            onClick={() => deleteDirectLink(link)}
+                            size={"small"}
+                            data-testid={`direct-links-control-row-delete-button-${link.id}`}
+                          >
+                            <DeleteOutlined fontSize={"small"} />
+                          </IconButton>
+                        </NoWrapTableCell>
+                        <TableCell
+                          sx={{
+                            maxWidth: 300,
+                            overflow: "hidden",
+                            textOverflow: "ellipsis",
+                            whiteSpace: "nowrap",
+                          }}
+                          onClick={(event) => event.stopPropagation()}
+                        >
+                          <Typography variant="body2" sx={{ cursor: "text" }}>
+                            <Link
+                              href={link.url}
+                              target="_blank"
+                              underline="hover"
+                              data-testid={`direct-links-control-row-link-anchor-${link.id}`}
+                            >
+                              {link.url}
+                            </Link>
+                          </Typography>
+                        </TableCell>
+                        <NoWrapTableCell>{link.downloaded}</NoWrapTableCell>
+                        <NoWrapTableCell>
+                          <TimeBadge variant={"body2"} datetime={link.created_at} />
+                        </NoWrapTableCell>
+                      </TableRow>
+                    );
+                  })}
               </TableBody>
             </Table>
             {!directLinks && fileExtended && (
@@ -242,6 +266,7 @@ const DirectLinksControl = () => {
               disableRipple
               checked={forceDownload}
               size="small"
+              data-testid="direct-links-control-force-download-checkbox"
             />
           }
           label={t("application:modals.forceDownload")}

@@ -22,6 +22,24 @@ const initialSetting: ShareSetting = {
   downloads_val: downloadOptions[0],
 };
 
+export const toDirectShareDisplayLink = (shareLink: string): string => {
+  if (!shareLink) {
+    return shareLink;
+  }
+
+  const matched = shareLink.match(/^(.*)\/s\/([^/?#]+)(\/[^?#]*)?(\?[^#]*)?(#.*)?$/);
+  if (!matched) {
+    return shareLink;
+  }
+
+  const [, prefix, token, suffix = "", query = "", hash = ""] = matched;
+  if (!suffix || suffix === "/") {
+    return `${prefix}/d/${token}/${query}${hash}`;
+  }
+
+  return `${prefix}/d/${token}${suffix}${query}${hash}`;
+};
+
 interface ShareLinkPassword {
   shareLink: string;
   password?: string;
@@ -140,6 +158,10 @@ const ShareDialog = () => {
     return shareLink.substring(0, shareLink.lastIndexOf("/"));
   }, [includePassword, shareLink]);
 
+  const displayedShareLink = useMemo(() => {
+    return toDirectShareDisplayLink(finalShareLink);
+  }, [finalShareLink]);
+
   const finalShareLinkPassword = useMemo(() => {
     if (!includePassword) {
       return shareLink.substring(shareLink.lastIndexOf("/") + 1);
@@ -155,6 +177,7 @@ const ShareDialog = () => {
         loading={loading}
         showCancel
         hideOk={!!shareLink}
+        okButtonTestId="share-dialog-create-button"
         onAccept={onAccept}
         dialogProps={{
           open: open ?? false,
@@ -168,7 +191,10 @@ const ShareDialog = () => {
             ? // @ts-ignore
               navigator.share && (
                 <Tooltip title={t("application:modals.sendLink")}>
-                  <IconButton onClick={() => sendLink(target?.name ?? "", finalShareLink)}>
+                  <IconButton
+                    data-testid="share-dialog-send-link-button"
+                    onClick={() => sendLink(target?.name ?? "", displayedShareLink)}
+                  >
                     <Share />
                   </IconButton>
                 </Tooltip>
@@ -197,16 +223,17 @@ const ShareDialog = () => {
                     <Stack spacing={1}>
                       <FilledTextField
                         variant={"filled"}
-                        inputProps={{ readonly: true }}
+                        inputProps={{ readonly: true, "data-testid": "share-dialog-share-link-filled-text-field" }}
                         label={t("modals.shareLink")}
                         fullWidth
-                        value={finalShareLink ?? ""}
+                        value={displayedShareLink ?? ""}
                         onFocus={(e) => e.target.select()}
                         slotProps={{
                           input: {
                             endAdornment: (
                               <IconButton
-                                onClick={() => copyToClipboard(finalShareLink)}
+                                data-testid="share-dialog-share-link-copy-button"
+                                onClick={() => copyToClipboard(displayedShareLink)}
                                 size="small"
                                 sx={{ marginRight: -1 }}
                               >
@@ -221,7 +248,7 @@ const ShareDialog = () => {
                           <Collapse in={!includePassword}>
                             <FilledTextField
                               variant={"filled"}
-                              inputProps={{ readonly: true }}
+                              inputProps={{ readonly: true, "data-testid": "share-dialog-password-filled-text-field" }}
                               label={t("modals.sharePassword")}
                               fullWidth
                               value={finalShareLinkPassword ?? ""}
@@ -230,6 +257,7 @@ const ShareDialog = () => {
                                 input: {
                                   endAdornment: (
                                     <IconButton
+                                      data-testid="share-dialog-password-copy-button"
                                       onClick={() => copyToClipboard(finalShareLinkPassword ?? "")}
                                       size="small"
                                       sx={{ marginRight: -1 }}
@@ -248,6 +276,7 @@ const ShareDialog = () => {
                               }}
                               control={
                                 <Checkbox
+                                  data-testid="share-dialog-include-password-checkbox"
                                   disableRipple
                                   sx={{
                                     pl: 0,

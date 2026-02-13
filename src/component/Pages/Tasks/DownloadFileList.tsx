@@ -161,9 +161,7 @@ const DownloadFileList = ({ taskId, summary, downloading, readonly }: DownloadFi
                 setHeight(h + 0.5);
               }}
               components={{
-                // eslint-disable-next-line react/display-name
                 Table: (props) => <Table {...props} size={"small"} />,
-                // eslint-disable-next-line react/display-name
                 TableRow: (props) => {
                   const index = props["data-index"];
                   const percentage = (files[index]?.progress ?? 0) * 100;
@@ -230,7 +228,7 @@ const DownloadFileList = ({ taskId, summary, downloading, readonly }: DownloadFi
           </TableContainer>
         </>
       )}
-      {downloading && !readonly && summary?.phase == "monitor" && (
+      {downloading && !readonly && summary?.phase === "monitor" && (
         <Box
           sx={{
             display: "flex",

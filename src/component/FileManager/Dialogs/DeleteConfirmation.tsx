@@ -1,7 +1,7 @@
 import { Alert, Checkbox, Collapse, DialogContent, FormGroup, Stack, Tooltip } from "@mui/material";
 import dayjs from "dayjs";
 import duration from "dayjs/plugin/duration";
-import { useCallback, useMemo, useState } from "react";
+import { useCallback, useEffect, useMemo, useState } from "react";
 import { Trans, useTranslation } from "react-i18next";
 import { Metadata } from "../../../api/explorer.ts";
 import { GroupPermission } from "../../../api/user.ts";
@@ -19,6 +19,7 @@ dayjs.extend(duration);
 export interface DeleteOption {
   unlink?: boolean;
   skip_soft_delete?: boolean;
+  delete_hls?: boolean;
 }
 const DeleteConfirmation = () => {
   const { t } = useTranslation();
@@ -26,6 +27,7 @@ const DeleteConfirmation = () => {
 
   const [unlink, setUnlink] = useState(false);
   const [skipSoftDelete, setSkipSoftDelete] = useState(false);
+  const [deleteHls, setDeleteHls] = useState(true);
 
   const open = useAppSelector((state) => state.fileManager[0].deleteFileModalOpen);
   const targets = useAppSelector((state) => state.fileManager[0].deleteFileModalSelected);
@@ -40,6 +42,17 @@ const DeleteConfirmation = () => {
     return false;
   }, [targets]);
 
+  const hasHLSAvailable = useMemo(() => {
+    if (!targets) return false;
+    return targets.some((target) => target.metadata?.["hls:available"] === "1");
+  }, [targets]);
+
+  useEffect(() => {
+    if (open && hasHLSAvailable) {
+      setDeleteHls(true);
+    }
+  }, [open, hasHLSAvailable]);
+
   const onClose = useCallback(() => {
     dispatch(
       setFileDeleteModal({
@@ -52,9 +65,9 @@ const DeleteConfirmation = () => {
     }
   }, [dispatch, targets, promiseId]);
 
-  const singleFileToTrash = targets && targets.length == 1 && !hasTrashFiles && !skipSoftDelete;
+  const singleFileToTrash = targets && targets.length === 1 && !hasTrashFiles && !skipSoftDelete;
   const multipleFilesToTrash = targets && targets.length > 1 && !hasTrashFiles && !skipSoftDelete;
-  const singleFilePermanently = targets && targets.length == 1 && (hasTrashFiles || skipSoftDelete);
+  const singleFilePermanently = targets && targets.length === 1 && (hasTrashFiles || skipSoftDelete);
   const multipleFilesPermanently = targets && targets.length > 1 && (hasTrashFiles || skipSoftDelete);
 
   const onAccept = useCallback(() => {
@@ -62,16 +75,17 @@ const DeleteConfirmation = () => {
       deleteDialogPromisePool[promiseId]?.resolve({
         unlink,
         skip_soft_delete: singleFilePermanently || multipleFilesPermanently ? true : skipSoftDelete,
+        ...(hasHLSAvailable ? { delete_hls: deleteHls } : {}),
       });
     }
-  }, [promiseId, unlink, skipSoftDelete, singleFilePermanently, multipleFilesPermanently]);
+  }, [promiseId, unlink, skipSoftDelete, singleFilePermanently, multipleFilesPermanently, hasHLSAvailable, deleteHls]);
 
   const permission = SessionManager.currentUserGroupPermission();
   const showSkipSoftDeleteOption = !hasTrashFiles;
   const showUnlinkOption = (skipSoftDelete || hasTrashFiles) && permission.enabled(GroupPermission.advance_delete);
   const showAdvanceOptions = showUnlinkOption || showSkipSoftDeleteOption;
 
-  const group = useMemo(() => SessionManager.currentUserGroup(), [open]);
+  const group = SessionManager.currentUserGroup();
 
   return (
     <DraggableDialog
@@ -120,6 +134,24 @@ const DeleteConfirmation = () => {
               </Alert>
             </Collapse>
           </StyledDialogContentText>
+          <Collapse in={hasHLSAvailable} unmountOnExit>
+            <Stack spacing={1} data-testid="delete-hls-prompt">
+              <Alert severity="warning">Also delete HLS artifacts for selected video(s)?</Alert>
+              <FormGroup>
+                <SmallFormControlLabel
+                  control={
+                    <Checkbox
+                      size="small"
+                      data-testid="delete-hls-checkbox"
+                      onChange={(e) => setDeleteHls(e.target.checked)}
+                      checked={deleteHls}
+                    />
+                  }
+                  label={"Delete HLS artifacts"}
+                />
+              </FormGroup>
+            </Stack>
+          </Collapse>
           {showAdvanceOptions && (
             <DialogAccordion defaultExpanded={unlink || skipSoftDelete} title={t("application:modals.advanceOptions")}>
               <FormGroup>

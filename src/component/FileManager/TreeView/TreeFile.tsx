@@ -98,7 +98,7 @@ const UnpinButton = (props: UnpinButton) => {
         setLoading(false);
       }
     },
-    [setLoading],
+    [dispatch, props.uri],
   );
 
   return (
@@ -139,13 +139,17 @@ const CustomContent = React.memo(
     };
 
     const handleExpansionClick = useCallback(
-      async (event: React.MouseEvent<HTMLDivElement, MouseEvent>) => {
+      async (event: React.SyntheticEvent) => {
         event.stopPropagation();
         let timeOutID: NodeJS.Timeout | undefined;
         handleExpansion(event);
         if (!expanded) {
           try {
-            await dispatch(loadChild(fmIndex, uri, () => (timeOutID = setTimeout(() => setLoading(true), 300))));
+            await dispatch(
+              loadChild(fmIndex, uri, () => {
+                timeOutID = setTimeout(() => setLoading(true), 300);
+              }),
+            );
           } finally {
             if (timeOutID) {
               clearTimeout(timeOutID);
@@ -154,16 +158,16 @@ const CustomContent = React.memo(
           }
         }
       },
-      [handleExpansion, setLoading, dispatch, uri],
+      [dispatch, expanded, fmIndex, handleExpansion, uri],
     );
 
     const handleSelectionClick = useCallback(
-      (event: React.MouseEvent<HTMLDivElement, MouseEvent>) => {
+      (event: React.SyntheticEvent) => {
         event.stopPropagation();
         handleSelection(event);
         dispatch(navigateToPath(fmIndex, uri, file));
       },
-      [dispatch, handleSelection, fmIndex, uri],
+      [dispatch, file, fmIndex, handleSelection, uri],
     );
 
     const FileItemIcon = useMemo(() => {
@@ -227,11 +231,21 @@ const CustomContent = React.memo(
 
     const onMouseEnter = useCallback(() => {
       if (props.pinned) setShowDelete(true);
-    }, [setShowDelete, props.pinned]);
+    }, [props.pinned]);
 
     const onMouseLeave = useCallback(() => {
       if (props.pinned) setShowDelete(false);
-    }, [setShowDelete, props.pinned]);
+    }, [props.pinned]);
+
+    const onKeyDown = useCallback(
+      (event: React.KeyboardEvent<HTMLDivElement>) => {
+        if (event.key === "Enter" || event.key === " ") {
+          event.preventDefault();
+          handleSelectionClick(event);
+        }
+      },
+      [handleSelectionClick],
+    );
 
     const [drag, drop, isOver, isDragging] = useFileDrag({
       file,
@@ -246,11 +260,13 @@ const CustomContent = React.memo(
     );
 
     return (
-      // eslint-disable-next-line jsx-a11y/no-static-element-interactions
       <CustomContentRoot
         onContextMenu={onContextMenu}
         onMouseEnter={onMouseEnter}
         onMouseLeave={onMouseLeave}
+        role="button"
+        tabIndex={0}
+        onKeyDown={onKeyDown}
         isDragging={isDragging}
         isDropOver={isOver && !isDragging}
         className={clsx(className, classes.root, {
@@ -267,11 +283,10 @@ const CustomContent = React.memo(
         onClick={handleSelectionClick}
         ref={mergedRef}
       >
-        {/* eslint-disable-next-line jsx-a11y/click-events-have-key-events,jsx-a11y/no-static-element-interactions */}
-        <div onClick={handleExpansionClick} className={classes.iconContainer}>
+        <button type="button" onClick={handleExpansionClick} className={classes.iconContainer}>
           {icon && !loading && <CaretDownIcon expanded={expanded} />}
           {icon && loading && <FacebookCircularProgress size={15} sx={{ pt: 0.5 }} />}
-        </div>
+        </button>
         {FileItemIcon}
         {fileName}
         <UnpinButton show={showDelete} uri={uri} />
@@ -282,10 +297,10 @@ const CustomContent = React.memo(
 
 const TreeFile = React.memo(
   React.forwardRef(function CustomTreeItem(props: TreeFileProps, ref: React.Ref<HTMLLIElement>) {
+    const { level, file, notLoaded, fileIcon, loading, pinned, canDrop } = props;
     const contentProps = useMemo(() => {
-      const { level, file, notLoaded, fileIcon, loading, pinned, canDrop } = props;
       return { level, file, notLoaded, fileIcon, loading, pinned, canDrop };
-    }, [props.level, props.file, props.notLoaded, props.fileIcon, props.loading, props.canDrop, props.pinned]);
+    }, [canDrop, file, fileIcon, level, loading, notLoaded, pinned]);
     return (
       <StyledTreeItemRoot
         ContentComponent={CustomContent}

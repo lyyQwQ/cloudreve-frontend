@@ -108,6 +108,10 @@ const TaskSummaryTitle = ({ type, summary, isInDashboard = false }: TaskSummaryT
           ]}
         />
       );
+    case TaskType.video_subtitle_burn:
+      return <Typography variant="inherit">Subtitle burn task</Typography>;
+    case TaskType.video_hls_slice:
+      return <Typography variant="inherit">HLS slice task</Typography>;
     default:
       return (
         <Trans

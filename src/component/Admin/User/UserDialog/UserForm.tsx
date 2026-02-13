@@ -104,7 +104,7 @@ const UserForm = ({ reload, setLoading }: { reload: () => void; setLoading: (loa
           setLoading(false);
         });
     },
-    [dispatch, values.id],
+    [dispatch, values.id, enqueueSnackbar, reload, setLoading, t],
   );
 
   return (
@@ -123,7 +123,8 @@ const UserForm = ({ reload, setLoading }: { reload: () => void; setLoading: (loa
               user={{
                 created_at: values.created_at,
                 nickname: values.nick ?? "",
-                id: values.avatar ? values.hash_id ?? "" : "dummy",
+                id: values.hash_id ?? "",
+                avatar: values.avatar,
               }}
             />
             <Collapse in={!!values.avatar} unmountOnExit>

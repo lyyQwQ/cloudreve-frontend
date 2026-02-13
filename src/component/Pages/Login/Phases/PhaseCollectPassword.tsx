@@ -52,6 +52,7 @@ const PhaseCollectPassword = ({
                 required: "true",
                 maxLength: 128,
                 minLength: 4,
+                "data-testid": "login-password-input",
               }}
               onChange={(e) => setPwd(e.target.value)}
               icon={<Password />}

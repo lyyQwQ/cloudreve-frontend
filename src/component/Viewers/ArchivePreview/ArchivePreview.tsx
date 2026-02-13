@@ -94,12 +94,16 @@ const ArchivePreview = () => {
   }, [currentPath]);
 
   // 规范化路径，去除开头可能存在的 `/`
-  const normalizeName = (name: string) => {
+  const normalizeName = useCallback((name: string) => {
     if (name && typeof name === "string" && name.startsWith("/")) {
       return name.slice(1);
     }
     return name;
-  };
+  }, []);
+
+  const onClose = useCallback(() => {
+    dispatch(closeArchiveViewer());
+  }, [dispatch]);
 
   useEffect(() => {
     if (!viewerState || !viewerState.open) {
@@ -180,11 +184,7 @@ const ArchivePreview = () => {
       .finally(() => {
         setLoading(false);
       });
-  }, [viewerState, encoding]);
-
-  const onClose = useCallback(() => {
-    dispatch(closeArchiveViewer());
-  }, [dispatch]);
+  }, [dispatch, encoding, normalizeName, onClose, viewerState]);
 
   const navigateToDirectory = useCallback(
     (dirName: string) => {
@@ -244,14 +244,14 @@ const ArchivePreview = () => {
     }
 
     dispatch(setExtractArchiveDialog({ open: true, file: viewerState?.file, mask: selectedFiles, encoding }));
-  }, [selectedFiles, t, enqueueSnackbar, encoding]);
+  }, [dispatch, encoding, selectedFiles, viewerState?.file]);
 
   const extractArchive = useCallback(() => {
     if (!viewerState?.file) {
       return;
     }
     dispatch(setExtractArchiveDialog({ open: true, file: viewerState?.file, encoding }));
-  }, [viewerState?.file, encoding]);
+  }, [dispatch, encoding, viewerState?.file]);
 
   return (
     <>
@@ -288,11 +288,12 @@ const ArchivePreview = () => {
                       {t("fileManager.rootFolder")}
                     </Link>
                     {breadcrumbPaths.map((path, index) => {
+                      const crumbPath = breadcrumbPaths.slice(0, index + 1).join("/");
                       const isLast = index === breadcrumbPaths.length - 1;
                       return isLast ? (
                         <Typography
                           variant="body2"
-                          key={index}
+                          key={crumbPath}
                           color="text.primary"
                           sx={{ display: "flex", alignItems: "center" }}
                         >
@@ -301,7 +302,7 @@ const ArchivePreview = () => {
                         </Typography>
                       ) : (
                         <Link
-                          key={index}
+                          key={crumbPath}
                           component="button"
                           variant="body2"
                           color="inherit"
@@ -332,7 +333,6 @@ const ArchivePreview = () => {
                         setHeight(h + 0.5);
                       }}
                       components={{
-                        // eslint-disable-next-line react/display-name
                         Table: (props) => <Table {...props} size="small" />,
                       }}
                       data={filteredFiles}

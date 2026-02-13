@@ -32,6 +32,16 @@ const completedStep: StepModel = {
   state: "",
 };
 
+const videoProcessingSteps: StepModel[] = [
+  queueingStep,
+  {
+    title: "setting.processing",
+    state: "",
+    supportProgress: true,
+  },
+  completedStep,
+];
+
 const stepOptions: {
   [key: string]: StepModel[][];
 } = {
@@ -91,7 +101,7 @@ const stepOptions: {
       },
     ],
   ],
-  [TaskType.relocate]: [
+  ["relocate"]: [
     // Master
     [
       queueingStep,
@@ -195,29 +205,30 @@ const stepOptions: {
       },
     ],
   ],
+  [TaskType.video_subtitle_burn]: [[videoProcessingSteps[0], videoProcessingSteps[1], videoProcessingSteps[2]]],
+  [TaskType.video_hls_slice]: [[videoProcessingSteps[0], videoProcessingSteps[1], videoProcessingSteps[2]]],
 };
 
 const TaskProgress = ({ taskId, taskStatus, taskType, summary, node }: TaskProgressProps) => {
-  const { t } = useTranslation();
   const [activeStep, setActiveStep] = useState(0);
   const steps = useMemo((): StepModel[] => {
-    return stepOptions[taskType]?.[node?.type == NodeTypes.slave ? 1 : 0] ?? [];
-  }, [taskId, node?.type]);
+    return stepOptions[taskType]?.[node?.type === NodeTypes.slave ? 1 : 0] ?? [];
+  }, [taskType, node?.type]);
   const theme = useTheme();
   const isMobile = useMediaQuery(theme.breakpoints.down("md"));
 
   useEffect(() => {
-    if (taskStatus == TaskStatus.queued) {
+    if (taskStatus === TaskStatus.queued) {
       setActiveStep(0);
       return;
     }
-    if (taskStatus == TaskStatus.completed) {
+    if (taskStatus === TaskStatus.completed) {
       setActiveStep(steps.length);
       return;
     }
     let active = 1;
     for (let i = 1; i < steps.length; i++) {
-      if (steps[i].state == summary?.phase) {
+      if (steps[i].state === summary?.phase) {
         active = i;
       }
     }
@@ -230,7 +241,7 @@ const TaskProgress = ({ taskId, taskStatus, taskType, summary, node }: TaskProgr
       <Stepper activeStep={activeStep} orientation={isMobile ? "vertical" : "horizontal"}>
         {steps.map((step, index) => (
           <TaskProgressStep
-            progressing={activeStep == index && taskStatus != TaskStatus.error}
+            progressing={activeStep === index && taskStatus !== TaskStatus.error}
             taskId={taskId}
             taskStatus={taskStatus}
             description={step.description}
@@ -240,7 +251,7 @@ const TaskProgress = ({ taskId, taskStatus, taskType, summary, node }: TaskProgr
           />
         ))}
       </Stepper>
-      {taskType == TaskType.remote_download && summary?.props.download?.pieces && summary?.phase == "monitor" && (
+      {taskType === TaskType.remote_download && summary?.props.download?.pieces && summary?.phase === "monitor" && (
         <PieceProgress total={summary?.props.download.num_pieces ?? 1} pieces={summary?.props.download?.pieces} />
       )}
     </Box>

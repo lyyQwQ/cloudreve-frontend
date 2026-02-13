@@ -75,6 +75,7 @@ const PhaseCollectEmail = ({ email, setEmail, control, onOAuthPasskeyLogin }: Ph
             type: "email",
             name: "email",
             required: "true",
+            "data-testid": "login-email-input",
           }}
           onChange={(e) => setEmail(e.target.value)}
           icon={<MailOutlined />}

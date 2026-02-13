@@ -33,6 +33,9 @@ import React from "react";
 import ColumnSetting from "../Explorer/ListView/ColumnSetting.tsx";
 import DirectLinks from "./DirectLinks.tsx";
 import DirectLinksControl from "./DirectLinksControl.tsx";
+import SubtitleSelectDialog from "./SubtitleSelectDialog.tsx";
+import VideoInfoDialog from "./VideoInfoDialog.tsx";
+import HLSManageDialog from "./HLSManageDialog.tsx";
 
 const Dialogs = () => {
   const showCreateArchive = useAppSelector((state) => state.globalState.createArchiveDialogOpen);
@@ -45,6 +48,9 @@ const Dialogs = () => {
   const directLinkManagement = useAppSelector((state) => state.globalState.directLinkManagementDialogOpen);
   const archivePreview = useAppSelector((state) => state.globalState.archiveViewer);
   const desktopMountSetup = useAppSelector((state) => state.globalState.desktopMountSetupDialogOpen);
+  const videoInfoDialog = useAppSelector((state) => state.globalState.videoInfoDialogOpen);
+  const subtitleSelectDialog = useAppSelector((state) => state.globalState.subtitleSelectDialogOpen);
+  const hlsManageDialog = useAppSelector((state) => state.globalState.hlsManageDialogOpen);
 
   return (
     <>
@@ -71,16 +77,19 @@ const Dialogs = () => {
       <PdfViewer />
       <CustomViewer />
       <EpubViewer />
-      {showCreateArchive != undefined && <CreateArchive />}
-      {showExtractArchive != undefined && <ExtractArchive />}
-      {showRemoteDownload != undefined && <CreateRemoteDownload />}
-      {showAdvancedSearch != undefined && <AdvanceSearch />}
-      {showListViewColumnSetting != undefined && <ColumnSetting />}
-      {directLink != undefined && <DirectLinks />}
-      {excalidrawViewer != undefined && <ExcalidrawViewer />}
-      {directLinkManagement != undefined && <DirectLinksControl />}
-      {archivePreview != undefined && <ArchivePreview />}
-      {desktopMountSetup != undefined && <DesktopMountSetup />}
+      {showCreateArchive !== undefined && <CreateArchive />}
+      {showExtractArchive !== undefined && <ExtractArchive />}
+      {showRemoteDownload !== undefined && <CreateRemoteDownload />}
+      {showAdvancedSearch !== undefined && <AdvanceSearch />}
+      {showListViewColumnSetting !== undefined && <ColumnSetting />}
+      {directLink !== undefined && <DirectLinks />}
+      {excalidrawViewer !== undefined && <ExcalidrawViewer />}
+      {directLinkManagement !== undefined && <DirectLinksControl />}
+      {archivePreview !== undefined && <ArchivePreview />}
+      {desktopMountSetup !== undefined && <DesktopMountSetup />}
+      {videoInfoDialog !== undefined && <VideoInfoDialog />}
+      {subtitleSelectDialog !== undefined && <SubtitleSelectDialog />}
+      {hlsManageDialog !== undefined && <HLSManageDialog />}
     </>
   );
 };

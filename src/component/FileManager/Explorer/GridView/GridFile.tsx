@@ -345,6 +345,7 @@ const GridFile = memo((props: FileBlockProps) => {
         transparent={isDragging || fileDisabled}
         isDropOver={isDropOver && !isDragging}
         onContextMenu={onContextMenu}
+        data-testid={file.id ? `fm-file-${file.id}` : undefined}
         data-rect-id={index ?? ""}
         selected={!!isSelected}
         square={showThumb}

@@ -62,6 +62,9 @@ export interface DraggableDialogProps {
   disabled?: boolean;
   denseAction?: boolean;
   secondaryFullWidth?: boolean;
+  closeIconTestId?: string;
+  cancelButtonTestId?: string;
+  okButtonTestId?: string;
 }
 
 const DraggableDialog = (props: DraggableDialogProps) => {
@@ -80,7 +83,7 @@ const DraggableDialog = (props: DraggableDialogProps) => {
         <Box>
           <StyledDialogTitle moveable id="draggable-dialog-title">
             <Box>{props.title}</Box>
-            <IconButton disabled={props.loading} onClick={onClose}>
+            <IconButton disabled={props.loading} onClick={onClose} data-testid={props.closeIconTestId}>
               <Dismiss fontSize={"small"} />
             </IconButton>
           </StyledDialogTitle>
@@ -92,7 +95,7 @@ const DraggableDialog = (props: DraggableDialogProps) => {
           <Box sx={{ flexGrow: props.secondaryFullWidth ? 1 : "unset" }}>{props.secondaryAction}</Box>
           <Stack direction={"row"} spacing={1}>
             {props.showCancel && (
-              <Button disabled={props.loading} onClick={onClose}>
+              <Button disabled={props.loading} onClick={onClose} data-testid={props.cancelButtonTestId}>
                 {props.cancelText ?? t("common:cancel")}
               </Button>
             )}
@@ -103,6 +106,7 @@ const DraggableDialog = (props: DraggableDialogProps) => {
                 variant={"contained"}
                 onClick={props.onAccept}
                 color="primary"
+                data-testid={props.okButtonTestId}
               >
                 <span>{props.okText ?? t("common:ok")}</span>
               </LoadingButton>

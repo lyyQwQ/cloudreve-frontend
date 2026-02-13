@@ -112,6 +112,8 @@ const TaskCard = ({ loading, showProgress, onLoad, task }: TaskCardProps) => {
   const theme = useTheme();
   const isMobile = useMediaQuery(theme.breakpoints.down("md"));
   const dispatch = useAppDispatch();
+
+  const testId = task ? `task-card-${task.id}` : loading === true ? "task-card-loading" : undefined;
   const { ref, inView } = useInView({
     rootMargin: "200px 0px",
     triggerOnce: true,
@@ -142,7 +144,12 @@ const TaskCard = ({ loading, showProgress, onLoad, task }: TaskCardProps) => {
   }, [task?.type]);
 
   return (
-    <Accordion expanded={expanded} onChange={handleChange} TransitionProps={{ unmountOnExit: true }}>
+    <Accordion
+      data-testid={testId}
+      expanded={expanded}
+      onChange={handleChange}
+      TransitionProps={{ unmountOnExit: true }}
+    >
       <AccordionSummary aria-controls="panel1d-content">
         <SummaryButton
           disabled={loading}

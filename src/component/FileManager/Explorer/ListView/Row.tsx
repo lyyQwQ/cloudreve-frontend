@@ -92,6 +92,7 @@ const Row = memo((props: FileBlockProps) => {
       isDropOver={isDropOver && !isDragging}
       ref={setRefFunc}
       selected={!!isSelected}
+      data-testid={file.id ? `fm-file-${file.id}` : undefined}
       onMouseDown={stopPop}
       onClick={onClick}
       onDoubleClick={onDoubleClicked}

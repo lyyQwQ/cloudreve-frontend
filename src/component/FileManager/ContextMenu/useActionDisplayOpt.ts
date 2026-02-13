@@ -65,6 +65,8 @@ export interface DisplayOption {
   showCopy?: boolean;
   showShare?: boolean;
   showInfo?: boolean;
+  showVideoInfo?: boolean;
+  showSubtitleBurn?: boolean;
   showDirectLink?: boolean;
 
   showMove?: boolean;
@@ -90,6 +92,13 @@ export interface DisplayOption {
   showUpload?: boolean;
   showRemoteDownload?: boolean;
 }
+
+const isVideoFile = (viewerSetting: ExpandedViewerSetting | undefined, ext: string | undefined): boolean => {
+  if (!viewerSetting || !ext) return false;
+  const viewers = viewerSetting[ext];
+  if (!viewers || viewers.length === 0) return false;
+  return viewers.some((v) => v?.id === "video");
+};
 
 const capabilityMap: { [key: string]: Boolset } = {};
 
@@ -279,6 +288,8 @@ export const getActionOpt = (
   display.showGoToSharedLink =
     targets.length == 1 && display.hasFile && targets[0].metadata && !!targets[0].metadata[Metadata.share_redirect];
   display.showInfo = targets.length == 1 && display.orCapability && canShowInfo(display.orCapability);
+  display.showVideoInfo = targets.length == 1 && display.hasFile && isVideoFile(viewerSetting, firstFileSuffix);
+  display.showSubtitleBurn = display.showVideoInfo;
   display.showVersionControl =
     targets.length == 1 &&
     display.orCapability &&

@@ -84,7 +84,7 @@ const TaskList = () => {
   };
 
   return (
-    <PageContainer>
+    <PageContainer data-testid="tasks-page-root">
       <Container maxWidth="lg">
         <PageHeader
           secondaryAction={

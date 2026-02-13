@@ -51,6 +51,7 @@ const ViewerDialog = (props: ViewerDialogProps) => {
       fullScreen={fullScreen}
       {...props.dialogProps}
       onClose={props.loading ? undefined : props.dialogProps.onClose}
+      data-testid="viewer-dialog-root"
     >
       <Box>
         <StyledDialogTitle sx={{ py: "8px", px: "14px" }} id="draggable-dialog-title">
@@ -70,7 +71,7 @@ const ViewerDialog = (props: ViewerDialogProps) => {
                 {fullScreen ? <FullScreenMinimize fontSize={"small"} /> : <FullScreenMaximize fontSize={"small"} />}
               </IconButton>
             )}
-            <IconButton disabled={props.loading} onClick={onClose}>
+            <IconButton data-testid="viewer-dialog-close-button" disabled={props.loading} onClick={onClose}>
               <Dismiss fontSize={"small"} />
             </IconButton>
           </Box>

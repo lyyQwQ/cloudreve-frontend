@@ -128,6 +128,8 @@ export enum TaskType {
   extract_archive = "extract_archive",
   remote_download = "remote_download",
   media_metadata = "media_meta",
+  video_subtitle_burn = "video_subtitle_burn",
+  video_hls_slice = "video_hls_slice",
   entity_recycle_routine = "entity_recycle_routine",
   explicit_entity_recycle = "explicit_entity_recycle",
   upload_sentinel_check = "upload_sentinel_check",

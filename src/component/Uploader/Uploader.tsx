@@ -68,7 +68,9 @@ const Uploader = () => {
         }
       }
 
-      tasks.forEach((t) => t.start());
+      tasks.forEach((t) => {
+        t.start();
+      });
 
       dispatch(openUploadTaskList());
       setUploaders((uploaders) => {
@@ -79,7 +81,7 @@ const Uploader = () => {
         return [...uploaders, ...tasks];
       });
     },
-    [enqueueSnackbar, dispatch, setUploaders],
+    [enqueueSnackbar, t, dispatch],
   );
 
   const uploadManager = useMemo(() => {
@@ -118,7 +120,7 @@ const Uploader = () => {
 
   useEffect(() => {
     uploadManager.setPolicy(policy, path);
-  }, [policy, path]);
+  }, [uploadManager, policy, path]);
 
   const handleUploaderError = useCallback(
     (e: any) => {
@@ -137,7 +139,6 @@ const Uploader = () => {
     (path: string, type = SelectType.File, original?: Base) => {
       dispatch(openUploadTaskList());
 
-      // eslint-disable-next-line no-unreachable
       uploadManager
         .select(path, type)
         .then(taskAdded(original))
@@ -150,7 +151,7 @@ const Uploader = () => {
 
   const getClipboardFileName = useCallback(
     (f: File) => {
-      if (f.type.startsWith("image") && f.name == defaultClipboardImageName) {
+      if (f.type.startsWith("image") && f.name === defaultClipboardImageName) {
         return t("uploader.clipboardDefaultFileName", {
           date: dayjs().valueOf(),
         });
@@ -166,7 +167,7 @@ const Uploader = () => {
         handleUploaderError(e);
       });
     },
-    [uploadManager, taskAdded, handleUploaderError, dispatch, getClipboardFileName],
+    [uploadManager, getClipboardFileName, handleUploaderError],
   );
 
   useEffect(() => {
@@ -176,7 +177,7 @@ const Uploader = () => {
       });
       dispatch(setUploadRawFiles({ files: [], promiseId: [] }));
     }
-  }, [uploadRawFiles, uploadRawPromiseId, handleUploaderError, uploadManager]);
+  }, [dispatch, getClipboardFileName, handleUploaderError, uploadManager, uploadRawFiles, uploadRawPromiseId]);
 
   useEffect(() => {
     const unfinished = uploadManager.resumeTasks();
@@ -240,19 +241,19 @@ const Uploader = () => {
         uploadManager.destroy();
       }
     };
-  }, []);
+  }, [dispatch, uploadManager]);
 
   useEffect(() => {
     if (selectFileSignal && selectFileSignal > 0 && path) {
       selectFile(path);
     }
-  }, [selectFileSignal]);
+  }, [path, selectFile, selectFileSignal]);
 
   useEffect(() => {
     if (selectFolderSignal && selectFolderSignal > 0 && path) {
       selectFile(path, SelectType.Directory);
     }
-  }, [selectFolderSignal]);
+  }, [path, selectFile, selectFolderSignal]);
 
   const deleteTask = useCallback((filter: (b: Base) => boolean) => {
     setUploaders((uploaders) => uploaders.filter(filter));

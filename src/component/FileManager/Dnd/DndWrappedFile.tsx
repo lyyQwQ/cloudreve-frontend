@@ -54,19 +54,19 @@ export const useFileDrag = ({ file, includeSelected, dropUri }: UseFileDragProps
     end: (item, monitor) => {
       // Ignore NoOpDropUri
       const target = monitor.getDropResult<DropResult>();
-      if (!item || !target || !target.uri || target.uri == NoOpDropUri) {
+      if (!item || !target || !target.uri || target.uri === NoOpDropUri) {
         return;
       }
 
       dispatch(processDnd(0, item as DragItem, target));
     },
     canDrag: () => {
-      if (!file || fmIndex == FileManagerIndex.selector || isTablet) {
+      if (!file || fmIndex === FileManagerIndex.selector || isTablet) {
         return false;
       }
 
       const crUri = new CrUri(file.path);
-      return file.owned && crUri.fs() != Filesystem.share;
+      return file.owned && crUri.fs() !== Filesystem.share;
     },
     collect: (monitor) => ({
       isDragging: monitor.isDragging(),
@@ -81,8 +81,8 @@ export const useFileDrag = ({ file, includeSelected, dropUri }: UseFileDragProps
       canDrop: monitor.canDrop(),
     }),
     canDrop: (item, _monitor) => {
-      const dropExist = !!dropUri || (!!file && file.type == FileType.folder);
-      if (!dropExist || fmIndex == FileManagerIndex.selector) {
+      const dropExist = !!dropUri || (!!file && file.type === FileType.folder);
+      if (!dropExist || fmIndex === FileManagerIndex.selector) {
         return false;
       }
 
@@ -97,8 +97,7 @@ export const useFileDrag = ({ file, includeSelected, dropUri }: UseFileDragProps
 
   useEffect(() => {
     preview(getEmptyImage(), { captureDraggingState: true });
-    // eslint-disable-next-line
-  }, []);
+  }, [preview]);
 
   useEffect(() => {
     if (isDragging) {
@@ -110,7 +109,7 @@ export const useFileDrag = ({ file, includeSelected, dropUri }: UseFileDragProps
         draggingWithSelected: !!includeSelected,
       }),
     );
-  }, [isDragging]);
+  }, [dispatch, includeSelected, isDragging]);
 
   return [drag, drop, isActive, isDragging] as const;
 };

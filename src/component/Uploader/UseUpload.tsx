@@ -10,7 +10,6 @@ export function useUpload(uploader: Base) {
   const { enqueueSnackbar } = useSnackbar();
 
   useEffect(() => {
-    /* eslint-disable @typescript-eslint/no-empty-function */
     uploader.subscribe({
       onTransition: (newStatus) => {
         setStatus(newStatus);
@@ -26,23 +25,21 @@ export function useUpload(uploader: Base) {
         enqueueSnackbar(msg, { variant: color });
       },
     });
-  }, []);
+  }, [enqueueSnackbar, uploader]);
 
   // 获取上传速度
   const [speed, speedAvg] = React.useMemo(() => {
-    if (progress == undefined || progress.total == null || progress.total.loaded == null) return [0, 0];
+    const loaded = progress?.total?.loaded;
+    if (loaded === undefined || loaded === null) return [0, 0];
     const duration = (Date.now() - (uploader.lastTime || 0)) / 1000;
     const durationTotal = (Date.now() - (uploader.startTime || 0)) / 1000;
-    const res =
-      progress.total.loaded > startLoadedRef.current
-        ? Math.floor((progress.total.loaded - startLoadedRef.current) / duration)
-        : 0;
-    const resAvg = progress.total.loaded > 0 ? Math.floor(progress.total.loaded / durationTotal) : 0;
+    const res = loaded > startLoadedRef.current ? Math.floor((loaded - startLoadedRef.current) / duration) : 0;
+    const resAvg = loaded > 0 ? Math.floor(loaded / durationTotal) : 0;
 
-    startLoadedRef.current = progress.total.loaded;
+    startLoadedRef.current = loaded;
     uploader.lastTime = Date.now();
     return [res, resAvg];
-  }, [progress?.total.loaded]);
+  }, [progress, uploader]);
 
   const retry = (opt?: RetryOption) => {
     uploader.retry(opt);

@@ -112,11 +112,19 @@ const VideoViewer = () => {
 
     const firstLoad = !currentExpire.current;
     const isM3u8 = fileExtension(viewerState.file.name) === "m3u8";
+    const hlsAvailable = viewerState.file.metadata?.["hls:available"] === "1";
     if (isM3u8) {
       // For m3u8, use masked url
       const crFileUrl = new CrUri(getFileLinkedUri(viewerState.file));
       const maskedUrl = `${CrMaskedPrefix}${crFileUrl.path()}`;
       art.switchUrl(maskedUrl);
+      loadSubtitles();
+      return;
+    }
+
+    if (hlsAvailable && viewerState.file.id !== undefined && viewerState.file.id !== null) {
+      const hlsIndexUrl = `/api/v4/hls/${encodeURIComponent(String(viewerState.file.id))}/play/index.m3u8`;
+      art.switchUrl(hlsIndexUrl);
       loadSubtitles();
       return;
     }
@@ -345,6 +353,9 @@ const VideoViewer = () => {
     [dispatch, viewerState?.file],
   );
 
+  const isMaskedM3u8File = fileExtension(viewerState?.file?.name ?? "") === "m3u8";
+  const shouldForceM3u8Type = viewerState?.file?.metadata?.["hls:available"] === "1";
+
   // TODO: Add artplayer-plugin-chapter after it's released to npm
   return (
     <ViewerDialog
@@ -430,50 +441,54 @@ const VideoViewer = () => {
           </Tooltip>
         ))}
       </Menu>
-      <Suspense fallback={<ViewerLoading minHeight={"calc(100vh - 350px)"} />}>
-        <Player
-          key={viewerState?.file?.path}
-          m3u8UrlTransform={m3u8UrlTransform}
-          getEntityUrl={getUnmaskedEntityUrl}
-          sx={{
-            width: "100%",
-            height: "100%",
-            minHeight: "calc(100vh - 350px)",
-          }}
-          chapters={chapters}
-          getInstance={(instance) => setArt(instance)}
-          option={{
-            title: viewerState?.file?.name,
-            theme: theme.palette.primary.main,
-            id: viewerState?.file?.path,
-            autoPlayback: true,
-            subtitleOffset: true,
-            fastForward: true,
-            flip: true,
-            setting: true,
-            playbackRate: true,
-            aspectRatio: true,
-            hotkey: true,
-            pip: !isMobile,
-            fullscreen: true,
-            fullscreenWeb: true,
-            autoHeight: true,
-            whitelist: ["*"],
-            moreVideoAttr: {
-              "webkit-playsinline": true,
-              playsInline: true,
-            },
-            subtitle: {
-              style: {
-                color: subtitleStyle.fontColor ?? "#fff",
-                fontSize: `${subtitleStyle.fontSize ?? 20}px`,
+      <Box data-testid="video-viewer-root">
+        {viewerState?.file?.metadata?.["hls:available"] === "1" && <span data-testid="video-viewer-source-hls" />}
+        <Suspense fallback={<ViewerLoading minHeight={"calc(100vh - 350px)"} />}>
+          <Player
+            key={viewerState?.file?.path}
+            m3u8UrlTransform={isMaskedM3u8File ? m3u8UrlTransform : undefined}
+            getEntityUrl={isMaskedM3u8File ? getUnmaskedEntityUrl : undefined}
+            sx={{
+              width: "100%",
+              height: "100%",
+              minHeight: "calc(100vh - 350px)",
+            }}
+            chapters={chapters}
+            getInstance={(instance) => setArt(instance)}
+            option={{
+              title: viewerState?.file?.name,
+              type: shouldForceM3u8Type ? "m3u8" : undefined,
+              theme: theme.palette.primary.main,
+              id: viewerState?.file?.path,
+              autoPlayback: true,
+              subtitleOffset: true,
+              fastForward: true,
+              flip: true,
+              setting: true,
+              playbackRate: true,
+              aspectRatio: true,
+              hotkey: true,
+              pip: !isMobile,
+              fullscreen: true,
+              fullscreenWeb: true,
+              autoHeight: true,
+              whitelist: ["*"],
+              moreVideoAttr: {
+                "webkit-playsinline": true,
+                playsInline: true,
               },
-            },
-            plugins: [],
-            lang: t("artPlayerLocaleCode", { ns: "common" }), // TODO: review
-          }}
-        />
-      </Suspense>
+              subtitle: {
+                style: {
+                  color: subtitleStyle.fontColor ?? "#fff",
+                  fontSize: `${subtitleStyle.fontSize ?? 20}px`,
+                },
+              },
+              plugins: [],
+              lang: t("artPlayerLocaleCode", { ns: "common" }), // TODO: review
+            }}
+          />
+        </Suspense>
+      </Box>
     </ViewerDialog>
   );
 };

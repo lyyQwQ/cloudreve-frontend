@@ -98,12 +98,10 @@ export default abstract class Base {
     this.logger = new Logger(this.manager.logger.level, "UPLOADER", this.id);
     this.logger.info("Initialize new uploader for task: ", task);
     this.subscriber = {
-      /* eslint-disable @typescript-eslint/no-empty-function */
       onTransition: (_newStatus: Status) => {},
       onError: (_err: Error) => {},
       onProgress: (_data: UploadProgress) => {},
       onMsg: (_msg, _color: MessageColor) => {},
-      /* eslint-enable @typescript-eslint/no-empty-function */
     };
   }
 

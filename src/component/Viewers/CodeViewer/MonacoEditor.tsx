@@ -228,67 +228,68 @@ function MonacoEditor({
     [fixedWidth, fixedHeight],
   );
 
-  const handleEditorWillMount = () => {
-    const finalOptions = editorWillMount(monaco);
-    return finalOptions || {};
-  };
+  useEffect(() => {
+    if (editor.current || !containerElement.current) {
+      return;
+    }
 
-  const handleEditorDidMount = () => {
-    editorDidMount(editor.current, monaco);
+    const finalValue = value !== null ? value : defaultValue;
+    const willMountOptions = editorWillMount?.(monaco) ?? {};
+    const finalOptions = { ...options, ...willMountOptions };
+
+    const modelUri = uri?.(monaco);
+    let model = modelUri && monaco.editor.getModel(modelUri);
+    if (model) {
+      // Cannot create two models with the same URI,
+      // if model with the given URI is already created, just update it.
+      model.setValue(finalValue);
+      monaco.editor.setModelLanguage(model, language);
+    } else {
+      model = monaco.editor.createModel(finalValue, language, modelUri);
+    }
+
+    editor.current = monaco.editor.create(
+      containerElement.current,
+      {
+        model,
+        ...(className ? { extraEditorClassName: className } : {}),
+        ...finalOptions,
+        ...(theme ? { theme } : {}),
+      },
+      overrideServices,
+    );
+
+    editorDidMount?.(editor.current, monaco);
 
     _subscription.current = editor.current.onDidChangeModelContent((event) => {
       if (!__prevent_trigger_change_event.current) {
-        onChange?.(editor.current.getValue(), event);
+        onChange?.(editor.current?.getValue() ?? "", event);
       }
     });
 
-    _subscriptionBlur.current = editor.current.onDidBlurEditorText((event) => {
-      onBlur?.(editor.current.getValue());
+    _subscriptionBlur.current = editor.current.onDidBlurEditorText(() => {
+      onBlur?.(editor.current?.getValue() ?? "");
     });
 
     // Add key binding for Ctrl+S or Meta+S (Cmd+S on Mac)
     editor.current.addCommand(monaco.KeyMod.CtrlCmd | monaco.KeyCode.KeyS, () => {
-      onSave?.current();
+      onSave?.current?.();
     });
-  };
-
-  const handleEditorWillUnmount = () => {
-    editorWillUnmount(editor.current, monaco);
-  };
-
-  const initMonaco = () => {
-    const finalValue = value !== null ? value : defaultValue;
-
-    if (containerElement.current) {
-      // Before initializing monaco editor
-      const finalOptions = { ...options, ...handleEditorWillMount() };
-      const modelUri = uri?.(monaco);
-      let model = modelUri && monaco.editor.getModel(modelUri);
-      if (model) {
-        // Cannot create two models with the same URI,
-        // if model with the given URI is already created, just update it.
-        model.setValue(finalValue);
-        monaco.editor.setModelLanguage(model, language);
-      } else {
-        model = monaco.editor.createModel(finalValue, language, modelUri);
-      }
-      editor.current = monaco.editor.create(
-        containerElement.current,
-        {
-          model,
-          ...(className ? { extraEditorClassName: className } : {}),
-          ...finalOptions,
-          ...(theme ? { theme } : {}),
-        },
-        overrideServices,
-      );
-      // After initializing monaco editor
-      handleEditorDidMount();
-    }
-  };
-
-  // eslint-disable-next-line react-hooks/exhaustive-deps
-  useEffect(initMonaco, []);
+  }, [
+    className,
+    defaultValue,
+    editorDidMount,
+    editorWillMount,
+    language,
+    onBlur,
+    onChange,
+    onSave,
+    options,
+    overrideServices,
+    theme,
+    uri,
+    value,
+  ]);
 
   useEffect(() => {
     if (editor.current) {
@@ -335,19 +336,23 @@ function MonacoEditor({
   }, [className, options]);
 
   useEffect(() => {
-    if (editor.current) {
+    if (!editor.current) {
+      return;
+    }
+
+    if (fixedWidth || fixedHeight) {
       editor.current.layout();
     }
-  }, [width, height]);
+  }, [fixedWidth, fixedHeight]);
 
   useEffect(() => {
     monaco.editor.setTheme(theme);
   }, [theme]);
 
-  useEffect(
-    () => () => {
+  useEffect(() => {
+    return () => {
       if (editor.current) {
-        handleEditorWillUnmount();
+        editorWillUnmount?.(editor.current, monaco);
         editor.current.dispose();
       }
       if (_subscription.current) {
@@ -356,10 +361,8 @@ function MonacoEditor({
       if (_subscriptionBlur.current) {
         _subscriptionBlur.current.dispose();
       }
-    },
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-    [],
-  );
+    };
+  }, [editorWillUnmount]);
 
   return (
     <Box

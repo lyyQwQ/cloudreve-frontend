@@ -127,15 +127,20 @@ const UserRow = ({ user, loading, deleting, selected, onDelete, onDetails, onSel
           <UserAvatar
             sx={{ width: 24, height: 24 }}
             overwriteTextSize
-            user={{ id: user?.hash_id ?? "", nickname: user?.nick ?? "", created_at: user?.created_at ?? "" }}
+            user={{
+              id: user?.hash_id ?? "",
+              nickname: user?.nick ?? "",
+              created_at: user?.created_at ?? "",
+              avatar: user?.avatar,
+            }}
           />
           <NoWrapTypography variant="inherit">{user?.nick}</NoWrapTypography>
           <Box sx={{ display: "flex", alignItems: "center", gap: 0.5 }}>
-            {user?.status == UserStatus.inactive && <SquareChip size="small" label={t("user.status_inactive")} />}
-            {user?.status == UserStatus.sys_banned && (
+            {user?.status === UserStatus.inactive && <SquareChip size="small" label={t("user.status_inactive")} />}
+            {user?.status === UserStatus.sys_banned && (
               <SquareChip size="small" color="error" label={t("user.status_sys_banned")} />
             )}
-            {user?.status == UserStatus.manual_banned && (
+            {user?.status === UserStatus.manual_banned && (
               <SquareChip size="small" color="error" label={t("user.status_manual_banned")} />
             )}
             {user?.two_fa_enabled && (

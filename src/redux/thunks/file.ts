@@ -6,6 +6,7 @@ import {
   getFileEntityUrl,
   getFileList,
   getFileThumb,
+  deleteHLSArtifact,
   sendCreateFile,
   sendDeleteFiles,
   sendMetadataPatch,
@@ -85,8 +86,9 @@ const contextMenuCloseAnimationDelay = 250;
 
 function get_platform(): string {
   // 2022 way of detecting. Note : this userAgentData feature is available only in secure contexts (HTTPS)
-  if (typeof navigator.userAgentData !== "undefined" && navigator.userAgentData != null) {
-    return navigator.userAgentData.platform;
+  const uaData = (navigator as any).userAgentData;
+  if (typeof uaData !== "undefined" && uaData != null) {
+    return uaData.platform;
   }
   // Deprecated but still works for most of the browser
   if (typeof navigator.platform !== "undefined") {
@@ -155,7 +157,7 @@ export function goToParent(index: number, folder: FileResponse): AppThunk {
 
 export function openFile(index: number, file: FileResponse): AppThunk {
   return async (dispatch, _getState) => {
-    if (file.type == FileType.folder) {
+    if (file.type === FileType.folder) {
       dispatch(navigateToPath(index, file.path, file));
       return;
     } else {
@@ -209,7 +211,7 @@ export function selectFile(index: number, file: FileResponse, e?: React.MouseEve
 
     lastSelectedIndex = fileIndex;
 
-    if (isCtrlSelection && index != FileManagerIndex.selector) {
+    if (isCtrlSelection && index !== FileManagerIndex.selector) {
       // Ctrl/Command 单击添加/删除
       const currentSelected = selected[file.path];
       if (currentSelected) {
@@ -247,13 +249,13 @@ export function fileClicked(index: number, file: FileResponse, e?: React.MouseEv
   };
 }
 
-export function fileDoubleClicked(index: number, file: FileResponse, e?: React.MouseEvent<HTMLElement>): AppThunk {
+export function fileDoubleClicked(index: number, file: FileResponse, _e?: React.MouseEvent<HTMLElement>): AppThunk {
   return async (dispatch, _getState) => {
     const actionOpt = getActionOpt([file], Viewers);
 
     if (actionOpt.showOpen) {
       dispatch(openFile(index, file));
-    } else if (file.type == FileType.file && actionOpt.showDownload) {
+    } else if (file.type === FileType.file && actionOpt.showDownload) {
       dispatch(downloadSingleFile(file));
     }
   };
@@ -306,7 +308,7 @@ export function openFileContextMenu(
   return async (dispatch, getState) => {
     e.preventDefault();
     e.stopPropagation();
-    if (index == FileManagerIndex.selector) {
+    if (index === FileManagerIndex.selector) {
       return;
     }
 
@@ -416,7 +418,7 @@ export function renameFile(index: number, file: FileResponse): AppThunk<Promise<
         if (
           currentPath.startsWith(file.path + "/") ||
           currentPath.startsWith(file.path + "?") ||
-          currentPath == file.path
+          currentPath === file.path
         ) {
           dispatch(navigateToPath(index, currentPath.replace(file.path, newFile.path)));
         }
@@ -453,7 +455,7 @@ export function validateFileName(
       return;
     }
 
-    if (newName == "." || newName == "..") {
+    if (newName === "." || newName === "..") {
       dispatch(
         setRenameFileModalError({
           index,
@@ -498,6 +500,15 @@ export function deleteFile(index: number, files: FileResponse[]): AppThunk<Promi
     }
 
     dispatch(setFileDeleteModalLoading({ index, value: true }));
+
+    if (opt.delete_hls) {
+      const hlsTargets = files.filter((f) => f.metadata?.["hls:available"] === "1");
+      for (const f of hlsTargets) {
+        try {
+          await dispatch(deleteHLSArtifact({ file_id: f.id }));
+        } catch (_e) {}
+      }
+    }
 
     let deleted = files;
     try {
@@ -553,7 +564,7 @@ function processFileListDiff(index: number, deleted: FileResponse[], refreshIfNe
 
     deleted.forEach((f) => {
       // Filter out potential parents
-      const index = potentialParents.findIndex((p) => f.path == p);
+      const index = potentialParents.findIndex((p) => f.path === p);
       if (index > 0) {
         potentialParents.splice(index);
       }
@@ -581,7 +592,7 @@ function processFileListDiff(index: number, deleted: FileResponse[], refreshIfNe
       }
     } else {
       // For offset pagination, refresh file list
-      if (refreshIfNeeded && newNavigateUri.pure_uri().toString() == currentUri.pure_uri().toString()) {
+      if (refreshIfNeeded && newNavigateUri.pure_uri().toString() === currentUri.pure_uri().toString()) {
         dispatch(refreshFileList(index));
       }
     }
@@ -589,7 +600,7 @@ function processFileListDiff(index: number, deleted: FileResponse[], refreshIfNe
     // Retreat to parent if current path is deleted
     if (
       refreshIfNeeded &&
-      newNavigateUri.pure_uri().toString() != currentUri.pure_uri().toString() &&
+      newNavigateUri.pure_uri().toString() !== currentUri.pure_uri().toString() &&
       newNavigatePath
     ) {
       dispatch(navigateToPath(index, newNavigatePath));
@@ -604,10 +615,10 @@ export function processDnd(index: number, src: DragItem, dst: DropResult): AppTh
     const fm = getState().fileManager[index];
     const srcFiles = [
       src.target,
-      ...(src.includeSelected ? Object.values(fm.selected).filter((f) => f.path != src.target.path) : []),
+      ...(src.includeSelected ? Object.values(fm.selected).filter((f) => f.path !== src.target.path) : []),
     ];
 
-    const isCopy = dst.dropEffect == DropEffect.copy;
+    const isCopy = dst.dropEffect === DropEffect.copy;
     return dispatch(moveFiles(index, srcFiles, dst.uri, isCopy));
   };
 }
@@ -616,7 +627,7 @@ export function processDnd(index: number, src: DragItem, dst: DropResult): AppTh
 // TODO: validate bypass by share
 function checkMovePrecondition(srcFiles: FileResponse[], dst: string) {
   return srcFiles.some((src) => {
-    if (src.path === dst || getFileLinkedUri(src) == dst) return true;
+    if (src.path === dst || getFileLinkedUri(src) === dst) return true;
     if (dst.startsWith(src.path + "/")) {
       enqueueSnackbar({
         message: i18next.t("application:modals.cannotMoveCopyToChild"),
@@ -626,9 +637,10 @@ function checkMovePrecondition(srcFiles: FileResponse[], dst: string) {
       return true;
     }
     const srcUri = new CrUri(src.path);
-    if (srcUri.parent().toString() == dst) {
+    if (srcUri.parent().toString() === dst) {
       return true;
     }
+    return false;
   });
 }
 
@@ -637,8 +649,8 @@ export function moveFiles(index: number, src: FileResponse[], dst: string, isCop
     const dstUri = new CrUri(dst);
     if (
       !src.find((f) => f.metadata && f.metadata[Metadata.restore_uri]) &&
-      dstUri.fs() == Filesystem.trash &&
-      dstUri.elements().length == 0
+      dstUri.fs() === Filesystem.trash &&
+      dstUri.elements().length === 0
     ) {
       return dispatch(deleteFile(index, src));
     }
@@ -667,7 +679,7 @@ export function moveFiles(index: number, src: FileResponse[], dst: string, isCop
     }
 
     if (isCopy) {
-      if (dst == getState().fileManager[index].path) dispatch(refreshFileList(index));
+      if (dst === getState().fileManager[index].path) dispatch(refreshFileList(index));
     } else if (success) {
       dispatch(processFileListDiff(index, src));
     }
@@ -907,7 +919,7 @@ export function createShareShortcut(index: number): AppThunk {
 
     await dispatch(
       sendCreateFile({
-        type: shareInfo.source_type == FileType.file ? "file" : "folder",
+        type: shareInfo.source_type === FileType.file ? "file" : "folder",
         uri: dstCrUri.toString(),
         metadata: {
           [Metadata.share_redirect]: shortcutPath,
@@ -1013,7 +1025,7 @@ export function createNew(index: number, type: string, viewer?: Viewer, template
         requestCreateNew(
           index,
           type,
-          type == CreateNewDialogType.folder ? i18next.t("application:fileManager.newlyCreatedFolder") : newFileName,
+          type === CreateNewDialogType.folder ? i18next.t("application:fileManager.newlyCreatedFolder") : newFileName,
         ),
       );
     } catch (e) {
@@ -1038,7 +1050,7 @@ export function submitCreateNew(index: number, name: string, type: number): AppT
 
     const newFile = await dispatch(
       sendCreateFile({
-        type: type == FileType.file ? "file" : "folder",
+        type: type === FileType.file ? "file" : "folder",
         uri: crUri.join(name).toString(),
         err_on_conflict: true,
       }),
@@ -1072,8 +1084,8 @@ export function walk(
     await callback(files, relativePath);
 
     for (const f of files) {
-      if (f.type == FileType.folder) {
-        var uri = getFileLinkedUri(f);
+      if (f.type === FileType.folder) {
+        const uri = getFileLinkedUri(f);
         if (f.metadata && f.metadata[Metadata.share_redirect]) {
           if (!walkedSymbolicLinks.includes(uri)) {
             walkedSymbolicLinks.push(uri);
@@ -1113,11 +1125,11 @@ export function walk(
               break;
             }
           }
-          const path = (relativePath == "" ? "" : relativePath + "/") + f.name;
+          const path = (relativePath === "" ? "" : relativePath + "/") + f.name;
           await dispatch(walk(allChildren, callback, walkedSymbolicLinks, path));
         } catch (e) {
           console.warn("Failed to load children", e);
-          if (e instanceof Error && e.name == "AbortError") {
+          if (e instanceof Error && e.name === "AbortError") {
             return;
           }
         }
@@ -1139,7 +1151,7 @@ export function walkAll(files: FileResponse[]): AppThunk<Promise<FileResponseWal
           ...f.map(
             (file): FileResponseWalked => ({
               ...file,
-              relativePath: (relativePath == "" ? "" : relativePath + "/") + file.name,
+              relativePath: (relativePath === "" ? "" : relativePath + "/") + file.name,
             }),
           ),
         ),
@@ -1177,13 +1189,13 @@ export function batchGetDirectLinks(index: number, files: FileResponse[]): AppTh
 export function resetThumbnails(files: FileResponse[]): AppThunk {
   return async (dispatch, getState) => {
     const thumbConfigLoaded = getState().siteConfig.thumb.loaded;
-    if (thumbConfigLoaded != ConfigLoadState.Loaded) {
+    if (thumbConfigLoaded !== ConfigLoadState.Loaded) {
       await dispatch(loadSiteConfig("thumb"));
     }
 
     const thumbExts = getState().siteConfig.thumb.config.thumb_exts ?? [];
     const targetFiles = files
-      .filter((f) => f.type == FileType.file)
+      .filter((f) => f.type === FileType.file)
       .filter(
         (f) => f.metadata?.[Metadata.thumbDisabled] !== undefined && thumbExts.includes(fileExtension(f.name) ?? ""),
       );
@@ -1234,7 +1246,7 @@ export function resetThumbnails(files: FileResponse[]): AppThunk {
 // we need to refresh the symbolic links by getting the latest file list
 export function refreshSingleFileSymbolicLinks(file: FileResponse): AppThunk<Promise<FileResponse>> {
   return async (dispatch, _getState) => {
-    if (file.type != FileType.file || !file?.metadata?.[Metadata.share_redirect]) {
+    if (file.type !== FileType.file || !file?.metadata?.[Metadata.share_redirect]) {
       return file;
     }
     const currentUrl = new CrUri(getFileLinkedUri(file));
@@ -1247,7 +1259,7 @@ export function refreshSingleFileSymbolicLinks(file: FileResponse): AppThunk<Pro
         false,
       ),
     );
-    if (latestList.files.length != 1) {
+    if (latestList.files.length !== 1) {
       return file;
     }
     const latestFile = latestList.files[0];
@@ -1255,7 +1267,7 @@ export function refreshSingleFileSymbolicLinks(file: FileResponse): AppThunk<Pro
       return file;
     }
 
-    if (latestFile.path != file?.metadata?.[Metadata.share_redirect]) {
+    if (latestFile.path !== file?.metadata?.[Metadata.share_redirect]) {
       // File renamed, update file share_redirect
       dispatch(
         patchFileMetadata(FileManagerIndex.main, [file], [{ key: Metadata.share_redirect, value: latestFile.path }]),
@@ -1271,8 +1283,8 @@ function startBatchGetDirectLinks(files: FileResponse[]): AppThunk<Promise<Direc
     const currentUser = SessionManager.currentUserGroup();
     const batchLimit = currentUser?.direct_link_batch_size ?? 0;
     await dispatch(
-      walk(files, async (children, relativePath) => {
-        const childFiles = children.filter((f) => f.type == FileType.file);
+      walk(files, async (children, _relativePath) => {
+        const childFiles = children.filter((f) => f.type === FileType.file);
         allFiles.push(...childFiles);
         if (allFiles.length > batchLimit) {
           enqueueSnackbar({

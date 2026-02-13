@@ -385,7 +385,15 @@ const EmailLogin = ({ oauthConsent }: SignInProps) => {
     }
     phaseSetting.control = {
       submit: (
-        <LoadingButton sx={{ mt: 2 }} type="submit" fullWidth variant="contained" color="primary" loading={loading}>
+        <LoadingButton
+          sx={{ mt: 2 }}
+          type="submit"
+          fullWidth
+          variant="contained"
+          color="primary"
+          loading={loading}
+          data-testid="login-submit-button"
+        >
           <span>{phaseSetting.nextButtonText}</span>
         </LoadingButton>
       ),
@@ -393,6 +401,7 @@ const EmailLogin = ({ oauthConsent }: SignInProps) => {
         <>
           {phaseSetting.showBackButton && (
             <Button
+              data-testid="login-back-button"
               startIcon={<ArrowBackIos />}
               size={"small"}
               sx={{ mt: 2 }}

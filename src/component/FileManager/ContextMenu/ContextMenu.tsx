@@ -1,8 +1,9 @@
 import { Box, Divider, ListItemIcon, ListItemText, Menu, MenuItem, styled, Typography, useTheme } from "@mui/material";
 import { useCallback, useMemo } from "react";
 import { useTranslation } from "react-i18next";
+import { FileType } from "../../../api/explorer.ts";
 import { closeContextMenu } from "../../../redux/fileManagerSlice.ts";
-import { CreateNewDialogType } from "../../../redux/globalStateSlice.ts";
+import { CreateNewDialogType, setSubtitleSelectDialog, setVideoInfoDialog } from "../../../redux/globalStateSlice.ts";
 import { useAppDispatch, useAppSelector } from "../../../redux/hooks.ts";
 import { downloadFiles } from "../../../redux/thunks/download.ts";
 import {
@@ -128,7 +129,12 @@ const ContextMenu = ({ fmIndex = 0 }: ContextMenuProps) => {
     displayOpt.showDirectLink;
   let part3 =
     displayOpt.showTags || displayOpt.showOrganize || displayOpt.showMore || displayOpt.showNewFileFromTemplate;
-  let part4 = displayOpt.showInfo || displayOpt.showGoToParent || displayOpt.showGoToSharedLink;
+  let part4 =
+    displayOpt.showSubtitleBurn ||
+    displayOpt.showVideoInfo ||
+    displayOpt.showInfo ||
+    displayOpt.showGoToParent ||
+    displayOpt.showGoToSharedLink;
   let part5 = displayOpt.showRestore || displayOpt.showDelete || displayOpt.showRefresh;
   const showDivider1 = part1 && part2;
   const showDivider2 = part2 && part3;
@@ -272,7 +278,16 @@ const ContextMenu = ({ fmIndex = 0 }: ContextMenuProps) => {
         </SquareMenuItem>
       )}
       {displayOpt.showDirectLink && (
-        <SquareMenuItem onClick={() => dispatch(batchGetDirectLinks(fmIndex, targets))}>
+        <SquareMenuItem
+          data-testid="context-menu-create-direct-link"
+          onClick={() => {
+            if (targets.length === 1 && targets[0].type === FileType.folder) {
+              dispatch(openShareDialog(fmIndex, targets[0]));
+              return;
+            }
+            dispatch(batchGetDirectLinks(fmIndex, targets));
+          }}
+        >
           <ListItemIcon>
             <LinkOutlined fontSize="small" />
           </ListItemIcon>
@@ -335,6 +350,44 @@ const ContextMenu = ({ fmIndex = 0 }: ContextMenuProps) => {
             <Info fontSize="small" />
           </ListItemIcon>
           <ListItemText>{t("application:fileManager.viewDetails")}</ListItemText>
+        </SquareMenuItem>
+      )}
+      {displayOpt.showVideoInfo && (
+        <SquareMenuItem
+          data-testid="context-menu-video-info"
+          onClick={() => {
+            onClose();
+            dispatch(
+              setVideoInfoDialog({
+                open: true,
+                file: targets[0],
+              }),
+            );
+          }}
+        >
+          <ListItemIcon>
+            <Info fontSize="small" />
+          </ListItemIcon>
+          <ListItemText>Video Info</ListItemText>
+        </SquareMenuItem>
+      )}
+      {displayOpt.showSubtitleBurn && (
+        <SquareMenuItem
+          data-testid="subtitle-burn-menu-item"
+          onClick={() => {
+            onClose();
+            dispatch(
+              setSubtitleSelectDialog({
+                open: true,
+                file: targets[0],
+              }),
+            );
+          }}
+        >
+          <ListItemIcon>
+            <Info fontSize="small" />
+          </ListItemIcon>
+          <ListItemText>Subtitle Burn</ListItemText>
         </SquareMenuItem>
       )}
     </>

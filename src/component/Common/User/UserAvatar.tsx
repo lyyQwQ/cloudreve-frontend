@@ -25,21 +25,17 @@ export interface UserAvatarProps {
 
 function stringToColor(string: string) {
   let hash = 0;
-  let i;
 
-  /* eslint-disable no-bitwise */
-  for (i = 0; i < string.length; i += 1) {
+  for (let i = 0; i < string.length; i += 1) {
     hash = string.charCodeAt(i) + ((hash << 5) - hash);
   }
 
   let color = "#";
 
-  for (i = 0; i < 3; i += 1) {
+  for (let i = 0; i < 3; i += 1) {
     const value = (hash >> (i * 8)) & 0xff;
     color += `00${value.toString(16)}`.slice(-2);
   }
-  /* eslint-enable no-bitwise */
-
   return color;
 }
 
@@ -74,18 +70,7 @@ const UserAvatar = memo(
       rootMargin: "200px 0px",
       skip: !!user,
     });
-    useEffect(() => {
-      if (inView && !loadedUser) {
-        if (uid) {
-          loadUser(uid);
-        }
-      }
-    }, [inView]);
-    useEffect(() => {
-      if (user) {
-        setLoadedUser(user);
-      }
-    }, [user]);
+
     const loadUser = useCallback(
       async (uid: string) => {
         try {
@@ -98,13 +83,27 @@ const UserAvatar = memo(
           console.warn("Failed to load user info", e);
         }
       },
-      [dispatch, setLoadedUser, onUserLoaded],
+      [dispatch, onUserLoaded],
     );
 
+    useEffect(() => {
+      if (inView && !loadedUser) {
+        if (uid) {
+          loadUser(uid);
+        }
+      }
+    }, [inView, loadedUser, uid, loadUser]);
+    useEffect(() => {
+      if (user) {
+        setLoadedUser(user);
+      }
+    }, [user]);
+
     const avatarUrl = useMemo(() => {
-      if (loadedUser) {
+      if (loadedUser?.id && loadedUser.avatar) {
         return ApiPrefix + `/user/avatar/${loadedUser.id}${cacheKey ? `?nocache=1&key=${cacheKey ?? 0}` : ""}`;
       }
+
       return undefined;
     }, [loadedUser, cacheKey]);
 
@@ -136,7 +135,7 @@ const UserAvatar = memo(
                 },
               ]}
             >
-              {loadedUser.id == "" ? (
+              {loadedUser.id === "" ? (
                 <InPrivate
                   sx={{
                     ...(overwriteTextSize

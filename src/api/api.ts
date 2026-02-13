@@ -111,6 +111,7 @@ import {
   TaskProgresses,
   TaskResponse,
 } from "./workflow.ts";
+import { CreateSubtitleBurnTaskRequest, GetVideoInfoRequest, GetVideoInfoResponse } from "./video.ts";
 
 export function getSiteConfig(section: string): ThunkResponse<SiteConfig> {
   return async (dispatch, _getState) => {
@@ -144,7 +145,7 @@ export function sendPrepareLogin(email: string): ThunkResponse<PrepareLoginRespo
         {
           ...defaultOpts,
           noCredential: true,
-          bypassSnackbar: (e) => e instanceof AppError && e.code == Code.NodeFound,
+          bypassSnackbar: (e) => e instanceof AppError && e.code === Code.NodeFound,
         },
       ),
     );
@@ -181,7 +182,7 @@ export function sendLogin(req: PasswordLoginRequest): ThunkResponse<LoginRespons
         {
           ...defaultOpts,
           noCredential: true,
-          bypassSnackbar: (e) => e instanceof AppError && e.code == Code.Continue,
+          bypassSnackbar: (e) => e instanceof AppError && e.code === Code.Continue,
         },
       ),
     );
@@ -270,7 +271,7 @@ export function getFileList(req: ListFileService, skipSnackbar = true): ThunkRes
         },
         {
           ...defaultOpts,
-          bypassSnackbar: (_e) => true,
+          bypassSnackbar: (_e) => skipSnackbar,
         },
       ),
     );
@@ -344,7 +345,7 @@ export function sendDeleteFiles(req: DeleteFileService): ThunkResponse {
         },
         {
           ...defaultOpts,
-          skipBatchError: req.uris.length == 1,
+          skipBatchError: req.uris.length === 1,
         },
       ),
     );
@@ -432,7 +433,7 @@ export function sendMoveFile(req: MoveFileService): ThunkResponse<void> {
         },
         {
           ...defaultOpts,
-          skipBatchError: req.uris.length == 1,
+          skipBatchError: req.uris.length === 1,
         },
       ),
     );
@@ -450,7 +451,7 @@ export function sendRestoreFile(req: DeleteFileService): ThunkResponse<void> {
         },
         {
           ...defaultOpts,
-          skipBatchError: req.uris.length == 1,
+          skipBatchError: req.uris.length === 1,
         },
       ),
     );
@@ -468,7 +469,7 @@ export function sendMetadataPatch(req: PatchMetadataService): ThunkResponse<void
         },
         {
           ...defaultOpts,
-          skipBatchError: req.uris.length == 1,
+          skipBatchError: req.uris.length === 1,
         },
       ),
     );
@@ -550,7 +551,7 @@ export function getShareInfo(
   return async (dispatch, _getState) => {
     let uri = "/share/info/" + id;
     const query = new URLSearchParams();
-    if (password && password != "") {
+    if (password && password !== "") {
       query.set("password", password);
     }
     if (count_views) {
@@ -559,7 +560,7 @@ export function getShareInfo(
     if (owner_extended) {
       query.set("owner_extended", "true");
     }
-    if (query.toString() != "") {
+    if (query.toString() !== "") {
       uri += "?" + query.toString();
     }
     return await dispatch(
@@ -605,7 +606,7 @@ export function getFileEntityUrl(req: FileURLService): ThunkResponse<FileURLResp
         },
         {
           ...defaultOpts,
-          skipBatchError: req.uris.length == 1,
+          skipBatchError: req.uris.length === 1,
         },
       ),
     );
@@ -624,6 +625,66 @@ export function getFileInfo(req: GetFileInfoService, skipError = false): ThunkRe
         {
           ...defaultOpts,
           bypassSnackbar: () => skipError,
+        },
+      ),
+    );
+  };
+}
+
+export function getVideoInfo(req: GetVideoInfoRequest): ThunkResponse<GetVideoInfoResponse> {
+  return async (dispatch, _getState) => {
+    return await dispatch(
+      send("/video/info", {
+        method: "POST",
+        data: req,
+      }),
+    );
+  };
+}
+
+export function createSubtitleBurnTask(req: CreateSubtitleBurnTaskRequest): ThunkResponse<any> {
+  return async (dispatch, _getState) => {
+    return await dispatch(
+      send("/video/subtitle/burn", {
+        method: "POST",
+        data: req,
+      }),
+    );
+  };
+}
+
+export function getHLSStatus(req: { file_id: string | number }): ThunkResponse<any> {
+  return async (dispatch, _getState) => {
+    const fileId = encodeURIComponent(String(req.file_id));
+    return await dispatch(
+      send(
+        `/hls/${fileId}`,
+        {
+          method: "GET",
+          validateStatus: () => true,
+        },
+        {
+          ...defaultOpts,
+          bypassSnackbar: (e) => e instanceof AppError && e.code === Code.NodeFound,
+        },
+      ),
+    );
+  };
+}
+
+export function deleteHLSArtifact(req: { file_id: string | number }): ThunkResponse<void> {
+  return async (dispatch, _getState) => {
+    const fileId = encodeURIComponent(String(req.file_id));
+    return await dispatch(
+      send(
+        `/hls/${fileId}`,
+        {
+          method: "DELETE",
+          validateStatus: () => true,
+        },
+        {
+          ...defaultOpts,
+          bypassSnackbar: (e) => e instanceof AppError && e.code === Code.NodeFound,
         },
       ),
     );
@@ -678,7 +739,7 @@ export function sendUpdateFile(req: FileUpdateService, data: any): ThunkResponse
           },
         },
         {
-          bypassSnackbar: (e) => e instanceof AppError && e.code == Code.StaleVersion,
+          bypassSnackbar: (e) => e instanceof AppError && e.code === Code.StaleVersion,
           ...defaultOpts,
         },
       ),
@@ -1018,7 +1079,7 @@ export function getFileDirectLinks(req: MultipleUriService): ThunkResponse<Direc
         },
         {
           ...defaultOpts,
-          skipBatchError: req.uris.length == 1,
+          skipBatchError: req.uris.length === 1,
           acceptBatchPartialSuccess: true,
         },
       ),
@@ -1216,7 +1277,7 @@ export function sendSinUp(req: SignUpService): ThunkResponse<User> {
         {
           ...defaultOpts,
           noCredential: true,
-          bypassSnackbar: (e) => e instanceof AppError && e.code == Code.Continue,
+          bypassSnackbar: (e) => e instanceof AppError && e.code === Code.Continue,
         },
       ),
     );
@@ -2043,7 +2104,7 @@ export function getOauthAppRegistration(app_id: string): ThunkResponse<AppRegist
 export function sendConsentOauthApp(args: GrantService): ThunkResponse<GrantResponse> {
   return async (dispatch, _getState) => {
     return await dispatch(
-      send(`/session/oauth/consent`, { method: "POST", data: args }, { bypassSnackbar: (e) => true, ...defaultOpts }),
+      send(`/session/oauth/consent`, { method: "POST", data: args }, { bypassSnackbar: (_e) => true, ...defaultOpts }),
     );
   };
 }

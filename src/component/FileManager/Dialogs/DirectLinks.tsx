@@ -67,6 +67,7 @@ const DirectLinks = () => {
             }}
             control={
               <StyledCheckbox
+                data-testid="direct-links-show-file-name-checkbox"
                 onChange={() => {
                   setShowFileName(!showFileName);
                 }}
@@ -90,6 +91,7 @@ const DirectLinks = () => {
             }}
             control={
               <StyledCheckbox
+                data-testid="direct-links-force-download-checkbox"
                 onChange={() => {
                   setForceDownload(!forceDownload);
                 }}
@@ -107,6 +109,9 @@ const DirectLinks = () => {
         onClose: onClose,
         fullWidth: true,
         maxWidth: "sm",
+        PaperProps: {
+          "data-testid": "direct-links-dialog-root",
+        },
       }}
     >
       <DialogContent sx={{ pt: 2, pb: 0 }}>
@@ -118,7 +123,10 @@ const DirectLinks = () => {
           variant="outlined"
           fullWidth
           slotProps={{
-            htmlInput: { readonly: true },
+            htmlInput: {
+              readonly: true,
+              "data-testid": "direct-links-source-link-text-field",
+            },
           }}
         />
       </DialogContent>
