@@ -7,8 +7,12 @@
     "dev": "vite",
     "build": "vite build",
     "build-prod": "tsc && vite build",
-    "lint": "eslint . --ext ts,tsx --report-unused-disable-directives --max-warnings 0",
+    "lint": "eslint src --ext ts,tsx --report-unused-disable-directives --max-warnings 0",
     "preview": "vite preview",
+    "preview:e2e": "node scripts/e2e-proxy.mjs",
+    "test": "vitest run",
+    "test:watch": "vitest",
+    "test:coverage": "vitest run --coverage",
     "format": "prettier --write .",
     "format:check": "prettier --check .",
     "prepare": "husky"
@@ -85,6 +89,10 @@
     "timeago-react": "^3.0.6"
   },
   "devDependencies": {
+    "@testing-library/dom": "^10.4.1",
+    "@testing-library/jest-dom": "^6.9.1",
+    "@testing-library/react": "^16.3.2",
+    "@testing-library/user-event": "^14.6.1",
     "@types/leaflet": "^1.9.12",
     "@types/lodash": "^4.14.202",
     "@types/node": "^20.10.5",
@@ -94,6 +102,7 @@
     "@types/wicg-file-system-access": "^2023.10.5",
     "@typescript-eslint/eslint-plugin": "^6.14.0",
     "@typescript-eslint/parser": "^6.14.0",
+    "@vitejs/plugin-react": "^5.1.4",
     "@vitejs/plugin-react-swc": "^3.5.0",
     "eslint": "^9.29.0",
     "eslint-plugin-react": "^7.37.5",
@@ -101,6 +110,7 @@
     "eslint-plugin-react-refresh": "^0.4.5",
     "globals": "^16.2.0",
     "husky": "^9.1.7",
+    "jsdom": "^28.0.0",
     "less": "^4.2.0",
     "lint-staged": "^16.1.2",
     "prettier": "3.1.1",
@@ -109,7 +119,8 @@
     "vite": "5.4.6",
     "vite-plugin-mkcert": "^1.17.6",
     "vite-plugin-pwa": "^0.21.1",
-    "vite-plugin-static-copy": "^2.2.0"
+    "vite-plugin-static-copy": "^2.2.0",
+    "vitest": "^4.0.18"
   },
   "lint-staged": {
     "*.{js,jsx,ts,tsx,json,css,scss,md}": [
