@@ -1,9 +1,7 @@
 import { useEffect } from "react";
-import { useLocation } from "react-router-dom";
 import { useAppSelector } from "../redux/hooks.ts";
 
 const PageTitle = ({ title }: { title?: string }) => {
-  const location = useLocation();
   const siteTitle = useAppSelector((state) => state.siteConfig.basic.config.title);
 
   useEffect(() => {
@@ -17,7 +15,7 @@ const PageTitle = ({ title }: { title?: string }) => {
     }
 
     document.title = titles.join(" - ");
-  }, [location, title, siteTitle]);
+  }, [title, siteTitle]);
 
   return null;
 };
