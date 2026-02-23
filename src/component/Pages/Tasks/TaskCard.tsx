@@ -172,8 +172,8 @@ const TaskCard = ({ loading, showProgress, onLoad, task }: TaskCardProps) => {
                   height: 30,
                 }}
                 file={{
-                  type: (task?.summary?.props.download?.files?.length ?? 0) > 1 ? FileType.folder : FileType.file,
-                  name: task?.summary?.props.download?.name ?? "",
+                  type: (task?.summary?.props?.download?.files?.length ?? 0) > 1 ? FileType.folder : FileType.file,
+                  name: task?.summary?.props?.download?.name ?? "",
                 }}
               />
             ) : (

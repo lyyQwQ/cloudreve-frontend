@@ -372,7 +372,7 @@ const ContextMenu = ({ fmIndex = 0 }: ContextMenuProps) => {
               <ListItemIcon>
                 <Info fontSize="small" />
               </ListItemIcon>
-              <ListItemText>Video Info</ListItemText>
+              <ListItemText>视频信息</ListItemText>
             </SquareMenuItem>
           )}
           {displayOpt.showSubtitleBurn && (
@@ -391,7 +391,7 @@ const ContextMenu = ({ fmIndex = 0 }: ContextMenuProps) => {
               <ListItemIcon>
                 <Info fontSize="small" />
               </ListItemIcon>
-              <ListItemText>Subtitle Burn</ListItemText>
+              <ListItemText>字幕嵌入</ListItemText>
             </SquareMenuItem>
           )}
           <SquareMenuItem

@@ -33,14 +33,14 @@ const TaskSummaryTitle = ({ type, summary, isInDashboard = false }: TaskSummaryT
 
   const selectedCount = useMemo(() => {
     let selected = 0;
-    for (const file of summary?.props.download?.files ?? []) {
+    for (const file of summary?.props?.download?.files ?? []) {
       if (file.selected) {
         selected++;
       }
     }
 
     return selected;
-  }, [summary?.props.download?.files]);
+  }, [summary?.props?.download?.files]);
 
   switch (type) {
     case TaskType.remote_download:
@@ -109,9 +109,9 @@ const TaskSummaryTitle = ({ type, summary, isInDashboard = false }: TaskSummaryT
         />
       );
     case TaskType.video_subtitle_burn:
-      return <Typography variant="inherit">Subtitle burn task</Typography>;
+      return <Typography variant="inherit">字幕嵌入任务</Typography>;
     case TaskType.video_hls_slice:
-      return <Typography variant="inherit">HLS slice task</Typography>;
+      return <Typography variant="inherit">HLS 转码任务</Typography>;
     default:
       return (
         <Trans
