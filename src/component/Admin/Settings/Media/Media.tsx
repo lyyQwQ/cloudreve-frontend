@@ -194,10 +194,10 @@ const Media = () => {
         </SettingSection>
         <SettingSection>
           <Typography variant="h6" gutterBottom>
-            Video Processing
+            {t("settings.videoProcessing")}
           </Typography>
           <SettingSectionContent>
-            <SettingForm title="video_ffmpeg_threads" lgWidth={5}>
+            <SettingForm title={t("settings.videoFfmpegThreads")} lgWidth={5}>
               <FormControl>
                 <DenseFilledTextField
                   type="number"
@@ -212,7 +212,7 @@ const Media = () => {
                 />
               </FormControl>
             </SettingForm>
-            <SettingForm title="video_ffmpeg_nice" lgWidth={5}>
+            <SettingForm title={t("settings.videoFfmpegNice")} lgWidth={5}>
               <FormControl>
                 <DenseFilledTextField
                   type="number"
@@ -227,7 +227,7 @@ const Media = () => {
                 />
               </FormControl>
             </SettingForm>
-            <SettingForm title="queue_video_process_worker_num" lgWidth={5}>
+            <SettingForm title={t("settings.videoProcessWorkerNum")} lgWidth={5}>
               <FormControl>
                 <DenseFilledTextField
                   type="number"

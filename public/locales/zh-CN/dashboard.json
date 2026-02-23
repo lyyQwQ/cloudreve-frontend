@@ -777,7 +777,14 @@
     "fileEventPushMaxAge": "离线有效期 (秒)",
     "fileEventPushMaxAgeDes": "订阅者离线后，在给定时间内的事件会被暂存，重新上线后仍可获得所有变更推送。",
     "fileEventPushDebounce": "防抖动延时 (秒)",
-    "fileEventPushDebounceDes": "事件发生后，等待给定时间以合并更多事件打包推送。"
+    "fileEventPushDebounceDes": "事件发生后，等待给定时间以合并更多事件打包推送。",
+    "videoProcessing": "视频处理",
+    "videoFfmpegThreads": "FFmpeg 线程数",
+    "videoFfmpegThreadsDes": "FFmpeg 编码时使用的线程数，0 表示自动检测。",
+    "videoFfmpegNice": "FFmpeg Nice 优先级",
+    "videoFfmpegNiceDes": "FFmpeg 进程的 nice 值（0-19），值越大优先级越低，减少对其他服务的影响。",
+    "videoProcessWorkerNum": "视频处理队列 Worker 数",
+    "videoProcessWorkerNumDes": "同时处理视频任务的 Worker 数量。"
   },
   "giftCodes": {
     "giftCodesSettings": "礼品码",
@@ -1479,7 +1486,9 @@
     "finished": "完成",
     "canceled": "取消/停止",
     "unknown": "未知",
-    "errorMsg": "错误信息"
+    "errorMsg": "错误信息",
+    "subtitleBurn": "字幕嵌入任务",
+    "hlsSlice": "HLS 转码任务"
   },
   "payment": {
     "tradeNo": "交易单号",

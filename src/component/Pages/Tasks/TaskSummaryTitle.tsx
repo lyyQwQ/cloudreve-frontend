@@ -109,9 +109,9 @@ const TaskSummaryTitle = ({ type, summary, isInDashboard = false }: TaskSummaryT
         />
       );
     case TaskType.video_subtitle_burn:
-      return <Typography variant="inherit">字幕嵌入任务</Typography>;
+      return <Typography variant="inherit">{t("dashboard:task.subtitleBurn")}</Typography>;
     case TaskType.video_hls_slice:
-      return <Typography variant="inherit">HLS 转码任务</Typography>;
+      return <Typography variant="inherit">{t("dashboard:task.hlsSlice")}</Typography>;
     default:
       return (
         <Trans

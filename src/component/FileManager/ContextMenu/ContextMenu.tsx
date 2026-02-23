@@ -355,7 +355,7 @@ const ContextMenu = ({ fmIndex = 0 }: ContextMenuProps) => {
         </SquareMenuItem>
       )}
       {displayOpt.showVideoProcessing && (
-        <CascadingSubmenu popupId={"videoProcessing"} title={"视频处理"} icon={<VideoSettings fontSize="small" />}>
+        <CascadingSubmenu popupId={"videoProcessing"} title={t("fileManager.videoProcessing")} icon={<VideoSettings fontSize="small" />}>
           {displayOpt.showVideoInfo && (
             <SquareMenuItem
               data-testid="context-menu-video-info"
@@ -372,7 +372,7 @@ const ContextMenu = ({ fmIndex = 0 }: ContextMenuProps) => {
               <ListItemIcon>
                 <Info fontSize="small" />
               </ListItemIcon>
-              <ListItemText>视频信息</ListItemText>
+              <ListItemText>{t("fileManager.videoInfo")}</ListItemText>
             </SquareMenuItem>
           )}
           {displayOpt.showSubtitleBurn && (
@@ -391,7 +391,7 @@ const ContextMenu = ({ fmIndex = 0 }: ContextMenuProps) => {
               <ListItemIcon>
                 <Info fontSize="small" />
               </ListItemIcon>
-              <ListItemText>字幕嵌入</ListItemText>
+              <ListItemText>{t("fileManager.subtitleBurn")}</ListItemText>
             </SquareMenuItem>
           )}
           <SquareMenuItem
@@ -409,7 +409,7 @@ const ContextMenu = ({ fmIndex = 0 }: ContextMenuProps) => {
             <ListItemIcon>
               <Info fontSize="small" />
             </ListItemIcon>
-            <ListItemText>HLS 管理</ListItemText>
+            <ListItemText>{t("fileManager.hlsManage")}</ListItemText>
           </SquareMenuItem>
         </CascadingSubmenu>
       )}

@@ -443,7 +443,11 @@
     "fullEncryption": "使用 {{cipher}} 加密",
     "partialEncryption": "部分加密",
     "partialEncryptionDes": "此文件的某些版本或其他数据未被加密。",
-    "noEncryption": "未加密"
+    "noEncryption": "未加密",
+    "videoInfo": "视频信息",
+    "subtitleBurn": "字幕嵌入",
+    "hlsManage": "HLS 管理",
+    "videoProcessing": "视频处理"
   },
   "modals": {
     "includePasswordInShareLink": "在链接中包含密码",
@@ -963,7 +967,12 @@
     "validDurationDays": "{{num}} 天",
     "reportTarget": "举报对象",
     "reportReason": "原因",
-    "reportReasonOptions": ["侵权", "有害内容", "垃圾信息", "其他"],
+    "reportReasonOptions": [
+      "侵权",
+      "有害内容",
+      "垃圾信息",
+      "其他"
+    ],
     "reportDescription": "补充说明",
     "reportAbuseSuccess": "举报已提交"
   }

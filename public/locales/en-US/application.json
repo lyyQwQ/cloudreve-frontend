@@ -443,7 +443,11 @@
     "fullEncryption": "Encrypted with {{cipher}}",
     "partialEncryption": "Partially encrypted",
     "partialEncryptionDes": "Some versions or other data of this file are not encrypted.",
-    "noEncryption": "Not encrypted"
+    "noEncryption": "Not encrypted",
+    "videoInfo": "Video Info",
+    "subtitleBurn": "Subtitle Burn",
+    "hlsManage": "HLS Management",
+    "videoProcessing": "Video Processing"
   },
   "modals": {
     "includePasswordInShareLink": "Include password in share link",
@@ -963,7 +967,12 @@
     "validDurationDays": "{{num}} days",
     "reportTarget": "Report target",
     "reportReason": "Reason",
-    "reportReasonOptions": ["Copyright infringement", "Harmful content", "Spam", "Other"],
+    "reportReasonOptions": [
+      "Copyright infringement",
+      "Harmful content",
+      "Spam",
+      "Other"
+    ],
     "reportDescription": "Additional description",
     "reportAbuseSuccess": "Report submitted."
   }

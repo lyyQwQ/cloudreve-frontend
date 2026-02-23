@@ -777,7 +777,14 @@
     "fileEventPushMaxAge": "Offline Validity Period (seconds)",
     "fileEventPushMaxAgeDes": "After a subscriber goes offline, events within the given time will be cached, and all change notifications can still be received when back online.",
     "fileEventPushDebounce": "Debounce Delay (seconds)",
-    "fileEventPushDebounceDes": "After an event occurs, wait for the given time to merge more events for batch push."
+    "fileEventPushDebounceDes": "After an event occurs, wait for the given time to merge more events for batch push.",
+    "videoProcessing": "Video Processing",
+    "videoFfmpegThreads": "FFmpeg Threads",
+    "videoFfmpegThreadsDes": "Number of threads used by FFmpeg for encoding. 0 means auto-detect.",
+    "videoFfmpegNice": "FFmpeg Nice Priority",
+    "videoFfmpegNiceDes": "Nice value for FFmpeg process (0-19). Higher values mean lower priority.",
+    "videoProcessWorkerNum": "Video Process Worker Count",
+    "videoProcessWorkerNumDes": "Number of workers for concurrent video task processing."
   },
   "giftCodes": {
     "giftCodesSettings": "Gift Codes",
@@ -1480,7 +1487,9 @@
     "finished": "Finished",
     "canceled": "Canceled/Stopped",
     "unknown": "Unknown",
-    "errorMsg": "Error message"
+    "errorMsg": "Error message",
+    "subtitleBurn": "Subtitle Burn Task",
+    "hlsSlice": "HLS Transcode Task"
   },
   "payment": {
     "tradeNo": "Trade No.",
