@@ -21,11 +21,11 @@ vi.mock("../../../../redux/hooks.ts", () => ({
 describe("TaskSummaryTitle video tasks", () => {
   it("renders subtitle burn title", () => {
     render(<TaskSummaryTitle type={TaskType.video_subtitle_burn} />);
-    expect(screen.getByText("Subtitle burn task")).toBeInTheDocument();
+    expect(screen.getByText("dashboard:task.subtitleBurn")).toBeInTheDocument();
   });
 
   it("renders hls slice title", () => {
     render(<TaskSummaryTitle type={TaskType.video_hls_slice} />);
-    expect(screen.getByText("HLS slice task")).toBeInTheDocument();
+    expect(screen.getByText("dashboard:task.hlsSlice")).toBeInTheDocument();
   });
 });
