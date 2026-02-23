@@ -81,31 +81,31 @@ const TaskProps = ({ task }: TaskPropsProps) => {
       />
       <TaskPropsBlock label={t("setting.taskStatus")} value={status} />
       <TaskPropsBlock label={t("modals.processNode")} value={task.node?.name ?? "-"} />
-      {task.summary?.props.src && (
+      {task.summary?.props?.src && (
         <TaskPropsBlock
           label={t("setting.input")}
           value={
             <FileBadge
               variant={"outlined"}
               simplifiedFile={{
-                path: task.summary?.props.src,
+                path: task.summary?.props?.src,
                 type: FileType.file,
               }}
             />
           }
         />
       )}
-      {task.summary?.props.src_str && (
+      {task.summary?.props?.src_str && (
         <TaskPropsBlock
           label={t("setting.input")}
           value={
             <Stack sx={{ maxHeight: 80, overflowY: "auto" }}>
-              <Typography variant="inherit">{task.summary?.props.src_str}</Typography>
+              <Typography variant="inherit">{task.summary?.props?.src_str}</Typography>
             </Stack>
           }
         />
       )}
-      {task.summary?.props.src_multiple && (
+      {task.summary?.props?.src_multiple && (
         <TaskPropsBlock
           label={t("setting.input")}
           value={
@@ -117,7 +117,7 @@ const TaskProps = ({ task }: TaskPropsProps) => {
                 padding: "2px 0",
               }}
             >
-              {task.summary?.props.src_multiple.map((src, index) => (
+              {task.summary?.props?.src_multiple.map((src, index) => (
                 <FileBadge
                   key={index}
                   variant={"outlined"}
@@ -131,7 +131,7 @@ const TaskProps = ({ task }: TaskPropsProps) => {
           }
         />
       )}
-      {task.summary?.props.dst && (
+      {task.summary?.props?.dst && (
         <TaskPropsBlock
           label={t("setting.output")}
           value={
@@ -143,7 +143,7 @@ const TaskProps = ({ task }: TaskPropsProps) => {
                 task.type == TaskType.import
               }
               simplifiedFile={{
-                path: task.summary?.props.dst,
+                path: task.summary?.props?.dst,
                 type:
                   task.type == TaskType.remote_download ||
                   task.type == TaskType.extract_archive ||
@@ -163,20 +163,20 @@ const TaskProps = ({ task }: TaskPropsProps) => {
         />
       )}
       <TaskPropsBlock label={t("setting.retryCount")} value={task.retry_count ?? 0} />
-      {!!task.summary?.props.download?.num_pieces && (
-        <TaskPropsBlock label={t("download.chunkNumbers")} value={task.summary?.props.download?.num_pieces} />
+      {!!task.summary?.props?.download?.num_pieces && (
+        <TaskPropsBlock label={t("download.chunkNumbers")} value={task.summary?.props?.download?.num_pieces} />
       )}
-      {!!task.summary?.props.download?.uploaded && (
-        <TaskPropsBlock label={t("download.uploaded")} value={sizeToString(task.summary?.props.download?.uploaded)} />
+      {!!task.summary?.props?.download?.uploaded && (
+        <TaskPropsBlock label={t("download.uploaded")} value={sizeToString(task.summary?.props?.download?.uploaded)} />
       )}
-      {!!task.summary?.props.download?.upload_speed && (
+      {!!task.summary?.props?.download?.upload_speed && (
         <TaskPropsBlock
           label={t("download.uploadSpeed")}
-          value={`${sizeToString(task.summary?.props.download?.upload_speed)}/s`}
+          value={`${sizeToString(task.summary?.props?.download?.upload_speed)}/s`}
         />
       )}
-      {!!task.summary?.props.download?.hash && (
-        <TaskPropsBlock label={t("download.InfoHash")} value={task.summary?.props.download?.hash} />
+      {!!task.summary?.props?.download?.hash && (
+        <TaskPropsBlock label={t("download.InfoHash")} value={task.summary?.props?.download?.hash} />
       )}
     </Grid>
   );

@@ -54,7 +54,7 @@ const TaskSummaryTitle = ({ type, summary, isInDashboard = false }: TaskSummaryT
         >
           <Typography variant={"inherit"} sx={{}}>
             {isInDashboard && t("dashboard:task.remoteDownload")}
-            {summary?.props.download?.name ?? t("download.unknownTaskName")}
+            {summary?.props?.download?.name ?? t("download.unknownTaskName")}
             {selectedCount > 1 && <StyledChip color={"primary"} size="small" label={selectedCount} />}
           </Typography>
         </Box>
@@ -65,7 +65,7 @@ const TaskSummaryTitle = ({ type, summary, isInDashboard = false }: TaskSummaryT
           i18nKey="setting.createArchiveTo"
           components={[
             <span key={0}>
-              {summary?.props.src_multiple?.slice(0, 3).map((src) => (
+              {summary?.props?.src_multiple?.slice(0, 3).map((src) => (
                 <StyledFileBadge
                   variant={"outlined"}
                   simplifiedFile={{
@@ -79,12 +79,12 @@ const TaskSummaryTitle = ({ type, summary, isInDashboard = false }: TaskSummaryT
               variant={"outlined"}
               simplifiedFile={{
                 type: FileType.file,
-                path: summary?.props.dst ? summary?.props.dst : newMyUri("").toString(),
+                path: summary?.props?.dst ? summary?.props?.dst : newMyUri("").toString(),
               }}
             />,
           ]}
           values={{
-            more: (summary?.props.src_multiple?.length ?? 0) > 3 ? "..." : "",
+            more: (summary?.props?.src_multiple?.length ?? 0) > 3 ? "..." : "",
           }}
         />
       );
@@ -94,7 +94,7 @@ const TaskSummaryTitle = ({ type, summary, isInDashboard = false }: TaskSummaryT
           i18nKey="setting.importFileTo"
           values={{
             policy: policyOption
-              ? policyOption.find((p) => p.id == summary?.props.dst_policy_id)?.name ?? "Unknown"
+              ? policyOption.find((p) => p.id == summary?.props?.dst_policy_id)?.name ?? "Unknown"
               : "",
           }}
           components={[
@@ -102,7 +102,7 @@ const TaskSummaryTitle = ({ type, summary, isInDashboard = false }: TaskSummaryT
               variant={"outlined"}
               simplifiedFile={{
                 type: FileType.folder,
-                path: summary?.props.dst ? summary?.props.dst : newMyUri("").toString(),
+                path: summary?.props?.dst ? summary?.props?.dst : newMyUri("").toString(),
               }}
             />,
           ]}
@@ -121,19 +121,19 @@ const TaskSummaryTitle = ({ type, summary, isInDashboard = false }: TaskSummaryT
               variant={"outlined"}
               simplifiedFile={{
                 type: FileType.file,
-                path: summary?.props.src ? summary?.props.src : newMyUri("").toString(),
+                path: summary?.props?.src ? summary?.props?.src : newMyUri("").toString(),
               }}
             />,
             <StyledFileBadge
               variant={"outlined"}
               simplifiedFile={{
                 type: FileType.folder,
-                path: summary?.props.dst ? summary?.props.dst : newMyUri("").toString(),
+                path: summary?.props?.dst ? summary?.props?.dst : newMyUri("").toString(),
               }}
             />,
           ]}
           values={{
-            more: (summary?.props.src_multiple?.length ?? 0) > 3 ? "..." : "",
+            more: (summary?.props?.src_multiple?.length ?? 0) > 3 ? "..." : "",
           }}
         />
       );

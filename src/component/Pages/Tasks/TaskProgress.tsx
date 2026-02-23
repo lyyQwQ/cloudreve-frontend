@@ -251,8 +251,8 @@ const TaskProgress = ({ taskId, taskStatus, taskType, summary, node }: TaskProgr
           />
         ))}
       </Stepper>
-      {taskType === TaskType.remote_download && summary?.props.download?.pieces && summary?.phase === "monitor" && (
-        <PieceProgress total={summary?.props.download.num_pieces ?? 1} pieces={summary?.props.download?.pieces} />
+      {taskType === TaskType.remote_download && summary?.props?.download?.pieces && summary?.phase === "monitor" && (
+        <PieceProgress total={summary?.props?.download?.num_pieces ?? 1} pieces={summary?.props?.download?.pieces} />
       )}
     </Box>
   );

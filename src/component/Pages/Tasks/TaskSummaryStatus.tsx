@@ -73,8 +73,8 @@ const TaskSummaryStatus = ({ type, status, summary, error, simplified }: TaskSum
     case TaskStatus.processing:
     case TaskStatus.suspending:
       if (type == TaskType.remote_download) {
-        if (summary?.phase == "monitor" && summary?.props.download) {
-          const downloadStatus = summary.props.download;
+        if (summary?.phase == "monitor" && summary?.props?.download) {
+          const downloadStatus = summary.props!.download;
           return (
             <Box
               sx={{
