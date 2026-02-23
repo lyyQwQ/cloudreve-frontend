@@ -1,9 +1,15 @@
 import { Box, Divider, ListItemIcon, ListItemText, Menu, MenuItem, styled, Typography, useTheme } from "@mui/material";
+import { VideoSettings } from "@mui/icons-material";
 import { useCallback, useMemo } from "react";
 import { useTranslation } from "react-i18next";
 import { FileType } from "../../../api/explorer.ts";
 import { closeContextMenu } from "../../../redux/fileManagerSlice.ts";
-import { CreateNewDialogType, setSubtitleSelectDialog, setVideoInfoDialog } from "../../../redux/globalStateSlice.ts";
+import {
+  CreateNewDialogType,
+  setHLSManageDialog,
+  setSubtitleSelectDialog,
+  setVideoInfoDialog,
+} from "../../../redux/globalStateSlice.ts";
 import { useAppDispatch, useAppSelector } from "../../../redux/hooks.ts";
 import { downloadFiles } from "../../../redux/thunks/download.ts";
 import {
@@ -130,11 +136,7 @@ const ContextMenu = ({ fmIndex = 0 }: ContextMenuProps) => {
   let part3 =
     displayOpt.showTags || displayOpt.showOrganize || displayOpt.showMore || displayOpt.showNewFileFromTemplate;
   let part4 =
-    displayOpt.showSubtitleBurn ||
-    displayOpt.showVideoInfo ||
-    displayOpt.showInfo ||
-    displayOpt.showGoToParent ||
-    displayOpt.showGoToSharedLink;
+    displayOpt.showVideoProcessing || displayOpt.showInfo || displayOpt.showGoToParent || displayOpt.showGoToSharedLink;
   let part5 = displayOpt.showRestore || displayOpt.showDelete || displayOpt.showRefresh;
   const showDivider1 = part1 && part2;
   const showDivider2 = part2 && part3;
@@ -352,43 +354,64 @@ const ContextMenu = ({ fmIndex = 0 }: ContextMenuProps) => {
           <ListItemText>{t("application:fileManager.viewDetails")}</ListItemText>
         </SquareMenuItem>
       )}
-      {displayOpt.showVideoInfo && (
-        <SquareMenuItem
-          data-testid="context-menu-video-info"
-          onClick={() => {
-            onClose();
-            dispatch(
-              setVideoInfoDialog({
-                open: true,
-                file: targets[0],
-              }),
-            );
-          }}
-        >
-          <ListItemIcon>
-            <Info fontSize="small" />
-          </ListItemIcon>
-          <ListItemText>Video Info</ListItemText>
-        </SquareMenuItem>
-      )}
-      {displayOpt.showSubtitleBurn && (
-        <SquareMenuItem
-          data-testid="subtitle-burn-menu-item"
-          onClick={() => {
-            onClose();
-            dispatch(
-              setSubtitleSelectDialog({
-                open: true,
-                file: targets[0],
-              }),
-            );
-          }}
-        >
-          <ListItemIcon>
-            <Info fontSize="small" />
-          </ListItemIcon>
-          <ListItemText>Subtitle Burn</ListItemText>
-        </SquareMenuItem>
+      {displayOpt.showVideoProcessing && (
+        <CascadingSubmenu popupId={"videoProcessing"} title={"视频处理"} icon={<VideoSettings fontSize="small" />}>
+          {displayOpt.showVideoInfo && (
+            <SquareMenuItem
+              data-testid="context-menu-video-info"
+              onClick={() => {
+                onClose();
+                dispatch(
+                  setVideoInfoDialog({
+                    open: true,
+                    file: targets[0],
+                  }),
+                );
+              }}
+            >
+              <ListItemIcon>
+                <Info fontSize="small" />
+              </ListItemIcon>
+              <ListItemText>Video Info</ListItemText>
+            </SquareMenuItem>
+          )}
+          {displayOpt.showSubtitleBurn && (
+            <SquareMenuItem
+              data-testid="subtitle-burn-menu-item"
+              onClick={() => {
+                onClose();
+                dispatch(
+                  setSubtitleSelectDialog({
+                    open: true,
+                    file: targets[0],
+                  }),
+                );
+              }}
+            >
+              <ListItemIcon>
+                <Info fontSize="small" />
+              </ListItemIcon>
+              <ListItemText>Subtitle Burn</ListItemText>
+            </SquareMenuItem>
+          )}
+          <SquareMenuItem
+            data-testid="hls-manage-menu-item"
+            onClick={() => {
+              onClose();
+              dispatch(
+                setHLSManageDialog({
+                  open: true,
+                  file: targets[0],
+                }),
+              );
+            }}
+          >
+            <ListItemIcon>
+              <Info fontSize="small" />
+            </ListItemIcon>
+            <ListItemText>HLS 管理</ListItemText>
+          </SquareMenuItem>
+        </CascadingSubmenu>
       )}
     </>
   ) : undefined;

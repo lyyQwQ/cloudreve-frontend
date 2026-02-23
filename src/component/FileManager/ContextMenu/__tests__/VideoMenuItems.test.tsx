@@ -40,7 +40,7 @@ vi.mock("../../../../redux/siteConfigSlice.ts", async (importOriginal) => {
 import Boolset from "../../../../util/boolset.ts";
 import { FileResponse, FileType, NavigatorCapability } from "../../../../api/explorer.ts";
 import { closeContextMenu, ContextMenuTypes } from "../../../../redux/fileManagerSlice.ts";
-import { setSubtitleSelectDialog, setVideoInfoDialog } from "../../../../redux/globalStateSlice.ts";
+import { setHLSManageDialog, setSubtitleSelectDialog, setVideoInfoDialog } from "../../../../redux/globalStateSlice.ts";
 import ContextMenu from "../ContextMenu.tsx";
 
 function createStoreHarness(state: any) {
@@ -84,8 +84,13 @@ function fileWithDownloadCapability(file: Partial<FileResponse>): FileResponse {
   } as FileResponse;
 }
 
+async function openVideoProcessingSubmenu() {
+  fireEvent.mouseOver(screen.getByText("视频处理"));
+  await screen.findByTestId("hls-manage-menu-item");
+}
+
 describe("ContextMenu video actions", () => {
-  it("shows Video Info only for single selected video file", () => {
+  it("shows video processing submenu only for single selected video file", async () => {
     const videoFile = fileWithDownloadCapability({ id: "v1", name: "demo.mp4" });
 
     const state = {
@@ -109,8 +114,11 @@ describe("ContextMenu video actions", () => {
       </Provider>,
     );
 
+    expect(screen.getByText("视频处理")).toBeInTheDocument();
+    await openVideoProcessingSubmenu();
     expect(screen.getByTestId("context-menu-video-info")).toBeInTheDocument();
     expect(screen.getByTestId("subtitle-burn-menu-item")).toBeInTheDocument();
+    expect(screen.getByTestId("hls-manage-menu-item")).toBeInTheDocument();
   });
 
   it("hides Video Info for non-video file", () => {
@@ -137,8 +145,7 @@ describe("ContextMenu video actions", () => {
       </Provider>,
     );
 
-    expect(screen.queryByTestId("context-menu-video-info")).toBeNull();
-    expect(screen.queryByTestId("subtitle-burn-menu-item")).toBeNull();
+    expect(screen.queryByText("视频处理")).toBeNull();
   });
 
   it("hides Video Info for multi-select", () => {
@@ -167,11 +174,10 @@ describe("ContextMenu video actions", () => {
       </Provider>,
     );
 
-    expect(screen.queryByTestId("context-menu-video-info")).toBeNull();
-    expect(screen.queryByTestId("subtitle-burn-menu-item")).toBeNull();
+    expect(screen.queryByText("视频处理")).toBeNull();
   });
 
-  it("click dispatches close + setVideoInfoDialog", () => {
+  it("click dispatches close + setVideoInfoDialog", async () => {
     const videoFile = fileWithDownloadCapability({ id: "v1", name: "demo.mp4" });
 
     const state = {
@@ -195,13 +201,14 @@ describe("ContextMenu video actions", () => {
       </Provider>,
     );
 
+    await openVideoProcessingSubmenu();
     fireEvent.click(screen.getByTestId("context-menu-video-info"));
 
     expect(dispatch).toHaveBeenCalledWith(closeContextMenu({ index: 0, value: undefined }));
     expect(dispatch).toHaveBeenCalledWith(setVideoInfoDialog({ open: true, file: videoFile }));
   });
 
-  it("click dispatches close + setSubtitleSelectDialog", () => {
+  it("click dispatches close + setSubtitleSelectDialog", async () => {
     const videoFile = fileWithDownloadCapability({ id: "v1", name: "demo.mp4" });
 
     const state = {
@@ -225,9 +232,41 @@ describe("ContextMenu video actions", () => {
       </Provider>,
     );
 
+    await openVideoProcessingSubmenu();
     fireEvent.click(screen.getByTestId("subtitle-burn-menu-item"));
 
     expect(dispatch).toHaveBeenCalledWith(closeContextMenu({ index: 0, value: undefined }));
     expect(dispatch).toHaveBeenCalledWith(setSubtitleSelectDialog({ open: true, file: videoFile }));
+  });
+
+  it("click dispatches close + setHLSManageDialog", async () => {
+    const videoFile = fileWithDownloadCapability({ id: "v1", name: "demo.mp4" });
+
+    const state = {
+      fileManager: [
+        {
+          contextMenuOpen: true,
+          contextMenuType: ContextMenuTypes.file,
+          contextMenuPos: { x: 0, y: 0 },
+          selected: {
+            [videoFile.id]: videoFile,
+          },
+        },
+      ],
+      globalState: {},
+    };
+
+    const { store, dispatch } = createStoreHarness(state);
+    render(
+      <Provider store={store as any}>
+        <ContextMenu fmIndex={0} />
+      </Provider>,
+    );
+
+    await openVideoProcessingSubmenu();
+    fireEvent.click(screen.getByTestId("hls-manage-menu-item"));
+
+    expect(dispatch).toHaveBeenCalledWith(closeContextMenu({ index: 0, value: undefined }));
+    expect(dispatch).toHaveBeenCalledWith(setHLSManageDialog({ open: true, file: videoFile }));
   });
 });

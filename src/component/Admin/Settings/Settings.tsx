@@ -269,6 +269,9 @@ const Settings = () => {
                     "media_meta_ffprobe_size_remote",
                     "media_meta_geocoding",
                     "media_meta_geocoding_mapbox_ak",
+                    "video_ffmpeg_threads",
+                    "video_ffmpeg_nice",
+                    "queue_video_process_worker_num",
                   ]}
                 >
                   <Media />

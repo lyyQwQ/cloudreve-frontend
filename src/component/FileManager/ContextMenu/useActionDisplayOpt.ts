@@ -65,6 +65,7 @@ export interface DisplayOption {
   showCopy?: boolean;
   showShare?: boolean;
   showInfo?: boolean;
+  showVideoProcessing?: boolean;
   showVideoInfo?: boolean;
   showSubtitleBurn?: boolean;
   showDirectLink?: boolean;
@@ -290,6 +291,8 @@ export const getActionOpt = (
   display.showInfo = targets.length == 1 && display.orCapability && canShowInfo(display.orCapability);
   display.showVideoInfo = targets.length == 1 && display.hasFile && isVideoFile(viewerSetting, firstFileSuffix);
   display.showSubtitleBurn = display.showVideoInfo;
+  display.showVideoProcessing =
+    targets.length === 1 && !!display.hasFile && isVideoFile(viewerSetting, firstFileSuffix);
   display.showVersionControl =
     targets.length == 1 &&
     display.orCapability &&

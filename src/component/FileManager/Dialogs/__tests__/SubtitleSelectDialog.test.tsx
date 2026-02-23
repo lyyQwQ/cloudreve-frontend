@@ -2,10 +2,12 @@ import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
 import { cleanup, fireEvent, render, screen, waitFor } from "@testing-library/react";
 import { Provider } from "react-redux";
 
-const { getVideoInfoMock, createSubtitleBurnTaskMock } = vi.hoisted(() => {
+const { getVideoInfoMock, createSubtitleBurnTaskMock, enqueueSnackbarMock, viewTaskActionMock } = vi.hoisted(() => {
   return {
     getVideoInfoMock: vi.fn(),
     createSubtitleBurnTaskMock: vi.fn(),
+    enqueueSnackbarMock: vi.fn(),
+    viewTaskActionMock: vi.fn(),
   };
 });
 
@@ -13,6 +15,22 @@ vi.mock("../../../../api/api.ts", () => {
   return {
     getVideoInfo: getVideoInfoMock,
     createSubtitleBurnTask: createSubtitleBurnTaskMock,
+  };
+});
+
+vi.mock("notistack", async (importOriginal) => {
+  const actual: any = await importOriginal();
+  return {
+    ...actual,
+    useSnackbar: () => ({
+      enqueueSnackbar: enqueueSnackbarMock,
+    }),
+  };
+});
+
+vi.mock("../../../Common/Snackbar/snackbar.tsx", () => {
+  return {
+    ViewTaskAction: viewTaskActionMock,
   };
 });
 
@@ -58,6 +76,9 @@ describe("SubtitleSelectDialog", () => {
   beforeEach(() => {
     getVideoInfoMock.mockReset();
     createSubtitleBurnTaskMock.mockReset();
+    enqueueSnackbarMock.mockReset();
+    viewTaskActionMock.mockReset();
+    viewTaskActionMock.mockReturnValue("view-task-action");
   });
 
   afterEach(() => {
@@ -79,7 +100,7 @@ describe("SubtitleSelectDialog", () => {
         },
       };
     });
-    createSubtitleBurnTaskMock.mockImplementation((req: any) => async () => req);
+    createSubtitleBurnTaskMock.mockImplementation((_req: any) => async () => ({ task_id: "task-sub-1" }));
 
     const { store, dispatch } = createStoreHarness(defaultState());
     render(
@@ -109,6 +130,14 @@ describe("SubtitleSelectDialog", () => {
         },
       });
     });
+    expect(viewTaskActionMock).toHaveBeenCalledWith("/tasks?task_id=task-sub-1");
+    expect(enqueueSnackbarMock).toHaveBeenCalledWith(
+      expect.objectContaining({
+        message: "modals.taskCreated",
+        variant: "success",
+        action: "view-task-action",
+      }),
+    );
     expect(dispatch).toHaveBeenCalledWith(closeSubtitleSelectDialog());
   });
 

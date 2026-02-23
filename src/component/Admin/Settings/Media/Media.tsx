@@ -192,6 +192,58 @@ const Media = () => {
             </SettingForm>
           </SettingSectionContent>
         </SettingSection>
+        <SettingSection>
+          <Typography variant="h6" gutterBottom>
+            Video Processing
+          </Typography>
+          <SettingSectionContent>
+            <SettingForm title="video_ffmpeg_threads" lgWidth={5}>
+              <FormControl>
+                <DenseFilledTextField
+                  type="number"
+                  required
+                  inputProps={{ step: 1 }}
+                  value={values.video_ffmpeg_threads}
+                  onChange={(e) => {
+                    setSettings({
+                      video_ffmpeg_threads: e.target.value,
+                    });
+                  }}
+                />
+              </FormControl>
+            </SettingForm>
+            <SettingForm title="video_ffmpeg_nice" lgWidth={5}>
+              <FormControl>
+                <DenseFilledTextField
+                  type="number"
+                  required
+                  inputProps={{ step: 1 }}
+                  value={values.video_ffmpeg_nice}
+                  onChange={(e) => {
+                    setSettings({
+                      video_ffmpeg_nice: e.target.value,
+                    });
+                  }}
+                />
+              </FormControl>
+            </SettingForm>
+            <SettingForm title="queue_video_process_worker_num" lgWidth={5}>
+              <FormControl>
+                <DenseFilledTextField
+                  type="number"
+                  required
+                  inputProps={{ min: 1, step: 1 }}
+                  value={values.queue_video_process_worker_num}
+                  onChange={(e) => {
+                    setSettings({
+                      queue_video_process_worker_num: e.target.value,
+                    });
+                  }}
+                />
+              </FormControl>
+            </SettingForm>
+          </SettingSectionContent>
+        </SettingSection>
       </Stack>
     </Box>
   );

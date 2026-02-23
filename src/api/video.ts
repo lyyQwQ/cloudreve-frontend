@@ -47,3 +47,18 @@ export interface CreateSubtitleBurnTaskRequest {
   subtitle?: SubtitleSelectionPayload;
   [key: string]: unknown;
 }
+
+export interface CreateHLSTaskResponse {
+  task_id: number;
+}
+
+export interface GetHLSStatusResponse {
+  file_id: number;
+  has_hls: boolean;
+  artifact?: {
+    storage_path: string;
+    segment_count: number;
+    total_size: number;
+    codec: string;
+  };
+}

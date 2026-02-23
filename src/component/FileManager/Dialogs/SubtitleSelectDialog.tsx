@@ -1,9 +1,12 @@
 import { Box, DialogContent, FormControlLabel, Radio, RadioGroup, Stack, Typography } from "@mui/material";
-import React, { useCallback, useEffect, useMemo, useState } from "react";
+import { useSnackbar } from "notistack";
+import { useCallback, useEffect, useMemo, useState } from "react";
+import { useTranslation } from "react-i18next";
 import { createSubtitleBurnTask, getVideoInfo } from "../../../api/api.ts";
 import type { CreateSubtitleBurnTaskRequest, GetVideoInfoResponse } from "../../../api/video.ts";
 import { closeSubtitleSelectDialog } from "../../../redux/globalStateSlice.ts";
 import { useAppDispatch, useAppSelector } from "../../../redux/hooks.ts";
+import { ViewTaskAction } from "../../Common/Snackbar/snackbar.tsx";
 import DraggableDialog from "../../Dialogs/DraggableDialog.tsx";
 
 type SubtitleOption = {
@@ -27,7 +30,9 @@ function resolveFileId(rawId: unknown): string | number | undefined {
 }
 
 const SubtitleSelectDialog = () => {
+  const { t } = useTranslation();
   const dispatch = useAppDispatch();
+  const { enqueueSnackbar } = useSnackbar();
   const open = useAppSelector((state) => state.globalState.subtitleSelectDialogOpen);
   const file = useAppSelector((state) => state.globalState.subtitleSelectDialogFile);
 
@@ -110,13 +115,20 @@ const SubtitleSelectDialog = () => {
         subtitle: selectedOption.payload,
       }),
     )
-      .then(() => {
+      .then((res) => {
+        const taskIdRaw = (res as { task_id?: string | number } | undefined)?.task_id;
+        const taskId = taskIdRaw !== undefined ? `/tasks?task_id=${encodeURIComponent(String(taskIdRaw))}` : "/tasks";
         onClose();
+        enqueueSnackbar({
+          message: t("modals.taskCreated"),
+          variant: "success",
+          action: ViewTaskAction(taskId),
+        });
       })
       .finally(() => {
         setSubmitting(false);
       });
-  }, [dispatch, fileId, onClose, selectedOption]);
+  }, [dispatch, enqueueSnackbar, fileId, onClose, selectedOption, t]);
 
   return (
     <DraggableDialog

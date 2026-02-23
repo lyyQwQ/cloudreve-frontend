@@ -111,7 +111,13 @@ import {
   TaskProgresses,
   TaskResponse,
 } from "./workflow.ts";
-import { CreateSubtitleBurnTaskRequest, GetVideoInfoRequest, GetVideoInfoResponse } from "./video.ts";
+import {
+  CreateHLSTaskResponse,
+  CreateSubtitleBurnTaskRequest,
+  GetHLSStatusResponse,
+  GetVideoInfoRequest,
+  GetVideoInfoResponse,
+} from "./video.ts";
 
 export function getSiteConfig(section: string): ThunkResponse<SiteConfig> {
   return async (dispatch, _getState) => {
@@ -653,7 +659,20 @@ export function createSubtitleBurnTask(req: CreateSubtitleBurnTaskRequest): Thun
   };
 }
 
-export function getHLSStatus(req: { file_id: string | number }): ThunkResponse<any> {
+export function createHLSTask(fileId: string | number): ThunkResponse<CreateHLSTaskResponse> {
+  return async (dispatch, _getState) => {
+    return await dispatch(
+      send("/video/hls", {
+        method: "POST",
+        data: {
+          file_id: fileId,
+        },
+      }),
+    );
+  };
+}
+
+export function getHLSStatus(req: { file_id: string | number }): ThunkResponse<GetHLSStatusResponse> {
   return async (dispatch, _getState) => {
     const fileId = encodeURIComponent(String(req.file_id));
     return await dispatch(
