@@ -28,12 +28,6 @@ const CustomContentRoot = styled(SideNavItemBase)<{
 }>(({ theme, isDragging, isDropOver }) => ({
   "& .MuiTreeItem-iconContainer": {
     marginLeft: theme.spacing(1),
-    color: theme.palette.text.secondary,
-    backgroundColor: "transparent",
-    border: 0,
-    padding: 0,
-    appearance: "none",
-    WebkitAppearance: "none",
   },
   opacity: isDragging ? 0.5 : 1,
   transition: "all 250ms cubic-bezier(0.4, 0, 0.2, 1) 0ms",
@@ -53,7 +47,6 @@ const StyledTreeItemRoot = styled(TreeItem)(() => ({
 
 export const CaretDownIcon = styled(CaretDown)<{ expanded: boolean }>(({ theme, expanded }) => ({
   fontSize: "12px!important",
-  color: theme.palette.text.secondary,
   transform: `rotate(${expanded ? 0 : -90}deg)`,
   transition: theme.transitions.create("transform", {
     duration: theme.transitions.duration.shortest,
@@ -290,10 +283,11 @@ const CustomContent = React.memo(
         onClick={handleSelectionClick}
         ref={mergedRef}
       >
-        <button type="button" onClick={handleExpansionClick} className={classes.iconContainer}>
+        {/* eslint-disable-next-line jsx-a11y/click-events-have-key-events,jsx-a11y/no-static-element-interactions */}
+        <div onClick={handleExpansionClick} className={classes.iconContainer}>
           {icon && !loading && <CaretDownIcon expanded={expanded} />}
           {icon && loading && <FacebookCircularProgress size={15} sx={{ pt: 0.5 }} />}
-        </button>
+        </div>
         {FileItemIcon}
         {fileName}
         <UnpinButton show={showDelete} uri={uri} />
