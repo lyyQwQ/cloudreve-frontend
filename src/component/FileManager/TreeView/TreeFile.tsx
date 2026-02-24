@@ -29,6 +29,11 @@ const CustomContentRoot = styled(SideNavItemBase)<{
   "& .MuiTreeItem-iconContainer": {
     marginLeft: theme.spacing(1),
     color: theme.palette.text.secondary,
+    backgroundColor: "transparent",
+    border: 0,
+    padding: 0,
+    appearance: "none",
+    WebkitAppearance: "none",
   },
   opacity: isDragging ? 0.5 : 1,
   transition: "all 250ms cubic-bezier(0.4, 0, 0.2, 1) 0ms",
