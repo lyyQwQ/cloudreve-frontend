@@ -25,12 +25,22 @@ i18n
     },
     backend: {
       backends: process.env.NODE_ENV === "development" ? [Backend] : [LocalStorageBackend, Backend],
-      backendOptions: [
-        {
-          expirationTime: 7 * 24 * 60 * 60 * 1000, // 7 days
-          loadPath: "/locales/{{lng}}/{{ns}}.json",
-        },
-      ],
+      backendOptions:
+        process.env.NODE_ENV === "development"
+          ? [
+              {
+                loadPath: "/locales/{{lng}}/{{ns}}.json",
+              },
+            ]
+          : [
+              {
+                defaultVersion: __ASSETS_VERSION__,
+                expirationTime: 7 * 24 * 60 * 60 * 1000, // 7 days
+              },
+              {
+                loadPath: "/locales/{{lng}}/{{ns}}.json",
+              },
+            ],
     },
   });
 

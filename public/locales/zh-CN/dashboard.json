@@ -780,11 +780,11 @@
     "fileEventPushDebounceDes": "事件发生后，等待给定时间以合并更多事件打包推送。",
     "videoProcessing": "视频处理",
     "videoFfmpegThreads": "FFmpeg 线程数",
-    "videoFfmpegThreadsDes": "FFmpeg 编码时使用的线程数，0 表示自动检测。",
+    "videoFfmpegThreadsDes": "每个 Worker 内 FFmpeg 使用的线程数。总 CPU 并发 = worker_num × threads，通常建议设为 1。",
     "videoFfmpegNice": "FFmpeg Nice 优先级",
-    "videoFfmpegNiceDes": "FFmpeg 进程的 nice 值（0-19），值越大优先级越低，减少对其他服务的影响。",
+    "videoFfmpegNiceDes": "FFmpeg 进程的 nice 值（0-19），值越大优先级越低；在容器内或不支持 nice 的环境中可能不生效。",
     "videoProcessWorkerNum": "视频处理队列 Worker 数",
-    "videoProcessWorkerNumDes": "同时处理视频任务的 Worker 数量。"
+    "videoProcessWorkerNumDes": "同时处理视频任务的 Worker 数量。2 核 VPS 建议设置为 1。"
   },
   "giftCodes": {
     "giftCodesSettings": "礼品码",

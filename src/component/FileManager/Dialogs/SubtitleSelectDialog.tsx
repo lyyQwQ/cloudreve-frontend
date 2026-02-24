@@ -1,4 +1,5 @@
 import { Box, DialogContent, FormControlLabel, Radio, RadioGroup, Stack, Typography } from "@mui/material";
+import { isAxiosError } from "axios";
 import { useSnackbar } from "notistack";
 import { useCallback, useEffect, useMemo, useState } from "react";
 import { useTranslation } from "react-i18next";
@@ -124,6 +125,18 @@ const SubtitleSelectDialog = () => {
           variant: "success",
           action: ViewTaskAction(taskId),
         });
+      })
+      .catch((e: unknown) => {
+        if (isAxiosError(e) && e.response?.status === 409) {
+          const fileName = (e.response.data as { data?: { file_name?: string } } | undefined)?.data?.file_name;
+          enqueueSnackbar({
+            message: fileName ? `${t("targetExisted")} ${fileName}` : t("targetExisted"),
+            variant: "info",
+          });
+          return;
+        }
+
+        throw e;
       })
       .finally(() => {
         setSubmitting(false);

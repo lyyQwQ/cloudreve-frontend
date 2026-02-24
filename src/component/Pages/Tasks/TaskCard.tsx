@@ -34,7 +34,7 @@ const Accordion = styled((props: AccordionProps) => <MuiAccordion disableGutters
   expanded,
 }) => {
   const bgColor = expanded
-    ? theme.palette.mode == "light"
+    ? theme.palette.mode === "light"
       ? "rgba(0, 0, 0, 0.06)"
       : "rgba(255, 255, 255, 0.09)"
     : "initial";
@@ -73,7 +73,7 @@ export const SummaryButton = styled(DefaultButton)<{
   percentage?: number;
 }>(({ theme, expanded, percentage }) => {
   percentage = percentage ?? 0;
-  const bgColor = theme.palette.mode == "light" ? "rgba(0, 0, 0, 0.06)" : "rgba(255, 255, 255, 0.09)";
+  const bgColor = theme.palette.mode === "light" ? "rgba(0, 0, 0, 0.06)" : "rgba(255, 255, 255, 0.09)";
   const progressColor = getProgressColor(theme);
   const progressBgColor = !expanded ? bgColor : "rgba(0,0,0,0)";
   return {
@@ -86,7 +86,7 @@ export const SummaryButton = styled(DefaultButton)<{
     backgroundColor: bgColor,
     background: `linear-gradient(to right, ${progressColor} 0%,${progressColor} ${percentage}%,${progressBgColor} ${percentage}%,${progressBgColor} 100%)`,
     "&:hover": {
-      backgroundColor: theme.palette.mode == "light" ? "rgba(0, 0, 0, 0.09)" : "rgba(255, 255, 255, 0.13)",
+      backgroundColor: theme.palette.mode === "light" ? "rgba(0, 0, 0, 0.09)" : "rgba(255, 255, 255, 0.13)",
     },
   };
 });
@@ -96,6 +96,7 @@ export interface TaskCardProps {
   showProgress?: boolean;
   task?: TaskResponse;
   onLoad?: () => void;
+  onRefresh?: () => void;
 }
 
 const taskIconsMap: {
@@ -107,7 +108,7 @@ const taskIconsMap: {
   [TaskType.import]: ArrowImport,
 };
 
-const TaskCard = ({ loading, showProgress, onLoad, task }: TaskCardProps) => {
+const TaskCard = ({ loading, showProgress, onLoad, onRefresh, task }: TaskCardProps) => {
   const { t } = useTranslation();
   const theme = useTheme();
   const isMobile = useMediaQuery(theme.breakpoints.down("md"));
@@ -130,7 +131,7 @@ const TaskCard = ({ loading, showProgress, onLoad, task }: TaskCardProps) => {
     if (onLoad) {
       onLoad();
     }
-  }, [inView]);
+  }, [inView, onLoad]);
 
   const handleChange = (_event: React.SyntheticEvent, newExpanded: boolean) => {
     if (loading) {
@@ -221,7 +222,9 @@ const TaskCard = ({ loading, showProgress, onLoad, task }: TaskCardProps) => {
           </Box>
         </SummaryButton>
       </AccordionSummary>
-      <AccordionDetails>{task && <TaskDetail task={task} downloading={showProgress} />}</AccordionDetails>
+      <AccordionDetails>
+        {task && <TaskDetail task={task} downloading={showProgress} onRefresh={onRefresh} />}
+      </AccordionDetails>
     </Accordion>
   );
 };

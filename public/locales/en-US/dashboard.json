@@ -780,11 +780,11 @@
     "fileEventPushDebounceDes": "After an event occurs, wait for the given time to merge more events for batch push.",
     "videoProcessing": "Video Processing",
     "videoFfmpegThreads": "FFmpeg Threads",
-    "videoFfmpegThreadsDes": "Number of threads used by FFmpeg for encoding. 0 means auto-detect.",
+    "videoFfmpegThreadsDes": "Threads used by FFmpeg per worker. Total CPU concurrency is worker_num × threads; 1 is recommended in most cases.",
     "videoFfmpegNice": "FFmpeg Nice Priority",
-    "videoFfmpegNiceDes": "Nice value for FFmpeg process (0-19). Higher values mean lower priority.",
+    "videoFfmpegNiceDes": "Nice value for FFmpeg process (0-19). Higher values mean lower priority; this may not work in containers or environments without nice support.",
     "videoProcessWorkerNum": "Video Process Worker Count",
-    "videoProcessWorkerNumDes": "Number of workers for concurrent video task processing."
+    "videoProcessWorkerNumDes": "Number of workers for concurrent video processing tasks. On a 2-core VPS, 1 is recommended."
   },
   "giftCodes": {
     "giftCodesSettings": "Gift Codes",

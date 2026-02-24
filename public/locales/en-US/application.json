@@ -967,12 +967,7 @@
     "validDurationDays": "{{num}} days",
     "reportTarget": "Report target",
     "reportReason": "Reason",
-    "reportReasonOptions": [
-      "Copyright infringement",
-      "Harmful content",
-      "Spam",
-      "Other"
-    ],
+    "reportReasonOptions": ["Copyright infringement", "Harmful content", "Spam", "Other"],
     "reportDescription": "Additional description",
     "reportAbuseSuccess": "Report submitted."
   }

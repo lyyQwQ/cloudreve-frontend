@@ -210,6 +210,7 @@ const Media = () => {
                     });
                   }}
                 />
+                <NoMarginHelperText>{t("settings.videoFfmpegThreadsDes")}</NoMarginHelperText>
               </FormControl>
             </SettingForm>
             <SettingForm title={t("settings.videoFfmpegNice")} lgWidth={5}>
@@ -225,6 +226,7 @@ const Media = () => {
                     });
                   }}
                 />
+                <NoMarginHelperText>{t("settings.videoFfmpegNiceDes")}</NoMarginHelperText>
               </FormControl>
             </SettingForm>
             <SettingForm title={t("settings.videoProcessWorkerNum")} lgWidth={5}>
@@ -240,6 +242,7 @@ const Media = () => {
                     });
                   }}
                 />
+                <NoMarginHelperText>{t("settings.videoProcessWorkerNumDes")}</NoMarginHelperText>
               </FormControl>
             </SettingForm>
           </SettingSectionContent>

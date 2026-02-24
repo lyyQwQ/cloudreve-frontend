@@ -18,18 +18,18 @@ const ProgressStepIcon = (status: string) => (props: ProgressStepIconProps) => {
   let newIcon = icon;
   if (active) {
     newIcon = <FacebookCircularProgress sx={{ pt: "5px" }} size={24} />;
-    if (status == TaskStatus.error) {
+    if (status === TaskStatus.error) {
       newIcon = <DismissCircleFilled sx={{ fontSize: 28.5, color: (theme) => theme.palette.error.main }} />;
     }
   } else if (completed) {
     newIcon = <CheckCircleFilled sx={{ fontSize: 28.5, color: (theme) => theme.palette.primary.main }} />;
   }
 
-  if (active && status == TaskStatus.error) {
+  if (active && status === TaskStatus.error) {
     newIcon = <DismissCircleFilled sx={{ fontSize: 28.5, color: (theme) => theme.palette.error.main }} />;
   }
 
-  if (active && status == TaskStatus.canceled) {
+  if (active && status === TaskStatus.canceled) {
     newIcon = (
       <DismissCircleFilled
         sx={{
@@ -83,7 +83,9 @@ const TaskProgressStep = ({
           {t(title)}
         </StepLabel>
       </Step>
-      {showProgress && progressing && <StepProgressPopover taskId={taskId} open={open} {...restPopup} />}
+      {showProgress && progressing && (
+        <StepProgressPopover taskId={taskId} processing={progressing} open={open} {...restPopup} />
+      )}
     </>
   );
 };

@@ -2,12 +2,14 @@ import { Grid, Stack, Typography } from "@mui/material";
 import dayjs from "dayjs";
 import duration from "dayjs/plugin/duration";
 import { TFunction } from "i18next";
-import { useMemo } from "react";
+import { MouseEvent, useMemo } from "react";
 import { useTranslation } from "react-i18next";
 import { FileType } from "../../../api/explorer.ts";
 import { TaskResponse, TaskStatus, TaskType } from "../../../api/workflow.ts";
+import { router } from "../../../router/index.tsx";
 import { sizeToString } from "../../../util";
 import { formatDuration } from "../../../util/datetime.ts";
+import CrUri from "../../../util/uri.ts";
 import TimeBadge from "../../Common/TimeBadge.tsx";
 import FileBadge from "../../FileManager/FileBadge.tsx";
 
@@ -67,6 +69,35 @@ export const getTaskStatusText = (status: TaskStatus, t: TFunction) => {
 
 const TaskProps = ({ task }: TaskPropsProps) => {
   const { t } = useTranslation();
+
+  const subtitleBurnDstParent = useMemo(() => {
+    if (task.type != TaskType.video_subtitle_burn) {
+      return "";
+    }
+
+    const raw = task.summary?.props?.dst;
+    if (!raw || typeof raw !== "string") {
+      return "";
+    }
+
+    try {
+      return new CrUri(raw).parent().toString();
+    } catch (_e) {
+      return "";
+    }
+  }, [task.type, task.summary?.props?.dst]);
+
+  const onSubtitleBurnDstClick = useMemo(() => {
+    if (!subtitleBurnDstParent) {
+      return undefined;
+    }
+
+    return (e: MouseEvent<HTMLElement>) => {
+      e.stopPropagation();
+      const s = new URLSearchParams("?path=" + encodeURIComponent(subtitleBurnDstParent));
+      router.navigate("/home?" + s.toString());
+    };
+  }, [subtitleBurnDstParent]);
   const status = useMemo(() => getTaskStatusText(task.status as TaskStatus, t), [task.status, t]);
 
   return (
@@ -140,7 +171,8 @@ const TaskProps = ({ task }: TaskPropsProps) => {
               clickable={
                 task.type == TaskType.remote_download ||
                 task.type == TaskType.extract_archive ||
-                task.type == TaskType.import
+                task.type == TaskType.import ||
+                task.type == TaskType.video_subtitle_burn
               }
               simplifiedFile={{
                 path: task.summary?.props?.dst,
@@ -151,6 +183,7 @@ const TaskProps = ({ task }: TaskPropsProps) => {
                     ? FileType.folder
                     : FileType.file,
               }}
+              onClick={task.type == TaskType.video_subtitle_burn ? onSubtitleBurnDstClick : undefined}
             />
           }
         />

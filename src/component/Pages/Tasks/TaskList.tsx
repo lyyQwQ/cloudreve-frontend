@@ -23,24 +23,6 @@ const TaskList = () => {
   const [autoRefresh, setAutoRefresh] = useState(true);
   const interval = React.useRef<NodeJS.Timeout>();
 
-  useEffect(() => {
-    if (autoRefresh && !interval.current) {
-      interval.current = setInterval(() => {
-        refresh();
-      }, autoRefreshInterval);
-    } else {
-      clearInterval(interval.current);
-      interval.current = undefined;
-    }
-  }, [autoRefresh]);
-
-  useEffect(() => {
-    return () => {
-      clearInterval(interval.current);
-      interval.current = undefined;
-    };
-  }, []);
-
   const loadNextPage = useCallback(
     (originTasks: TaskResponse[], token?: string) => () => {
       setLoading(true);
@@ -69,12 +51,30 @@ const TaskList = () => {
           setLoading(false);
         });
     },
-    [dispatch, setAutoRefresh, setTasks],
+    [dispatch],
   );
 
-  const refresh = () => {
+  const refresh = useCallback(() => {
     loadNextPage([], "")();
-  };
+  }, [loadNextPage]);
+
+  useEffect(() => {
+    if (autoRefresh && !interval.current) {
+      interval.current = setInterval(() => {
+        refresh();
+      }, autoRefreshInterval);
+    } else {
+      clearInterval(interval.current);
+      interval.current = undefined;
+    }
+  }, [autoRefresh, refresh]);
+
+  useEffect(() => {
+    return () => {
+      clearInterval(interval.current);
+      interval.current = undefined;
+    };
+  }, []);
 
   const toggleAutoRefresh = (event: React.ChangeEvent<HTMLInputElement>) => {
     if (event.target.checked && tasks.length > defaultPageSize) {
@@ -105,13 +105,13 @@ const TaskList = () => {
           title={t("application:navbar.taskQueue")}
         />
         {tasks.map((task) => (
-          <TaskCard key={task.id} task={task} />
+          <TaskCard key={task.id} task={task} onRefresh={refresh} />
         ))}
-        {nextPageToken != undefined && (
+        {nextPageToken !== undefined && (
           <TaskCard onLoad={loadNextPage(tasks, nextPageToken)} loading={true} key={nextPageToken} />
         )}
 
-        {nextPageToken == undefined && tasks.length == 0 && (
+        {nextPageToken === undefined && tasks.length === 0 && (
           <Box sx={{ p: 1, width: "100%", textAlign: "center" }}>
             <Nothing size={0.8} top={63} primary={t("setting.listEmpty")} />
           </Box>

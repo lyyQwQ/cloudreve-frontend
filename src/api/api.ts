@@ -1,4 +1,4 @@
-import { AxiosProgressEvent, CancelToken } from "axios";
+import { AxiosProgressEvent, CancelToken, isAxiosError } from "axios";
 import { EncryptedBlob } from "../component/Uploader/core/uploader/encrypt/blob.ts";
 import i18n from "../i18n.ts";
 import {
@@ -651,10 +651,17 @@ export function getVideoInfo(req: GetVideoInfoRequest): ThunkResponse<GetVideoIn
 export function createSubtitleBurnTask(req: CreateSubtitleBurnTaskRequest): ThunkResponse<any> {
   return async (dispatch, _getState) => {
     return await dispatch(
-      send("/video/subtitle/burn", {
-        method: "POST",
-        data: req,
-      }),
+      send(
+        "/video/subtitle/burn",
+        {
+          method: "POST",
+          data: req,
+        },
+        {
+          ...defaultOpts,
+          bypassSnackbar: (e) => isAxiosError(e) && e.response?.status === 409,
+        },
+      ),
     );
   };
 }
@@ -992,6 +999,22 @@ export function sendCancelDownloadTask(id: string): ThunkResponse {
     return await dispatch(
       send(
         "/workflow/download/" + id,
+        {
+          method: "DELETE",
+        },
+        {
+          ...defaultOpts,
+        },
+      ),
+    );
+  };
+}
+
+export function sendCancelVideoTask(id: string): ThunkResponse {
+  return async (dispatch, _getState) => {
+    return await dispatch(
+      send(
+        "/workflow/video/" + id,
         {
           method: "DELETE",
         },
