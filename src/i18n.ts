@@ -34,7 +34,7 @@ i18n
             ]
           : [
               {
-                defaultVersion: __ASSETS_VERSION__,
+                defaultVersion: typeof __ASSETS_VERSION__ !== "undefined" ? __ASSETS_VERSION__ : "",
                 expirationTime: 7 * 24 * 60 * 60 * 1000, // 7 days
               },
               {
