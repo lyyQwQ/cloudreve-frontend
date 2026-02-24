@@ -85,7 +85,7 @@ function fileWithDownloadCapability(file: Partial<FileResponse>): FileResponse {
 }
 
 async function openVideoProcessingSubmenu() {
-  fireEvent.mouseOver(screen.getByText("视频处理"));
+  fireEvent.mouseOver(screen.getByText("fileManager.videoProcessing"));
   await screen.findByTestId("hls-manage-menu-item");
 }
 
@@ -114,7 +114,7 @@ describe("ContextMenu video actions", () => {
       </Provider>,
     );
 
-    expect(screen.getByText("视频处理")).toBeInTheDocument();
+    expect(screen.getByText("fileManager.videoProcessing")).toBeInTheDocument();
     await openVideoProcessingSubmenu();
     expect(screen.getByTestId("context-menu-video-info")).toBeInTheDocument();
     expect(screen.getByTestId("subtitle-burn-menu-item")).toBeInTheDocument();
@@ -145,7 +145,7 @@ describe("ContextMenu video actions", () => {
       </Provider>,
     );
 
-    expect(screen.queryByText("视频处理")).toBeNull();
+    expect(screen.queryByText("fileManager.videoProcessing")).toBeNull();
   });
 
   it("hides Video Info for multi-select", () => {
@@ -174,7 +174,7 @@ describe("ContextMenu video actions", () => {
       </Provider>,
     );
 
-    expect(screen.queryByText("视频处理")).toBeNull();
+    expect(screen.queryByText("fileManager.videoProcessing")).toBeNull();
   });
 
   it("click dispatches close + setVideoInfoDialog", async () => {
