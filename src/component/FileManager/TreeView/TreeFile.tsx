@@ -28,6 +28,7 @@ const CustomContentRoot = styled(SideNavItemBase)<{
 }>(({ theme, isDragging, isDropOver }) => ({
   "& .MuiTreeItem-iconContainer": {
     marginLeft: theme.spacing(1),
+    color: theme.palette.text.secondary,
   },
   opacity: isDragging ? 0.5 : 1,
   transition: "all 250ms cubic-bezier(0.4, 0, 0.2, 1) 0ms",
@@ -47,6 +48,7 @@ const StyledTreeItemRoot = styled(TreeItem)(() => ({
 
 export const CaretDownIcon = styled(CaretDown)<{ expanded: boolean }>(({ theme, expanded }) => ({
   fontSize: "12px!important",
+  color: theme.palette.text.secondary,
   transform: `rotate(${expanded ? 0 : -90}deg)`,
   transition: theme.transitions.create("transform", {
     duration: theme.transitions.duration.shortest,
