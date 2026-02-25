@@ -43,6 +43,29 @@ const DirectLinks = () => {
       .join("\n");
   }, [targets, showFileName, forceDownload]);
 
+  const hlsContents = useMemo(() => {
+    if (!targets) {
+      return "";
+    }
+
+    return targets
+      .map((link) => {
+        if (!link.hls_url) {
+          return "";
+        }
+
+        if (!showFileName) {
+          return link.hls_url;
+        }
+
+        const crUri = new CrUri(link.file_url);
+        const elements = crUri.elements();
+        return `[${elements.pop()}] ${link.hls_url}`;
+      })
+      .filter((line) => line.length > 0)
+      .join("\n");
+  }, [targets, showFileName]);
+
   const onClose = useCallback(() => {
     dispatch(closeDirectLinkDialog());
   }, [dispatch]);
@@ -129,6 +152,22 @@ const DirectLinks = () => {
             },
           }}
         />
+        {hlsContents && (
+          <TextField
+            sx={{ mt: 2 }}
+            label={t("application:modals.hlsPlaylistLink")}
+            multiline
+            value={hlsContents}
+            variant="outlined"
+            fullWidth
+            slotProps={{
+              htmlInput: {
+                readonly: true,
+                "data-testid": "direct-links-hls-link-text-field",
+              },
+            }}
+          />
+        )}
       </DialogContent>
     </DraggableDialog>
   );

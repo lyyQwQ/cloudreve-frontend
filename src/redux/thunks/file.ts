@@ -18,7 +18,7 @@ import {
 } from "../../api/api.ts";
 import {
   ConflictDetail,
-  DirectLink,
+  DirectLinkResult,
   FileResponse,
   FileType,
   ListResponse,
@@ -1277,8 +1277,8 @@ export function refreshSingleFileSymbolicLinks(file: FileResponse): AppThunk<Pro
   };
 }
 
-function startBatchGetDirectLinks(files: FileResponse[]): AppThunk<Promise<DirectLink[]>> {
-  return async (dispatch, _getState): Promise<DirectLink[]> => {
+function startBatchGetDirectLinks(files: FileResponse[]): AppThunk<Promise<DirectLinkResult[]>> {
+  return async (dispatch, _getState): Promise<DirectLinkResult[]> => {
     const allFiles: FileResponse[] = [];
     const currentUser = SessionManager.currentUserGroup();
     const batchLimit = currentUser?.direct_link_batch_size ?? 0;

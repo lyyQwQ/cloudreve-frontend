@@ -1,7 +1,7 @@
 import { createSlice, PayloadAction } from "@reduxjs/toolkit";
 import {
   ConflictDetail,
-  DirectLink,
+  DirectLinkResult,
   FileResponse,
   Share,
   StoragePolicy,
@@ -195,7 +195,7 @@ export interface GlobalStateSlice {
 
   // Direct Link result dialog
   directLinkDialogOpen?: boolean;
-  directLinkRes?: DirectLink[];
+  directLinkRes?: DirectLinkResult[];
 
   // Direct Link management dialog
   directLinkManagementDialogOpen?: boolean;
@@ -377,7 +377,7 @@ export const globalStateSlice = createSlice({
     setMobileDrawerOpen: (state, action: PayloadAction<boolean>) => {
       state.mobileDrawerOpen = action.payload;
     },
-    setDirectLinkDialog: (state, action: PayloadAction<{ open: boolean; res?: DirectLink[] }>) => {
+    setDirectLinkDialog: (state, action: PayloadAction<{ open: boolean; res?: DirectLinkResult[] }>) => {
       state.directLinkDialogOpen = action.payload.open;
       state.directLinkRes = action.payload.res;
     },

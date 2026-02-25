@@ -16,26 +16,28 @@ export interface PlayerProps extends BoxProps {
   chapters?: any;
   m3u8UrlTransform?: (url: string, isPlaylist?: boolean) => Promise<string>;
   getEntityUrl?: (url: string) => Promise<string>;
+  onHlsFatalError?: (errorType: string) => void | Promise<void>;
 }
 
 const playM3u8 =
   (
     urlTransform?: (url: string, isPlaylist?: boolean) => Promise<string>,
     getEntityUrl?: (url: string) => Promise<string>,
+    onHlsFatalError?: (errorType: string) => void | Promise<void>,
   ) =>
   (video: HTMLVideoElement, url: string, art: Artplayer) => {
     if (Hls.isSupported()) {
       if (art.hls) art.hls.destroy();
-      const hls = new Hls({
+      const hlsConfig: any = {
         fLoader: class extends Hls.DefaultConfig.loader {
           constructor(config: HlsConfig) {
             super(config);
-            var load = this.load.bind(this);
-            this.load = function (context, config, callbacks) {
+            const load: any = this.load.bind(this);
+            this.load = function (context: any, config: any, callbacks: any) {
               if (urlTransform) {
                 urlTransform(context.url).then((url) => {
                   const complete = callbacks.onSuccess;
-                  callbacks.onSuccess = (loaderResponse, stats, successContext, networkDetails) => {
+                  callbacks.onSuccess = (loaderResponse: any, stats: any, successContext: any, networkDetails: any) => {
                     // Do something with loaderResponse.data
                     loaderResponse.url = url;
                     complete(loaderResponse, stats, successContext, networkDetails);
@@ -51,12 +53,12 @@ const playM3u8 =
         pLoader: class extends Hls.DefaultConfig.loader {
           constructor(config: HlsConfig) {
             super(config);
-            var load = this.load.bind(this);
-            this.load = function (context, config, callbacks) {
+            const load: any = this.load.bind(this);
+            this.load = function (context: any, config: any, callbacks: any) {
               if (urlTransform) {
                 urlTransform(context.url, true).then((url) => {
                   const complete = callbacks.onSuccess;
-                  callbacks.onSuccess = (loaderResponse, stats, successContext, networkDetails) => {
+                  callbacks.onSuccess = (loaderResponse: any, stats: any, successContext: any, networkDetails: any) => {
                     // Do something with loaderResponse.data
                     loaderResponse.url = url;
                     complete(loaderResponse, stats, successContext, networkDetails);
@@ -69,7 +71,7 @@ const playM3u8 =
             };
           }
         },
-        xhrSetup: async (xhr, url) => {
+        xhrSetup: async (xhr: any, url: string) => {
           // Always send cookies, even for cross-origin calls.
           if (url.startsWith(CrMaskedPrefix)) {
             if (getEntityUrl) {
@@ -78,6 +80,21 @@ const playM3u8 =
             }
           }
         },
+      };
+      const hls = new Hls(hlsConfig);
+      let handledFatalError = false;
+      hls.on(Hls.Events.ERROR, (_event, data) => {
+        if (!data.fatal || handledFatalError) {
+          return;
+        }
+        handledFatalError = true;
+
+        if (onHlsFatalError) {
+          Promise.resolve(onHlsFatalError(data.type));
+          return;
+        }
+
+        art.notice.show = i18next.t("application:fileManager.hlsManageNoArtifact");
       });
       hls.loadSource(url);
       hls.attachMedia(video);
@@ -118,6 +135,7 @@ export default function Player({
   getInstance,
   m3u8UrlTransform,
   getEntityUrl,
+  onHlsFatalError,
   ...rest
 }: PlayerProps) {
   const artRef = useRef<Artplayer>();
@@ -131,7 +149,7 @@ export default function Player({
       container: artRef.current,
       customType: {
         ...option.customType,
-        m3u8: playM3u8(m3u8UrlTransform, getEntityUrl),
+        m3u8: playM3u8(m3u8UrlTransform, getEntityUrl, onHlsFatalError),
         flv: playFlv,
       },
       type,
@@ -150,7 +168,8 @@ export default function Player({
             // Show qualitys in setting
             setting: true,
             // Get the quality name from level
-            getName: (level) => (level.height ? level.height + "P" : i18next.t("application:fileManager.default")),
+            getName: (level: any) =>
+              level?.height ? `${level.height}P` : i18next.t("application:fileManager.default"),
             // I18n
             title: i18next.t("application:fileManager.quality"),
             auto: i18next.t("application:fileManager.auto"),
@@ -161,7 +180,7 @@ export default function Player({
             // Show audios in setting
             setting: true,
             // Get the audio name from track
-            getName: (track) => track.name,
+            getName: (track: any) => track?.name,
             // I18n
             title: i18next.t("application:fileManager.audioTrack"),
             auto: i18next.t("application:fileManager.auto"),
@@ -181,7 +200,7 @@ export default function Player({
         art.destroy(false);
       }
     };
-  }, []);
+  }, [chapters, getEntityUrl, getInstance, m3u8UrlTransform, onHlsFatalError, option, type]);
 
   return <Box ref={artRef} {...rest}></Box>;
 }

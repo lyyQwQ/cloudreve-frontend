@@ -1,6 +1,7 @@
 import { Alert, Button, DialogContent, Stack, Typography } from "@mui/material";
 import { useSnackbar } from "notistack";
 import { useCallback, useEffect, useMemo, useState } from "react";
+import { useTranslation } from "react-i18next";
 import { useNavigate } from "react-router-dom";
 import {
   createHLSTask,
@@ -51,6 +52,7 @@ const HLSManageDialog = () => {
   const dispatch = useAppDispatch();
   const { enqueueSnackbar } = useSnackbar();
   const navigate = useNavigate();
+  const { t } = useTranslation();
   const open = useAppSelector((state) => state.globalState.hlsManageDialogOpen);
   const file = useAppSelector((state) => state.globalState.hlsManageDialogFile);
 
@@ -63,7 +65,7 @@ const HLSManageDialog = () => {
 
   const fileId = useMemo(() => {
     if (!file) return undefined;
-    return resolveFileId((file as any).id);
+    return resolveFileId(file.id);
   }, [file]);
 
   const hasInvalidFileId = useMemo(() => open && file !== undefined && fileId === undefined, [open, file, fileId]);
@@ -98,7 +100,11 @@ const HLSManageDialog = () => {
           if (taskProgress && String(taskProgress.identifier) === String(fileId)) {
             return true;
           }
-        } catch (_e) {}
+        } catch (e) {
+          if (import.meta.env.DEV) {
+            console.debug("Failed to load task progress", e);
+          }
+        }
       }
 
       nextPageToken = taskList.pagination?.next_token;
@@ -171,14 +177,14 @@ const HLSManageDialog = () => {
       return;
     }
 
-    dispatch(confirmOperation("Are you sure you want to delete this HLS artifact?"))
+    dispatch(confirmOperation(t("application:fileManager.hlsManageDeleteConfirm")))
       .then(() => {
         setDeleting(true);
         return dispatch(deleteHLSArtifact({ file_id: fileId }));
       })
       .then(() => {
         enqueueSnackbar({
-          message: "HLS artifact deleted.",
+          message: t("application:fileManager.hlsManageDeleted"),
           variant: "success",
         });
         dispatch(refreshFileList(FileManagerIndex.main));
@@ -192,7 +198,7 @@ const HLSManageDialog = () => {
       .finally(() => {
         setDeleting(false);
       });
-  }, [dispatch, enqueueSnackbar, fileId, onClose]);
+  }, [dispatch, enqueueSnackbar, fileId, onClose, t]);
 
   const onCreate = useCallback(() => {
     if (fileId === undefined || !videoInfo?.hls_compatible) {
@@ -204,7 +210,7 @@ const HLSManageDialog = () => {
       .then((data) => {
         const taskPath = `/tasks?task_id=${encodeURIComponent(String(data.task_id))}`;
         enqueueSnackbar({
-          message: "Task created.",
+          message: t("modals.taskCreated"),
           variant: "success",
           action: ViewTaskAction(taskPath),
         });
@@ -214,7 +220,7 @@ const HLSManageDialog = () => {
         if (isConflictError(e)) {
           setDialogState("processing");
           enqueueSnackbar({
-            message: "A transcoding task is already in progress for this file.",
+            message: t("application:fileManager.hlsManageTaskConflict"),
             variant: "warning",
           });
         }
@@ -222,7 +228,7 @@ const HLSManageDialog = () => {
       .finally(() => {
         setCreating(false);
       });
-  }, [dispatch, enqueueSnackbar, fileId, onClose, videoInfo?.hls_compatible]);
+  }, [dispatch, enqueueSnackbar, fileId, onClose, t, videoInfo?.hls_compatible]);
 
   const goToTasks = useCallback(() => {
     navigate("/tasks");
@@ -230,14 +236,14 @@ const HLSManageDialog = () => {
   }, [navigate, onClose]);
 
   const renderedHeader = useMemo(() => {
-    if (hasInvalidFileId) return "Invalid file_id.";
+    if (hasInvalidFileId) return t("application:fileManager.hlsManageInvalidFileId");
     if (!open) return "";
-    if (loading) return "Loading...";
-    if (dialogState === "processing") return "HLS transcoding is in progress.";
-    if (dialogState === "no_hls") return "No HLS artifact found.";
-    if (dialogState === "has_hls") return "HLS artifact is available.";
-    return "No HLS artifact found.";
-  }, [dialogState, hasInvalidFileId, loading, open]);
+    if (loading) return t("application:fileManager.hlsManageLoading");
+    if (dialogState === "processing") return t("application:fileManager.hlsManageProcessing");
+    if (dialogState === "no_hls") return t("application:fileManager.hlsManageNoArtifact");
+    if (dialogState === "has_hls") return t("application:fileManager.hlsManageAvailable");
+    return t("application:fileManager.hlsManageNoArtifact");
+  }, [dialogState, hasInvalidFileId, loading, open, t]);
 
   const disableCreate =
     loading ||
@@ -251,7 +257,7 @@ const HLSManageDialog = () => {
 
   return (
     <DraggableDialog
-      title={"HLS Management"}
+      title={t("application:fileManager.hlsManage")}
       showActions
       showCancel
       loading={loading || creating || deleting}
@@ -270,7 +276,7 @@ const HLSManageDialog = () => {
       <DialogContent data-testid="hls-manage-dialog" sx={{ pt: 1 }}>
         <Stack spacing={1.5}>
           <Typography variant={"body2"} color={"text.secondary"} sx={{ wordBreak: "break-word" }}>
-            file_id: {fileId ?? ""}
+            {t("application:fileManager.hlsManageFileId")}: {fileId ?? ""}
           </Typography>
 
           <Typography
@@ -287,29 +293,29 @@ const HLSManageDialog = () => {
               {videoInfo && (
                 <>
                   <Typography variant={"body2"} color={"text.secondary"}>
-                    video_codec: {videoInfo.codec}
+                    {t("application:fileManager.hlsManageVideoCodec")}: {videoInfo.codec}
                   </Typography>
                   <Typography variant={"body2"} color={"text.secondary"}>
-                    audio_codec: {videoInfo.audio_codec}
+                    {t("application:fileManager.hlsManageAudioCodec")}: {videoInfo.audio_codec}
                   </Typography>
                   <Typography variant={"body2"} color={"text.secondary"}>
-                    resolution: {videoInfo.resolution}
+                    {t("application:fileManager.hlsManageResolution")}: {videoInfo.resolution}
                   </Typography>
                   <Typography variant={"body2"} color={"text.secondary"}>
-                    duration: {String(videoInfo.duration)}
+                    {t("application:fileManager.hlsManageDuration")}: {String(videoInfo.duration)}
                   </Typography>
                   <Typography variant={"body2"} color={"text.secondary"}>
-                    bitrate: {String(videoInfo.bitrate)}
+                    {t("application:fileManager.hlsManageBitrate")}: {String(videoInfo.bitrate)}
                   </Typography>
                   <Typography variant={"body2"} color={"text.secondary"}>
-                    hls_compatible: {String(videoInfo.hls_compatible)}
+                    {t("application:fileManager.hlsManageHlsCompatible")}: {String(videoInfo.hls_compatible)}
                   </Typography>
                 </>
               )}
 
               {videoInfo?.hls_compatible === false && (
                 <Alert severity="warning" data-testid="hls-manage-incompatible-alert">
-                  This file cannot be transcoded to HLS directly. H.264 video and AAC audio are required.
+                  {t("application:fileManager.hlsManageIncompatibleAlert")}
                 </Alert>
               )}
 
@@ -320,7 +326,7 @@ const HLSManageDialog = () => {
                   onClick={onCreate}
                   data-testid="hls-manage-create-button"
                 >
-                  Start Transcoding
+                  {t("application:fileManager.hlsManageStartTranscoding")}
                 </Button>
               </Stack>
             </Stack>
@@ -329,11 +335,11 @@ const HLSManageDialog = () => {
           {dialogState === "processing" && (
             <Stack spacing={1.5}>
               <Alert severity="info" data-testid="hls-manage-processing-alert">
-                HLS transcoding is in progress. You can check task progress in the task page.
+                {t("application:fileManager.hlsManageProcessingAlert")}
               </Alert>
               <Stack direction={"row"} spacing={1} justifyContent={"flex-end"}>
                 <Button variant="outlined" onClick={goToTasks} data-testid="hls-manage-view-task-button">
-                  View Tasks
+                  {t("application:fileManager.hlsManageViewTasks")}
                 </Button>
               </Stack>
             </Stack>
@@ -342,16 +348,16 @@ const HLSManageDialog = () => {
           {dialogState === "has_hls" && (
             <Stack spacing={1.5}>
               <Typography variant={"body2"} color={"text.secondary"}>
-                segment_count: {String(status?.artifact?.segment_count ?? "")}
+                {t("application:fileManager.hlsManageSegmentCount")}: {String(status?.artifact?.segment_count ?? "")}
               </Typography>
               <Typography variant={"body2"} color={"text.secondary"}>
-                total_size: {String(status?.artifact?.total_size ?? "")}
+                {t("application:fileManager.hlsManageTotalSize")}: {String(status?.artifact?.total_size ?? "")}
               </Typography>
               <Typography variant={"body2"} color={"text.secondary"}>
-                codec: {String(status?.artifact?.codec ?? "")}
+                {t("application:fileManager.hlsManageCodec")}: {String(status?.artifact?.codec ?? "")}
               </Typography>
               <Typography variant={"body2"} color={"text.secondary"} sx={{ wordBreak: "break-word" }}>
-                storage_path: {String(status?.artifact?.storage_path ?? "")}
+                {t("application:fileManager.hlsManageStoragePath")}: {String(status?.artifact?.storage_path ?? "")}
               </Typography>
 
               <Stack direction={"row"} spacing={1} justifyContent={"flex-end"}>
@@ -362,7 +368,7 @@ const HLSManageDialog = () => {
                   onClick={onDelete}
                   data-testid="hls-manage-delete-button"
                 >
-                  Delete HLS Artifact
+                  {t("application:fileManager.hlsManageDeleteArtifact")}
                 </Button>
               </Stack>
             </Stack>

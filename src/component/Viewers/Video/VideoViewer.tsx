@@ -53,6 +53,7 @@ const VideoViewer = () => {
   const [subtitleSelected, setSubtitleSelected] = useState<FileResponse | null>(null);
   const [subtitleStyleOpen, setSubtitleStyleOpen] = useState(false);
   const currentUrl = useRef<string | null>(null);
+  const [preferDirectPlayback, setPreferDirectPlayback] = useState(false);
 
   const subtitleStyle = useMemo(() => {
     return SessionManager.getWithFallback(UserSettings.SubtitleStyle) as SubtitleStyle;
@@ -89,7 +90,7 @@ const VideoViewer = () => {
         return;
       }
     },
-    [art],
+    [art, dispatch],
   );
 
   const loadSubtitles = useCallback(() => {
@@ -102,7 +103,7 @@ const VideoViewer = () => {
     if (subs.length > 0 && subs[0].name.startsWith(fileNameNoExt(viewerState.file.name) + ".")) {
       switchSubtitle(subs[0]);
     }
-  }, [viewerState?.file, switchSubtitle]);
+  }, [dispatch, switchSubtitle, viewerState?.file]);
 
   // refresh video src before entity url expires
   const refreshSrc = useCallback(() => {
@@ -122,7 +123,7 @@ const VideoViewer = () => {
       return;
     }
 
-    if (hlsAvailable && viewerState.file.id !== undefined && viewerState.file.id !== null) {
+    if (!preferDirectPlayback && hlsAvailable && viewerState.file.id !== undefined && viewerState.file.id !== null) {
       const hlsIndexUrl = `/api/v4/hls/${encodeURIComponent(String(viewerState.file.id))}/play/index.m3u8`;
       art.switchUrl(hlsIndexUrl);
       loadSubtitles();
@@ -159,9 +160,9 @@ const VideoViewer = () => {
       })
       .catch((e) => {
         console.error(e);
-        onClose();
+        dispatch(closeVideoViewer());
       });
-  }, [viewerState?.file, art, loadSubtitles]);
+  }, [art, dispatch, loadSubtitles, preferDirectPlayback, switchSubtitle, viewerState]);
 
   const chapters = useMemo(() => {
     if (!viewerState || !viewerState.file?.metadata) {
@@ -176,7 +177,7 @@ const VideoViewer = () => {
       };
     } = {};
 
-    Object.keys(viewerState.file.metadata).map((k) => {
+    Object.keys(viewerState.file.metadata).forEach((k) => {
       if (k.startsWith("stream:chapter_")) {
         const id = k.split("_")[1];
         // type = remove prefix
@@ -225,7 +226,7 @@ const VideoViewer = () => {
       false,
     );
     refreshSrc();
-  }, [art]);
+  }, [art, refreshSrc]);
 
   useEffect(() => {
     if (!viewerState || !viewerState.open) {
@@ -239,18 +240,15 @@ const VideoViewer = () => {
     setArt(null);
     setSubtitles([]);
     setSubtitleSelected(null);
-  }, [viewerState?.open]);
+  }, [viewerState]);
 
   const onClose = useCallback(() => {
     dispatch(closeVideoViewer());
   }, [dispatch]);
 
-  const openOption = useCallback(
-    (e: React.MouseEvent<any>) => {
-      setAnchorEl(e.currentTarget);
-    },
-    [dispatch],
-  );
+  const openOption = useCallback((e: React.MouseEvent<any>) => {
+    setAnchorEl(e.currentTarget);
+  }, []);
 
   const openSubtitleStyle = useCallback(() => {
     setSubtitleStyleOpen(true);
@@ -282,7 +280,7 @@ const VideoViewer = () => {
 
         const currentParsed = new URL(currentUrl.current);
         const requestParsed = new URL(url);
-        if (currentParsed.origin != requestParsed.origin) {
+        if (currentParsed.origin !== requestParsed.origin) {
           // Playlist is from different origin, return original URL
           return url;
         }
@@ -309,7 +307,7 @@ const VideoViewer = () => {
         }
 
         const currentFileUrl = new CrUri(getFileLinkedUri(viewerState?.file));
-        const base = i == 0 ? new CrUri(currentFileUrl.base()) : currentFileUrl.parent();
+        const base = i === 0 ? new CrUri(currentFileUrl.base()) : currentFileUrl.parent();
         realUrl = base.join(relativePath).path();
         return `${CrMaskedPrefix}${realUrl}`;
       } else {
@@ -353,8 +351,42 @@ const VideoViewer = () => {
     [dispatch, viewerState?.file],
   );
 
+  useEffect(() => {
+    if (viewerState) {
+      setPreferDirectPlayback(false);
+      return;
+    }
+
+    setPreferDirectPlayback(false);
+  }, [viewerState]);
+
+  const fallbackToDirectPlayback = useCallback(async () => {
+    if (!viewerState?.file || !art) {
+      return;
+    }
+
+    setPreferDirectPlayback(true);
+
+    try {
+      const current = art.currentTime;
+      const res = await dispatch(
+        getFileEntityUrl({
+          uris: [getFileLinkedUri(viewerState.file)],
+          entity: viewerState.version,
+        }),
+      );
+      const fallbackUrl = res.urls[0].url;
+      currentUrl.current = fallbackUrl;
+      await art.switchUrl(fallbackUrl);
+      art.currentTime = current;
+      loadSubtitles();
+    } catch (e) {
+      console.error(e);
+    }
+  }, [art, dispatch, loadSubtitles, viewerState?.file, viewerState?.version]);
+
   const isMaskedM3u8File = fileExtension(viewerState?.file?.name ?? "") === "m3u8";
-  const shouldForceM3u8Type = viewerState?.file?.metadata?.["hls:available"] === "1";
+  const shouldForceM3u8Type = !preferDirectPlayback && viewerState?.file?.metadata?.["hls:available"] === "1";
 
   // TODO: Add artplayer-plugin-chapter after it's released to npm
   return (
@@ -370,7 +402,11 @@ const VideoViewer = () => {
         </Box>
       }
       fullScreenToggle
-      toggleFullScreen={() => art && (art.fullscreenWeb = true)}
+      toggleFullScreen={() => {
+        if (art) {
+          art.fullscreenWeb = true;
+        }
+      }}
       dialogProps={{
         open: !!(viewerState && viewerState.open),
         onClose: onClose,
@@ -403,7 +439,7 @@ const VideoViewer = () => {
           <ListItemText>{t("application:fileManager.subtitleStyles")}</ListItemText>
         </SquareMenuItem>
         <DenseDivider />
-        {subtitles.length == 0 && (
+        {subtitles.length === 0 && (
           <Box sx={{ p: 1 }}>
             <Typography variant={"caption"} color={"text.secondary"}>
               {t("application:fileManager.noSubtitle")}
@@ -432,7 +468,7 @@ const VideoViewer = () => {
                   },
                 }}
               />
-              {subtitleSelected?.id == sub.id && (
+              {subtitleSelected?.id === sub.id && (
                 <ListItemIcon sx={{ minWidth: "0!important" }}>
                   <Checkmark />
                 </ListItemIcon>
@@ -448,6 +484,7 @@ const VideoViewer = () => {
             key={viewerState?.file?.path}
             m3u8UrlTransform={isMaskedM3u8File ? m3u8UrlTransform : undefined}
             getEntityUrl={isMaskedM3u8File ? getUnmaskedEntityUrl : undefined}
+            onHlsFatalError={shouldForceM3u8Type ? fallbackToDirectPlayback : undefined}
             sx={{
               width: "100%",
               height: "100%",

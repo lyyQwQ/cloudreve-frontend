@@ -50,7 +50,7 @@ import {
   CreateViewerSessionService,
   DeleteFileService,
   DeleteUploadSessionService,
-  DirectLink,
+  DirectLinkResult,
   FileResponse,
   FileThumbResponse,
   FileUpdateService,
@@ -1110,7 +1110,7 @@ export function sendDeleteDavAccount(id: string): ThunkResponse {
   };
 }
 
-export function getFileDirectLinks(req: MultipleUriService): ThunkResponse<DirectLink[]> {
+export function getFileDirectLinks(req: MultipleUriService): ThunkResponse<DirectLinkResult[]> {
   return async (dispatch, _getState) => {
     return await dispatch(
       send(

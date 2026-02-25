@@ -55,6 +55,7 @@ export interface CreateHLSTaskResponse {
 export interface GetHLSStatusResponse {
   file_id: number;
   has_hls: boolean;
+  disk_available?: boolean;
   artifact?: {
     storage_path: string;
     segment_count: number;

@@ -51,10 +51,10 @@ export interface ExtendedInfo {
   shares?: Share[];
   entities?: Entity[];
   view?: ExplorerView;
-  direct_links?: DirectLink[];
+  direct_links?: DirectLinkRecord[];
 }
 
-export interface DirectLink {
+export interface DirectLinkRecord {
   id: string;
   created_at: string;
   url: string;
@@ -544,9 +544,10 @@ export interface DeleteUploadSessionService {
   uri: string;
 }
 
-export interface DirectLink {
+export interface DirectLinkResult {
   file_url: string;
   link: string;
+  hls_url?: string;
 }
 
 export interface PatchViewSyncService {

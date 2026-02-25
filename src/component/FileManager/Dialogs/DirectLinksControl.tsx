@@ -17,7 +17,7 @@ import {
 import { useCallback, useEffect, useMemo, useState } from "react";
 import { useTranslation } from "react-i18next";
 import { getFileInfo, sendDeleteDirectLink } from "../../../api/api.ts";
-import { DirectLink, FileResponse } from "../../../api/explorer.ts";
+import { DirectLinkRecord, FileResponse } from "../../../api/explorer.ts";
 import { closeDirectLinkManagementDialog } from "../../../redux/globalStateSlice.ts";
 import { useAppDispatch, useAppSelector } from "../../../redux/hooks.ts";
 import { confirmOperation } from "../../../redux/thunks/dialog.ts";
@@ -76,11 +76,11 @@ const DirectLinksControl = () => {
     });
   }, [directLinksFromFile, forceDownload]);
 
-  const handleRowClick = useCallback((directLink: DirectLink) => {
+  const handleRowClick = useCallback((directLink: DirectLinkRecord) => {
     window.open(directLink.url, "_blank");
   }, []);
 
-  const copyURL = useCallback((actionTarget: DirectLink) => {
+  const copyURL = useCallback((actionTarget: DirectLinkRecord) => {
     if (!actionTarget) {
       return;
     }
@@ -89,7 +89,7 @@ const DirectLinksControl = () => {
   }, []);
 
   const deleteDirectLink = useCallback(
-    (actionTarget: DirectLink) => {
+    (actionTarget: DirectLinkRecord) => {
       if (!target || !actionTarget) {
         return;
       }
