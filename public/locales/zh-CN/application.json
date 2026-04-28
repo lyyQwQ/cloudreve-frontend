@@ -988,7 +988,8 @@
     "workerTransferSourceDownload": "传输：源文件下载",
     "workerTransferOutputDownload": "传输：结果回传",
     "workerTranscode": "转码",
-    "workerOutputSize": "Worker 输出大小"
+    "workerOutputSize": "Worker 输出大小",
+    "workerEstimatedRemaining": "预计剩余：{{duration}}"
   },
   "vas": {
     "points": "积分",

@@ -988,7 +988,8 @@
     "workerTransferSourceDownload": "Transfer: source download",
     "workerTransferOutputDownload": "Transfer: result download",
     "workerTranscode": "Transcode",
-    "workerOutputSize": "Worker output size"
+    "workerOutputSize": "Worker output size",
+    "workerEstimatedRemaining": "Estimated remaining: {{duration}}"
   },
   "vas": {
     "points": "Points",

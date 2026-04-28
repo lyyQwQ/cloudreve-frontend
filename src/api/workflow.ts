@@ -42,6 +42,7 @@ export interface TaskSummary {
     worker_transfer_progress?: number;
     worker_transcode_progress?: number;
     worker_output_size?: number;
+    worker_started_at?: number;
   };
 }
 

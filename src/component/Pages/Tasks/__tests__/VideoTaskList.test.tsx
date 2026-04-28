@@ -15,7 +15,8 @@ vi.mock("react-i18next", async (importOriginal) => {
   return {
     ...actual,
     useTranslation: () => ({
-      t: (key: string) => key,
+      t: (key: string, options?: { duration?: string }) =>
+        key === "setting.workerEstimatedRemaining" ? `${key} ${options?.duration}` : key,
     }),
   };
 });
@@ -84,14 +85,19 @@ describe("Video task list", () => {
   });
 
   it("renders remote worker transfer and transcode progress", () => {
+    vi.useFakeTimers();
+    vi.setSystemTime(new Date("2026-04-28T12:10:00Z"));
+
     renderWithRouter(
       <WorkerProgress
+        status={TaskStatus.processing}
         summary={{
           props: {
             worker_transfer_phase: "source_download",
             worker_transfer_progress: 72,
             worker_transcode_progress: 35,
             worker_output_size: 2048,
+            worker_started_at: Date.parse("2026-04-28T12:00:00Z") / 1000,
           },
         }}
       />,
@@ -101,5 +107,67 @@ describe("Video task list", () => {
     expect(screen.getByText("setting.workerTranscode")).toBeInTheDocument();
     expect(screen.getByText("72%")).toBeInTheDocument();
     expect(screen.getByText("35% · 2.0 KB")).toBeInTheDocument();
+    expect(screen.getByText(/^setting.workerEstimatedRemaining/)).toHaveTextContent("setting.workerEstimatedRemaining");
+
+    vi.useRealTimers();
+  });
+
+  it("hides remote worker ETA when progress is too low", () => {
+    vi.useFakeTimers();
+    vi.setSystemTime(new Date("2026-04-28T12:10:00Z"));
+
+    renderWithRouter(
+      <WorkerProgress
+        status={TaskStatus.processing}
+        summary={{
+          props: {
+            worker_transfer_phase: "source_download",
+            worker_transfer_progress: 2,
+            worker_transcode_progress: 2,
+            worker_started_at: Date.parse("2026-04-28T12:00:00Z") / 1000,
+          },
+        }}
+      />,
+    );
+
+    expect(screen.queryByText(/^setting.workerEstimatedRemaining/)).not.toBeInTheDocument();
+
+    vi.useRealTimers();
+  });
+
+  it("hides remote worker ETA for transfer-only, invalid, and terminal states", () => {
+    vi.useFakeTimers();
+    vi.setSystemTime(new Date("2026-04-28T12:10:00Z"));
+
+    const baseSummary = {
+      props: {
+        worker_transfer_phase: "source_download",
+        worker_transfer_progress: 72,
+        worker_started_at: Date.parse("2026-04-28T12:00:00Z") / 1000,
+      },
+    };
+
+    const cases = [
+      baseSummary,
+      { props: { ...baseSummary.props, worker_transcode_progress: Number.NaN } },
+      { props: { ...baseSummary.props, worker_transcode_progress: 35 } },
+      { props: { ...baseSummary.props, worker_transcode_progress: 35 } },
+      { props: { ...baseSummary.props, worker_transcode_progress: 35 } },
+    ];
+    const statuses = [
+      TaskStatus.processing,
+      TaskStatus.processing,
+      TaskStatus.completed,
+      TaskStatus.error,
+      TaskStatus.canceled,
+    ];
+
+    for (const [index, summary] of cases.entries()) {
+      const { unmount } = renderWithRouter(<WorkerProgress status={statuses[index]} summary={summary} />);
+      expect(screen.queryByText(/^setting.workerEstimatedRemaining/)).not.toBeInTheDocument();
+      unmount();
+    }
+
+    vi.useRealTimers();
   });
 });

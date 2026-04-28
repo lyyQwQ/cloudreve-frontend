@@ -101,7 +101,7 @@ const TaskDetail = ({ task, downloading, onRefresh }: TaskDetailProps) => {
           summary={task.summary}
           node={task.node}
         />
-        {hasWorkerProgress(task.summary) && <WorkerProgress summary={task.summary} />}
+        {hasWorkerProgress(task.summary) && <WorkerProgress summary={task.summary} status={task.status} />}
         <Divider />
       </Stack>
       <Stack spacing={1}>
