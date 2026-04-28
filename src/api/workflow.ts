@@ -38,6 +38,10 @@ export interface TaskSummary {
     dst_policy_id?: string;
     failed?: number;
     download?: DownloadTaskStatus;
+    worker_transfer_phase?: string;
+    worker_transfer_progress?: number;
+    worker_transcode_progress?: number;
+    worker_output_size?: number;
   };
 }
 
@@ -90,6 +94,11 @@ export const NodeCapability = {
   remote_download: 3,
   //relocate: 4,
 };
+
+export enum WorkerTransferPhase {
+  source_download = "source_download",
+  output_download = "output_download",
+}
 
 export interface RelocateWorkflowService {
   src: string[];

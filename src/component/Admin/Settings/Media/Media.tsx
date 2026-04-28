@@ -1,4 +1,16 @@
-import { Alert, Box, Collapse, FormControlLabel, Link, ListItemText, Stack, Switch, Typography } from "@mui/material";
+import {
+  Alert,
+  Box,
+  Button,
+  Chip,
+  Collapse,
+  FormControlLabel,
+  Link,
+  ListItemText,
+  Stack,
+  Switch,
+  Typography,
+} from "@mui/material";
 import FormControl from "@mui/material/FormControl";
 import { useCallback, useContext, useState } from "react";
 import { Trans, useTranslation } from "react-i18next";
@@ -17,6 +29,9 @@ const Media = () => {
   const { t } = useTranslation("dashboard");
   const { formRef, setSettings, values } = useContext(SettingContext);
   const [magicVarDialogOpen, setMagicVarDialogOpen] = useState(false);
+  const workerAPIKeyEdited = (values.video_ffmpeg_worker_api_key ?? "") !== "";
+  const workerAPIKeySet = values.video_ffmpeg_worker_api_key_set === "1";
+  const workerAPIKeyClear = values.video_ffmpeg_worker_api_key_clear === "1";
 
   const handleThumbMagicVarClick = useCallback((e: React.MouseEvent) => {
     e.preventDefault();
@@ -243,6 +258,126 @@ const Media = () => {
                   }}
                 />
                 <NoMarginHelperText>{t("settings.videoProcessWorkerNumDes")}</NoMarginHelperText>
+              </FormControl>
+            </SettingForm>
+          </SettingSectionContent>
+          <Typography variant="subtitle1" gutterBottom sx={{ mt: 1 }}>
+            {t("settings.remoteFFmpegWorker")}
+          </Typography>
+          <SettingSectionContent>
+            <SettingForm lgWidth={5}>
+              <FormControl fullWidth>
+                <FormControlLabel
+                  control={
+                    <Switch
+                      checked={isTrueVal(values.video_ffmpeg_worker_enabled)}
+                      onChange={(e) =>
+                        setSettings({
+                          video_ffmpeg_worker_enabled: e.target.checked ? "1" : "0",
+                        })
+                      }
+                    />
+                  }
+                  label={t("settings.remoteFFmpegWorkerEnabled")}
+                />
+                <NoMarginHelperText>{t("settings.remoteFFmpegWorkerEnabledDes")}</NoMarginHelperText>
+              </FormControl>
+            </SettingForm>
+            <SettingForm title={t("settings.remoteFFmpegWorkerEndpoint")} lgWidth={5}>
+              <FormControl fullWidth>
+                <DenseFilledTextField
+                  type="url"
+                  value={values.video_ffmpeg_worker_endpoint ?? ""}
+                  onChange={(e) => {
+                    setSettings({
+                      video_ffmpeg_worker_endpoint: e.target.value,
+                    });
+                  }}
+                />
+                <NoMarginHelperText>{t("settings.remoteFFmpegWorkerEndpointDes")}</NoMarginHelperText>
+              </FormControl>
+            </SettingForm>
+            <SettingForm title={t("settings.remoteFFmpegWorkerAPIKey")} lgWidth={5}>
+              <FormControl fullWidth>
+                <Stack direction="row" spacing={1} sx={{ mb: 1 }}>
+                  <Chip
+                    size="small"
+                    color={
+                      workerAPIKeyClear ? "warning" : workerAPIKeyEdited || workerAPIKeySet ? "success" : "default"
+                    }
+                    label={
+                      workerAPIKeyEdited
+                        ? t("settings.remoteFFmpegWorkerAPIKeyEdited")
+                        : workerAPIKeyClear
+                          ? t("settings.remoteFFmpegWorkerAPIKeyClearPending")
+                          : workerAPIKeySet
+                            ? t("settings.remoteFFmpegWorkerAPIKeySet")
+                            : t("settings.remoteFFmpegWorkerAPIKeyUnset")
+                    }
+                  />
+                </Stack>
+                <DenseFilledTextField
+                  type="password"
+                  autoComplete="new-password"
+                  value={values.video_ffmpeg_worker_api_key ?? ""}
+                  placeholder={workerAPIKeySet ? t("settings.remoteFFmpegWorkerAPIKeyPlaceholder") : ""}
+                  onChange={(e) => {
+                    setSettings({
+                      video_ffmpeg_worker_api_key: e.target.value,
+                      video_ffmpeg_worker_api_key_set: e.target.value ? "1" : values.video_ffmpeg_worker_api_key_set,
+                      video_ffmpeg_worker_api_key_clear: "0",
+                    });
+                  }}
+                />
+                {workerAPIKeySet && !workerAPIKeyEdited && (
+                  <Button
+                    size="small"
+                    color="warning"
+                    sx={{ alignSelf: "flex-start", mt: 1 }}
+                    onClick={() =>
+                      setSettings({
+                        video_ffmpeg_worker_api_key: "",
+                        video_ffmpeg_worker_api_key_set: "0",
+                        video_ffmpeg_worker_api_key_clear: "1",
+                      })
+                    }
+                  >
+                    {t("settings.remoteFFmpegWorkerAPIKeyClear")}
+                  </Button>
+                )}
+                <NoMarginHelperText>{t("settings.remoteFFmpegWorkerAPIKeyDes")}</NoMarginHelperText>
+              </FormControl>
+            </SettingForm>
+            <SettingForm title={t("settings.remoteFFmpegWorkerTimeout")} lgWidth={5}>
+              <FormControl>
+                <DenseFilledTextField
+                  type="number"
+                  required
+                  inputProps={{ min: 1, step: 1 }}
+                  value={values.video_ffmpeg_worker_timeout ?? ""}
+                  onChange={(e) => {
+                    setSettings({
+                      video_ffmpeg_worker_timeout: e.target.value,
+                    });
+                  }}
+                />
+                <NoMarginHelperText>{t("settings.remoteFFmpegWorkerTimeoutDes")}</NoMarginHelperText>
+              </FormControl>
+            </SettingForm>
+            <SettingForm title={t("settings.remoteFFmpegWorkerPollInterval")} lgWidth={5}>
+              <FormControl>
+                <DenseFilledTextField
+                  type="number"
+                  required
+                  inputProps={{ min: 1, step: 1 }}
+                  value={values.video_ffmpeg_worker_poll_interval ?? ""}
+                  onChange={(e) => {
+                    setSettings({
+                      video_ffmpeg_worker_poll_interval: e.target.value,
+                    });
+                  }}
+                />
+                <NoMarginHelperText>{t("settings.remoteFFmpegWorkerPollIntervalDes")}</NoMarginHelperText>
               </FormControl>
             </SettingForm>
           </SettingSectionContent>

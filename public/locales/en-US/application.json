@@ -552,6 +552,8 @@
     "deleteOneDescriptionHard": "Are you sure to permanently delete <0>{{name}}</0>?",
     "trashRetention": "Files in the trash bin will be deleted after <0>{{num}}</0>.",
     "deleteMultipleDescriptionHard": "Are you sure to permanently delete those {{num}} objects?",
+    "deleteHLSPrompt": "Also delete HLS artifacts for selected video(s)?",
+    "deleteHLSLabel": "Delete HLS artifacts",
     "newRemoteDownloadTitle": "New remote download task",
     "remoteDownloadURL": "Download target URL",
     "remoteDownloadURLDescription": "Paste the download URL, one URL per line",
@@ -981,7 +983,12 @@
     "relocateFileTo": "Relocate storage policy to {{policy}} for <0></0>{{more}}",
     "extractFileTo": "Extract <0></0>{{more}} to <1></1>",
     "createArchiveTo": "Create archive file to <1></1> for <0></0>{{more}}",
-    "importFileTo": "Import files from {{policy}} to <0></0>"
+    "importFileTo": "Import files from {{policy}} to <0></0>",
+    "workerTransfer": "Transfer",
+    "workerTransferSourceDownload": "Transfer: source download",
+    "workerTransferOutputDownload": "Transfer: result download",
+    "workerTranscode": "Transcode",
+    "workerOutputSize": "Worker output size"
   },
   "vas": {
     "points": "Points",

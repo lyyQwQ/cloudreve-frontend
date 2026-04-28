@@ -7,6 +7,7 @@ import { TaskProgress, TaskProgresses, TaskType } from "../../../api/workflow.ts
 import { useAppDispatch } from "../../../redux/hooks.ts";
 import { sizeToString } from "../../../util";
 import StepProgressBar from "./StepProgressBar.tsx";
+import { workerTransferPhaseText } from "./WorkerProgress.tsx";
 
 export interface StepProgressPopoverProps extends PopoverProps {
   taskId: string;
@@ -26,6 +27,8 @@ export const ProgressKeys = {
   imported: "imported",
   indexed: "indexed",
   ffmpeg: "ffmpeg",
+  worker_transfer: "worker_transfer",
+  worker_transcode: "worker_transcode",
 };
 
 const ProgressBar = ({ pkey, p }: { pkey: string; p: TaskProgress }) => {
@@ -33,6 +36,18 @@ const ProgressBar = ({ pkey, p }: { pkey: string; p: TaskProgress }) => {
   if (pkey === ProgressKeys.ffmpeg) {
     const percent = Math.round((100 * p.current) / Math.max(p.total, 1));
     return <StepProgressBar title={"FFmpeg"} secondary={`${percent}%`} progress={percent} />;
+  }
+
+  if (pkey === ProgressKeys.worker_transfer) {
+    const percent = Math.round((100 * p.current) / Math.max(p.total, 1));
+    return (
+      <StepProgressBar title={workerTransferPhaseText(p.identifier, t)} secondary={`${percent}%`} progress={percent} />
+    );
+  }
+
+  if (pkey === ProgressKeys.worker_transcode) {
+    const percent = Math.round((100 * p.current) / Math.max(p.total, 1));
+    return <StepProgressBar title={t("setting.workerTranscode")} secondary={`${percent}%`} progress={percent} />;
   }
 
   if (pkey === TaskType.video_subtitle_burn) {

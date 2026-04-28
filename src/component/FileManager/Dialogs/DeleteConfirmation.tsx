@@ -136,7 +136,7 @@ const DeleteConfirmation = () => {
           </StyledDialogContentText>
           <Collapse in={hasHLSAvailable} unmountOnExit>
             <Stack spacing={1} data-testid="delete-hls-prompt">
-              <Alert severity="warning">Also delete HLS artifacts for selected video(s)?</Alert>
+              <Alert severity="warning">{t("application:modals.deleteHLSPrompt")}</Alert>
               <FormGroup>
                 <SmallFormControlLabel
                   control={
@@ -147,7 +147,7 @@ const DeleteConfirmation = () => {
                       checked={deleteHls}
                     />
                   }
-                  label={"Delete HLS artifacts"}
+                  label={t("application:modals.deleteHLSLabel")}
                 />
               </FormGroup>
             </Stack>

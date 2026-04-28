@@ -271,6 +271,13 @@ const Settings = () => {
                     "media_meta_geocoding_mapbox_ak",
                     "video_ffmpeg_threads",
                     "video_ffmpeg_nice",
+                    "video_ffmpeg_worker_enabled",
+                    "video_ffmpeg_worker_endpoint",
+                    "video_ffmpeg_worker_api_key",
+                    "video_ffmpeg_worker_api_key_set",
+                    "video_ffmpeg_worker_api_key_clear",
+                    "video_ffmpeg_worker_timeout",
+                    "video_ffmpeg_worker_poll_interval",
                     "queue_video_process_worker_num",
                   ]}
                 >

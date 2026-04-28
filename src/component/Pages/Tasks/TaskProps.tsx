@@ -211,6 +211,12 @@ const TaskProps = ({ task }: TaskPropsProps) => {
       {!!task.summary?.props?.download?.hash && (
         <TaskPropsBlock label={t("download.InfoHash")} value={task.summary?.props?.download?.hash} />
       )}
+      {!!task.summary?.props?.worker_output_size && (
+        <TaskPropsBlock
+          label={t("setting.workerOutputSize")}
+          value={sizeToString(task.summary.props.worker_output_size)}
+        />
+      )}
     </Grid>
   );
 };

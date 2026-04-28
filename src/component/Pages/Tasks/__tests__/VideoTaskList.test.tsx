@@ -6,6 +6,7 @@ import TaskList from "../TaskList.tsx";
 import TaskCard from "../TaskCard.tsx";
 import TaskProgress from "../TaskProgress.tsx";
 import TaskSummaryTitle from "../TaskSummaryTitle.tsx";
+import WorkerProgress from "../WorkerProgress.tsx";
 
 const renderWithRouter = (ui: JSX.Element) => render(<MemoryRouter>{ui}</MemoryRouter>);
 
@@ -80,5 +81,25 @@ describe("Video task list", () => {
     expect(within(hlsProgress.container).getByText("setting.queueToStart")).toBeInTheDocument();
     expect(within(hlsProgress.container).getByText("setting.processing")).toBeInTheDocument();
     expect(within(hlsProgress.container).getByText("setting.finished")).toBeInTheDocument();
+  });
+
+  it("renders remote worker transfer and transcode progress", () => {
+    renderWithRouter(
+      <WorkerProgress
+        summary={{
+          props: {
+            worker_transfer_phase: "source_download",
+            worker_transfer_progress: 72,
+            worker_transcode_progress: 35,
+            worker_output_size: 2048,
+          },
+        }}
+      />,
+    );
+
+    expect(screen.getByText("setting.workerTransferSourceDownload")).toBeInTheDocument();
+    expect(screen.getByText("setting.workerTranscode")).toBeInTheDocument();
+    expect(screen.getByText("72%")).toBeInTheDocument();
+    expect(screen.getByText("35% · 2.0 KB")).toBeInTheDocument();
   });
 });

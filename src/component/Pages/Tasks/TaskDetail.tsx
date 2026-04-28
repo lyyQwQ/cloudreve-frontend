@@ -23,6 +23,7 @@ import DownloadFileList from "./DownloadFileList.tsx";
 import TaskProgress from "./TaskProgress.tsx";
 import TaskProps from "./TaskProps.tsx";
 import Dismiss from "../../Icons/Dismiss.tsx";
+import WorkerProgress, { hasWorkerProgress } from "./WorkerProgress.tsx";
 
 export interface TaskDetailProps {
   task: TaskResponse;
@@ -100,6 +101,7 @@ const TaskDetail = ({ task, downloading, onRefresh }: TaskDetailProps) => {
           summary={task.summary}
           node={task.node}
         />
+        {hasWorkerProgress(task.summary) && <WorkerProgress summary={task.summary} />}
         <Divider />
       </Stack>
       <Stack spacing={1}>

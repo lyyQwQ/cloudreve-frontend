@@ -8,6 +8,7 @@ import ArrowSyncCircleFilled from "../../Icons/ArrowSyncCircleFilled.tsx";
 import CheckCircleFilled from "../../Icons/CheckCircleFilled.tsx";
 import CircleHintFilled from "../../Icons/CircleHintFilled.tsx";
 import DismissCircleFilled from "../../Icons/DismissCircleFilled.tsx";
+import { hasWorkerProgress, workerTransferPhaseText } from "./WorkerProgress.tsx";
 
 const ArrowSyncCircleFilledSpin = styled(ArrowSyncCircleFilled)({
   animation: "spin 4s linear infinite",
@@ -72,6 +73,22 @@ const TaskSummaryStatus = ({ type, status, summary, error, simplified }: TaskSum
       );
     case TaskStatus.processing:
     case TaskStatus.suspending:
+      if (type == TaskType.video_subtitle_burn && hasWorkerProgress(summary)) {
+        const transferProgress = Math.max(0, Math.min(100, summary?.props?.worker_transfer_progress ?? 0));
+        const transcodeProgress = Math.max(0, Math.min(100, summary?.props?.worker_transcode_progress ?? 0));
+        const transferText = `${workerTransferPhaseText(
+          summary?.props?.worker_transfer_phase,
+          t,
+        )} ${transferProgress.toFixed(0)}%`;
+        const transcodeText = `${t("setting.workerTranscode")} ${transcodeProgress.toFixed(0)}%`;
+        return (
+          <TaskStatusContent
+            title={simplified ? transcodeText : `${transferText} · ${transcodeText}`}
+            icon={<ArrowSyncCircleFilledSpin fontSize={"small"} />}
+            color={theme.palette.primary.main}
+          />
+        );
+      }
       if (type == TaskType.remote_download) {
         if (summary?.phase == "monitor" && summary?.props?.download) {
           const downloadStatus = summary.props!.download;
