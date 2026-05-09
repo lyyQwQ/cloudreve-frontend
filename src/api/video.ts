@@ -52,6 +52,82 @@ export interface CreateHLSTaskResponse {
   task_id: number;
 }
 
+export interface BatchFileIDsRequest {
+  file_ids: Array<string | number>;
+  [key: string]: unknown;
+}
+
+export interface BatchSubtitleBurnRequest extends BatchFileIDsRequest {
+  candidate_key: string;
+}
+
+export interface BatchResultSummary {
+  ready?: number;
+  created?: number;
+  skipped?: number;
+  conflict?: number;
+  failed?: number;
+  existing?: number;
+  processing?: number;
+  incompatible?: number;
+}
+
+export interface BatchSubtitleCandidate {
+  key: string;
+  label: string;
+  type: "external" | "embedded" | string;
+  count: number;
+}
+
+export interface BatchSubtitleCandidateBind {
+  candidate_key: string;
+  type: "external" | "embedded" | string;
+  external_name?: string;
+  embedded_index?: number;
+  label: string;
+}
+
+export interface BatchSubtitleRow {
+  file_id: string;
+  file_name: string;
+  status: string;
+  reason?: string;
+  candidates?: BatchSubtitleCandidateBind[];
+}
+
+export interface BatchSubtitlePreflightResponse {
+  candidates: BatchSubtitleCandidate[];
+  rows: BatchSubtitleRow[];
+  summary: BatchResultSummary;
+}
+
+export interface BatchCreateRow {
+  file_id: string;
+  file_name: string;
+  status: string;
+  reason?: string;
+  task_id?: string;
+}
+
+export interface BatchCreateResponse {
+  rows: BatchCreateRow[];
+  summary: BatchResultSummary;
+}
+
+export interface BatchHLSRow {
+  file_id: string;
+  file_name: string;
+  status: string;
+  reason?: string;
+  codec?: string;
+  audio_codec?: string;
+}
+
+export interface BatchHLSPreflightResponse {
+  rows: BatchHLSRow[];
+  summary: BatchResultSummary;
+}
+
 export interface GetHLSStatusResponse {
   file_id: number;
   has_hls: boolean;

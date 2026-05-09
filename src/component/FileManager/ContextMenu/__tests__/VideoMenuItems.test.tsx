@@ -40,7 +40,13 @@ vi.mock("../../../../redux/siteConfigSlice.ts", async (importOriginal) => {
 import Boolset from "../../../../util/boolset.ts";
 import { FileResponse, FileType, NavigatorCapability } from "../../../../api/explorer.ts";
 import { closeContextMenu, ContextMenuTypes } from "../../../../redux/fileManagerSlice.ts";
-import { setHLSManageDialog, setSubtitleSelectDialog, setVideoInfoDialog } from "../../../../redux/globalStateSlice.ts";
+import {
+  setBatchHLSDialog,
+  setBatchSubtitleBurnDialog,
+  setHLSManageDialog,
+  setSubtitleSelectDialog,
+  setVideoInfoDialog,
+} from "../../../../redux/globalStateSlice.ts";
 import ContextMenu from "../ContextMenu.tsx";
 
 function createStoreHarness(state: any) {
@@ -87,6 +93,11 @@ function fileWithDownloadCapability(file: Partial<FileResponse>): FileResponse {
 async function openVideoProcessingSubmenu() {
   fireEvent.mouseOver(screen.getByText("fileManager.videoProcessing"));
   await screen.findByTestId("hls-manage-menu-item");
+}
+
+async function openBatchVideoProcessingSubmenu() {
+  fireEvent.mouseOver(screen.getByText("fileManager.videoProcessing"));
+  await screen.findByTestId("batch-hls-menu-item");
 }
 
 describe("ContextMenu video actions", () => {
@@ -148,7 +159,7 @@ describe("ContextMenu video actions", () => {
     expect(screen.queryByText("fileManager.videoProcessing")).toBeNull();
   });
 
-  it("hides Video Info for multi-select", () => {
+  it("shows batch video processing for multi-selected video files", async () => {
     const videoFile = fileWithDownloadCapability({ id: "v1", name: "demo.mp4" });
     const another = fileWithDownloadCapability({ id: "v2", name: "demo2.mp4" });
 
@@ -174,7 +185,13 @@ describe("ContextMenu video actions", () => {
       </Provider>,
     );
 
-    expect(screen.queryByText("fileManager.videoProcessing")).toBeNull();
+    expect(screen.getByText("fileManager.videoProcessing")).toBeInTheDocument();
+    await openBatchVideoProcessingSubmenu();
+    expect(screen.queryByTestId("context-menu-video-info")).toBeNull();
+    expect(screen.queryByTestId("subtitle-burn-menu-item")).toBeNull();
+    expect(screen.queryByTestId("hls-manage-menu-item")).toBeNull();
+    expect(screen.getByTestId("batch-subtitle-burn-menu-item")).toBeInTheDocument();
+    expect(screen.getByTestId("batch-hls-menu-item")).toBeInTheDocument();
   });
 
   it("click dispatches close + setVideoInfoDialog", async () => {
@@ -268,5 +285,71 @@ describe("ContextMenu video actions", () => {
 
     expect(dispatch).toHaveBeenCalledWith(closeContextMenu({ index: 0, value: undefined }));
     expect(dispatch).toHaveBeenCalledWith(setHLSManageDialog({ open: true, file: videoFile }));
+  });
+
+  it("click dispatches close + setBatchSubtitleBurnDialog", async () => {
+    const videoFile = fileWithDownloadCapability({ id: "v1", name: "demo.mp4" });
+    const another = fileWithDownloadCapability({ id: "v2", name: "demo2.mp4" });
+
+    const state = {
+      fileManager: [
+        {
+          contextMenuOpen: true,
+          contextMenuType: ContextMenuTypes.file,
+          contextMenuPos: { x: 0, y: 0 },
+          selected: {
+            [videoFile.id]: videoFile,
+            [another.id]: another,
+          },
+        },
+      ],
+      globalState: {},
+    };
+
+    const { store, dispatch } = createStoreHarness(state);
+    render(
+      <Provider store={store as any}>
+        <ContextMenu fmIndex={0} />
+      </Provider>,
+    );
+
+    await openBatchVideoProcessingSubmenu();
+    fireEvent.click(screen.getByTestId("batch-subtitle-burn-menu-item"));
+
+    expect(dispatch).toHaveBeenCalledWith(closeContextMenu({ index: 0, value: undefined }));
+    expect(dispatch).toHaveBeenCalledWith(setBatchSubtitleBurnDialog({ open: true, files: [videoFile, another] }));
+  });
+
+  it("click dispatches close + setBatchHLSDialog", async () => {
+    const videoFile = fileWithDownloadCapability({ id: "v1", name: "demo.mp4" });
+    const another = fileWithDownloadCapability({ id: "v2", name: "demo2.mp4" });
+
+    const state = {
+      fileManager: [
+        {
+          contextMenuOpen: true,
+          contextMenuType: ContextMenuTypes.file,
+          contextMenuPos: { x: 0, y: 0 },
+          selected: {
+            [videoFile.id]: videoFile,
+            [another.id]: another,
+          },
+        },
+      ],
+      globalState: {},
+    };
+
+    const { store, dispatch } = createStoreHarness(state);
+    render(
+      <Provider store={store as any}>
+        <ContextMenu fmIndex={0} />
+      </Provider>,
+    );
+
+    await openBatchVideoProcessingSubmenu();
+    fireEvent.click(screen.getByTestId("batch-hls-menu-item"));
+
+    expect(dispatch).toHaveBeenCalledWith(closeContextMenu({ index: 0, value: undefined }));
+    expect(dispatch).toHaveBeenCalledWith(setBatchHLSDialog({ open: true, files: [videoFile, another] }));
   });
 });

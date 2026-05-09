@@ -206,9 +206,13 @@ export interface GlobalStateSlice {
   videoInfoDialogFile?: FileResponse;
   subtitleSelectDialogOpen?: boolean;
   subtitleSelectDialogFile?: FileResponse;
+  batchSubtitleBurnDialogOpen?: boolean;
+  batchSubtitleBurnDialogFiles?: FileResponse[];
 
   hlsManageDialogOpen?: boolean;
   hlsManageDialogFile?: FileResponse;
+  batchHLSDialogOpen?: boolean;
+  batchHLSDialogFiles?: FileResponse[];
 
   // Desktop mount setup dialog
   desktopMountSetupDialogOpen?: boolean;
@@ -365,6 +369,14 @@ export const globalStateSlice = createSlice({
       state.subtitleSelectDialogOpen = false;
       state.subtitleSelectDialogFile = undefined;
     },
+    setBatchSubtitleBurnDialog: (state, action: PayloadAction<{ open: boolean; files?: FileResponse[] }>) => {
+      state.batchSubtitleBurnDialogOpen = action.payload.open;
+      state.batchSubtitleBurnDialogFiles = action.payload.files;
+    },
+    closeBatchSubtitleBurnDialog: (state) => {
+      state.batchSubtitleBurnDialogOpen = false;
+      state.batchSubtitleBurnDialogFiles = undefined;
+    },
 
     setHLSManageDialog: (state, action: PayloadAction<{ open: boolean; file?: FileResponse }>) => {
       state.hlsManageDialogOpen = action.payload.open;
@@ -373,6 +385,14 @@ export const globalStateSlice = createSlice({
     closeHLSManageDialog: (state) => {
       state.hlsManageDialogOpen = false;
       state.hlsManageDialogFile = undefined;
+    },
+    setBatchHLSDialog: (state, action: PayloadAction<{ open: boolean; files?: FileResponse[] }>) => {
+      state.batchHLSDialogOpen = action.payload.open;
+      state.batchHLSDialogFiles = action.payload.files;
+    },
+    closeBatchHLSDialog: (state) => {
+      state.batchHLSDialogOpen = false;
+      state.batchHLSDialogFiles = undefined;
     },
     setMobileDrawerOpen: (state, action: PayloadAction<boolean>) => {
       state.mobileDrawerOpen = action.payload;
@@ -432,9 +452,13 @@ export const globalStateSlice = createSlice({
       state.videoInfoDialogFile = undefined;
       state.subtitleSelectDialogOpen = state.subtitleSelectDialogOpen ? false : undefined;
       state.subtitleSelectDialogFile = undefined;
+      state.batchSubtitleBurnDialogOpen = state.batchSubtitleBurnDialogOpen ? false : undefined;
+      state.batchSubtitleBurnDialogFiles = undefined;
 
       state.hlsManageDialogOpen = state.hlsManageDialogOpen ? false : undefined;
       state.hlsManageDialogFile = undefined;
+      state.batchHLSDialogOpen = state.batchHLSDialogOpen ? false : undefined;
+      state.batchHLSDialogFiles = undefined;
 
       // reset all viewers
       state.imageViewer = undefined;
@@ -961,8 +985,12 @@ export const {
   closeVideoInfoDialog,
   setSubtitleSelectDialog,
   closeSubtitleSelectDialog,
+  setBatchSubtitleBurnDialog,
+  closeBatchSubtitleBurnDialog,
   setHLSManageDialog,
   closeHLSManageDialog,
+  setBatchHLSDialog,
+  closeBatchHLSDialog,
   setShareReadmeDetect,
   closeShareReadme,
   setShareReadmeOpen,

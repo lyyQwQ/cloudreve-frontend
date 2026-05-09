@@ -112,6 +112,11 @@ import {
   TaskResponse,
 } from "./workflow.ts";
 import {
+  BatchCreateResponse,
+  BatchFileIDsRequest,
+  BatchHLSPreflightResponse,
+  BatchSubtitleBurnRequest,
+  BatchSubtitlePreflightResponse,
   CreateHLSTaskResponse,
   CreateSubtitleBurnTaskRequest,
   GetHLSStatusResponse,
@@ -666,6 +671,28 @@ export function createSubtitleBurnTask(req: CreateSubtitleBurnTaskRequest): Thun
   };
 }
 
+export function batchSubtitlePreflight(req: BatchFileIDsRequest): ThunkResponse<BatchSubtitlePreflightResponse> {
+  return async (dispatch, _getState) => {
+    return await dispatch(
+      send("/video/batch/subtitle/preflight", {
+        method: "POST",
+        data: req,
+      }),
+    );
+  };
+}
+
+export function createBatchSubtitleBurnTasks(req: BatchSubtitleBurnRequest): ThunkResponse<BatchCreateResponse> {
+  return async (dispatch, _getState) => {
+    return await dispatch(
+      send("/video/batch/subtitle/burn", {
+        method: "POST",
+        data: req,
+      }),
+    );
+  };
+}
+
 export function createHLSTask(fileId: string | number): ThunkResponse<CreateHLSTaskResponse> {
   return async (dispatch, _getState) => {
     return await dispatch(
@@ -674,6 +701,28 @@ export function createHLSTask(fileId: string | number): ThunkResponse<CreateHLST
         data: {
           file_id: fileId,
         },
+      }),
+    );
+  };
+}
+
+export function batchHLSPreflight(req: BatchFileIDsRequest): ThunkResponse<BatchHLSPreflightResponse> {
+  return async (dispatch, _getState) => {
+    return await dispatch(
+      send("/video/batch/hls/preflight", {
+        method: "POST",
+        data: req,
+      }),
+    );
+  };
+}
+
+export function createBatchHLSTasks(req: BatchFileIDsRequest): ThunkResponse<BatchCreateResponse> {
+  return async (dispatch, _getState) => {
+    return await dispatch(
+      send("/video/batch/hls", {
+        method: "POST",
+        data: req,
       }),
     );
   };

@@ -6,6 +6,8 @@ import { FileType } from "../../../api/explorer.ts";
 import { closeContextMenu } from "../../../redux/fileManagerSlice.ts";
 import {
   CreateNewDialogType,
+  setBatchHLSDialog,
+  setBatchSubtitleBurnDialog,
   setHLSManageDialog,
   setSubtitleSelectDialog,
   setVideoInfoDialog,
@@ -355,7 +357,11 @@ const ContextMenu = ({ fmIndex = 0 }: ContextMenuProps) => {
         </SquareMenuItem>
       )}
       {displayOpt.showVideoProcessing && (
-        <CascadingSubmenu popupId={"videoProcessing"} title={t("fileManager.videoProcessing")} icon={<VideoSettings fontSize="small" />}>
+        <CascadingSubmenu
+          popupId={"videoProcessing"}
+          title={t("fileManager.videoProcessing")}
+          icon={<VideoSettings fontSize="small" />}
+        >
           {displayOpt.showVideoInfo && (
             <SquareMenuItem
               data-testid="context-menu-video-info"
@@ -394,23 +400,63 @@ const ContextMenu = ({ fmIndex = 0 }: ContextMenuProps) => {
               <ListItemText>{t("fileManager.subtitleBurn")}</ListItemText>
             </SquareMenuItem>
           )}
-          <SquareMenuItem
-            data-testid="hls-manage-menu-item"
-            onClick={() => {
-              onClose();
-              dispatch(
-                setHLSManageDialog({
-                  open: true,
-                  file: targets[0],
-                }),
-              );
-            }}
-          >
-            <ListItemIcon>
-              <Info fontSize="small" />
-            </ListItemIcon>
-            <ListItemText>{t("fileManager.hlsManage")}</ListItemText>
-          </SquareMenuItem>
+          {targets.length === 1 && (
+            <SquareMenuItem
+              data-testid="hls-manage-menu-item"
+              onClick={() => {
+                onClose();
+                dispatch(
+                  setHLSManageDialog({
+                    open: true,
+                    file: targets[0],
+                  }),
+                );
+              }}
+            >
+              <ListItemIcon>
+                <Info fontSize="small" />
+              </ListItemIcon>
+              <ListItemText>{t("fileManager.hlsManage")}</ListItemText>
+            </SquareMenuItem>
+          )}
+          {displayOpt.showBatchSubtitleBurn && (
+            <SquareMenuItem
+              data-testid="batch-subtitle-burn-menu-item"
+              onClick={() => {
+                onClose();
+                dispatch(
+                  setBatchSubtitleBurnDialog({
+                    open: true,
+                    files: targets,
+                  }),
+                );
+              }}
+            >
+              <ListItemIcon>
+                <Info fontSize="small" />
+              </ListItemIcon>
+              <ListItemText>{t("fileManager.batchSubtitleBurn")}</ListItemText>
+            </SquareMenuItem>
+          )}
+          {displayOpt.showBatchHLS && (
+            <SquareMenuItem
+              data-testid="batch-hls-menu-item"
+              onClick={() => {
+                onClose();
+                dispatch(
+                  setBatchHLSDialog({
+                    open: true,
+                    files: targets,
+                  }),
+                );
+              }}
+            >
+              <ListItemIcon>
+                <Info fontSize="small" />
+              </ListItemIcon>
+              <ListItemText>{t("fileManager.batchHLS")}</ListItemText>
+            </SquareMenuItem>
+          )}
         </CascadingSubmenu>
       )}
     </>

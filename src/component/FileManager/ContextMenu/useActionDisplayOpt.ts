@@ -68,6 +68,8 @@ export interface DisplayOption {
   showVideoProcessing?: boolean;
   showVideoInfo?: boolean;
   showSubtitleBurn?: boolean;
+  showBatchSubtitleBurn?: boolean;
+  showBatchHLS?: boolean;
   showDirectLink?: boolean;
 
   showMove?: boolean;
@@ -208,6 +210,14 @@ export const getActionOpt = (
   });
 
   const firstFileSuffix = fileExtension(targets[0]?.name ?? "");
+  const allVideoFiles =
+    targets.length > 0 &&
+    targets.every((target) => {
+      if (target.type !== FileType.file) {
+        return false;
+      }
+      return isVideoFile(viewerSetting, fileExtension(target.name ?? ""));
+    });
   display.showPin = !display.hasTrashFile && targets.length == 1 && display.hasFolder;
   display.showDelete =
     display.hasUpdatable &&
@@ -291,8 +301,12 @@ export const getActionOpt = (
   display.showInfo = targets.length == 1 && display.orCapability && canShowInfo(display.orCapability);
   display.showVideoInfo = targets.length == 1 && display.hasFile && isVideoFile(viewerSetting, firstFileSuffix);
   display.showSubtitleBurn = display.showVideoInfo;
+  display.showBatchSubtitleBurn = targets.length > 1 && allVideoFiles;
+  display.showBatchHLS = targets.length > 1 && allVideoFiles;
   display.showVideoProcessing =
-    targets.length === 1 && !!display.hasFile && isVideoFile(viewerSetting, firstFileSuffix);
+    (targets.length === 1 && !!display.hasFile && isVideoFile(viewerSetting, firstFileSuffix)) ||
+    display.showBatchSubtitleBurn ||
+    display.showBatchHLS;
   display.showVersionControl =
     targets.length == 1 &&
     display.orCapability &&

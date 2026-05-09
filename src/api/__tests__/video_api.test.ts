@@ -21,7 +21,14 @@ vi.mock("../request.ts", () => {
   };
 });
 
-import { createSubtitleBurnTask, getVideoInfo } from "../api.ts";
+import {
+  batchHLSPreflight,
+  batchSubtitlePreflight,
+  createBatchHLSTasks,
+  createBatchSubtitleBurnTasks,
+  createSubtitleBurnTask,
+  getVideoInfo,
+} from "../api.ts";
 import { send } from "../request.ts";
 
 function createThunkHarness() {
@@ -68,7 +75,7 @@ describe("video api thunks", () => {
     const req = {
       file_id: 456,
       subtitle: {
-        mode: "external",
+        mode: "external" as const,
         external_name: "foo.srt",
       },
     };
@@ -85,5 +92,31 @@ describe("video api thunks", () => {
       file_id: 456,
       subtitle: { mode: "external", external_name: "foo.srt" },
     });
+  });
+
+  it("batch video thunks call backend batch endpoints", async () => {
+    sendMock.mockImplementation((_url: string, _config?: any, _opts?: any) => async () => "ok");
+
+    const filesReq = { file_ids: ["v1", "v2"] };
+    const subtitleReq = { file_ids: ["v1", "v2"], candidate_key: "embedded:simplified_chinese" };
+    const { dispatch, getState } = createThunkHarness();
+
+    await batchSubtitlePreflight(filesReq)(dispatch as any, getState as any, undefined);
+    await createBatchSubtitleBurnTasks(subtitleReq)(dispatch as any, getState as any, undefined);
+    await batchHLSPreflight(filesReq)(dispatch as any, getState as any, undefined);
+    await createBatchHLSTasks(filesReq)(dispatch as any, getState as any, undefined);
+
+    expect(sendMock.mock.calls.map((call) => call[0])).toEqual([
+      "/video/batch/subtitle/preflight",
+      "/video/batch/subtitle/burn",
+      "/video/batch/hls/preflight",
+      "/video/batch/hls",
+    ]);
+    expect(sendMock.mock.calls.map((call) => (call[1] as any).data)).toEqual([
+      filesReq,
+      subtitleReq,
+      filesReq,
+      filesReq,
+    ]);
   });
 });

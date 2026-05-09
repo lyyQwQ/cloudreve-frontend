@@ -36,6 +36,8 @@ import DirectLinksControl from "./DirectLinksControl.tsx";
 import SubtitleSelectDialog from "./SubtitleSelectDialog.tsx";
 import VideoInfoDialog from "./VideoInfoDialog.tsx";
 import HLSManageDialog from "./HLSManageDialog.tsx";
+import BatchSubtitleBurnDialog from "./BatchSubtitleBurnDialog.tsx";
+import BatchHLSDialog from "./BatchHLSDialog.tsx";
 
 const Dialogs = () => {
   const showCreateArchive = useAppSelector((state) => state.globalState.createArchiveDialogOpen);
@@ -51,6 +53,8 @@ const Dialogs = () => {
   const videoInfoDialog = useAppSelector((state) => state.globalState.videoInfoDialogOpen);
   const subtitleSelectDialog = useAppSelector((state) => state.globalState.subtitleSelectDialogOpen);
   const hlsManageDialog = useAppSelector((state) => state.globalState.hlsManageDialogOpen);
+  const batchSubtitleBurnDialog = useAppSelector((state) => state.globalState.batchSubtitleBurnDialogOpen);
+  const batchHLSDialog = useAppSelector((state) => state.globalState.batchHLSDialogOpen);
 
   return (
     <>
@@ -90,6 +94,8 @@ const Dialogs = () => {
       {videoInfoDialog !== undefined && <VideoInfoDialog />}
       {subtitleSelectDialog !== undefined && <SubtitleSelectDialog />}
       {hlsManageDialog !== undefined && <HLSManageDialog />}
+      {batchSubtitleBurnDialog !== undefined && <BatchSubtitleBurnDialog />}
+      {batchHLSDialog !== undefined && <BatchHLSDialog />}
     </>
   );
 };
