@@ -33,6 +33,7 @@ export enum UserSettings {
   UploadOverwrite = "upload_overwrite",
   TimeZone = "time_zone",
   TreeViewAutoExpand = "tree_view_auto_expand",
+  FolderClickAction = "folder_click_action",
 }
 
 export const UserSettingsDefault: { [key: string]: any } = {
@@ -63,6 +64,7 @@ export const UserSettingsDefault: { [key: string]: any } = {
   [UserSettings.UploadOverwrite]: false,
   [UserSettings.TimeZone]: "Asia/Shanghai",
   [UserSettings.TreeViewAutoExpand]: true,
+  [UserSettings.FolderClickAction]: "open",
 };
 
 export interface Session extends LoginResponse {

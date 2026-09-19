@@ -2,6 +2,7 @@ import { Box, Stack } from "@mui/material";
 import { useContext } from "react";
 import { useTranslation } from "react-i18next";
 import BasicInfoSection from "./BasicInfoSection";
+import DefaultPinnedSection from "./DefaultPinnedSection";
 import FileManagementSection from "./FileManagementSection";
 import { GroupSettingContext } from "./GroupSettingWrapper";
 import ShareSection from "./ShareSection";
@@ -15,6 +16,7 @@ const GroupForm = () => {
       <Stack spacing={5}>
         <BasicInfoSection />
         <ShareSection />
+        <DefaultPinnedSection />
         <FileManagementSection />
         <UploadDownloadSection />
       </Stack>

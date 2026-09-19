@@ -66,9 +66,7 @@ export function openViewers(
   return async (dispatch, getState) => {
     dispatch(closeContextMenu({ index, value: undefined }));
     const {
-      siteConfig: {
-        explorer: { typed },
-      },
+      siteConfig: { explorer },
     } = getState();
 
     const ext = fileExtension(file.name) ?? "";
@@ -85,6 +83,12 @@ export function openViewers(
 
     if (!ignorePreference && viewerOptions.length == 1) {
       dispatch(openViewer(file, viewerOptions[0], entitySize, preferredVersion));
+      return;
+    }
+
+    const globalDefaultViewer = explorer?.config?.default_viewer_mapping?.[ext];
+    if (!ignorePreference && globalDefaultViewer && ViewersByID[globalDefaultViewer]) {
+      dispatch(openViewer(file, ViewersByID[globalDefaultViewer], entitySize, preferredVersion));
       return;
     }
 
@@ -285,7 +289,7 @@ export function openViewer(
 }
 
 export function openCustomViewer(file: FileResponse, viewer: Viewer, preferredVersion?: string): AppThunk {
-  return async (dispatch, _getState) => {
+  return async (dispatch, getState) => {
     const entityUrl = await longRunningTaskWithSnackbar(
       dispatch(
         getFileEntityUrl({
@@ -299,6 +303,14 @@ export function openCustomViewer(file: FileResponse, viewer: Viewer, preferredVe
 
     const currentUser = SessionManager.currentUser();
 
+    // Mirrors the fallback in useGeneratedTheme (App.tsx): explicit user
+    // preference wins, otherwise fall back to the OS/browser preference.
+    const darkModePreference = getState().globalState.darkMode;
+    const isDarkMode =
+      darkModePreference === undefined
+        ? window.matchMedia?.("(prefers-color-scheme: dark)").matches
+        : darkModePreference;
+
     const vars: { [key: string]: string } = {
       src: encodeURIComponent(entityUrl.urls[0].url),
       src_raw: entityUrl.urls[0].url,
@@ -308,6 +320,8 @@ export function openCustomViewer(file: FileResponse, viewer: Viewer, preferredVe
       id: file.id,
       user_id: currentUser?.id ?? "",
       user_display_name: encodeURIComponent(currentUser?.nickname ?? ""),
+      theme: isDarkMode ? "dark" : "light",
+      dark: isDarkMode ? "1" : "0",
     };
 
     // replace variables in viewer.url

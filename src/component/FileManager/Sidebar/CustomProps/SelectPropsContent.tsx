@@ -3,10 +3,18 @@ import { useEffect, useState } from "react";
 import { useTranslation } from "react-i18next";
 import { PropsContentProps } from "./CustomPropsItem.tsx";
 
-const NoLabelFilledSelect = styled(Select)(({ theme }) => ({
+const NoLabelFilledSelect = styled(Select)<{ fullSize?: boolean }>(({ theme, fullSize }) => ({
   "& .MuiSelect-select": {
     paddingTop: theme.spacing(1),
     paddingBottom: theme.spacing(1),
+    ...(!fullSize
+      ? {
+          paddingLeft: 0,
+          paddingRight: 0,
+          paddingTop: 0,
+          paddingBottom: 0,
+        }
+      : {}),
     fontSize: theme.typography.body2.fontSize,
     "&.Mui-disabled": {
       borderBottomStyle: "none",
@@ -16,6 +24,12 @@ const NoLabelFilledSelect = styled(Select)(({ theme }) => ({
     },
   },
   "&.MuiInputBase-root.MuiFilledInput-root.MuiSelect-root": {
+    ...(!fullSize
+      ? {
+          borderRadius: 0,
+          backgroundColor: "initial",
+        }
+      : {}),
     "&.Mui-disabled": {
       borderBottomStyle: "none",
       "&::before": {
@@ -25,7 +39,7 @@ const NoLabelFilledSelect = styled(Select)(({ theme }) => ({
   },
 }));
 
-const SelectPropsContent = ({ prop, onChange, loading, readOnly }: PropsContentProps) => {
+const SelectPropsContent = ({ prop, onChange, loading, readOnly, fullSize }: PropsContentProps) => {
   const { t } = useTranslation();
   const [value, setValue] = useState(prop.value || "");
 
@@ -50,6 +64,7 @@ const SelectPropsContent = ({ prop, onChange, loading, readOnly }: PropsContentP
     <NoLabelFilledSelect
       variant="filled"
       fullWidth
+      fullSize={fullSize}
       disabled={loading}
       value={value}
       onChange={(e) => handleChange(e.target.value as string)}

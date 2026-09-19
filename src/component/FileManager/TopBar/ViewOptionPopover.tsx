@@ -157,7 +157,7 @@ const ViewOptionPopover = ({ ...rest }: PopoverProps) => {
             ))}
           </ToggleButtonGroup>
         </Box>
-        <Collapse in={layout == Layouts.grid}>
+        <Collapse in={layout == Layouts.grid || layout == Layouts.list}>
           <Typography variant="subtitle2" sx={{ mt: 1.5, mb: 0.5, ml: 0.5 }} color={"text.secondary"}>
             {t("application:fileManager.thumbnails")}
           </Typography>

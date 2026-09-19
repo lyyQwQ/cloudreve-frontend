@@ -5,7 +5,7 @@ import { NoLabelFilledTextField } from "../../../Common/StyledComponents.tsx";
 import Edit from "../../../Icons/Edit.tsx";
 import { PropsContentProps } from "./CustomPropsItem.tsx";
 
-const LinkPropsContent = ({ prop, onChange, loading, readOnly }: PropsContentProps) => {
+const LinkPropsContent = ({ prop, onChange, loading, fullSize, readOnly }: PropsContentProps) => {
   const { t } = useTranslation();
   const [value, setValue] = useState(prop.value);
   const [isEditing, setIsEditing] = useState(false);
@@ -51,6 +51,7 @@ const LinkPropsContent = ({ prop, onChange, loading, readOnly }: PropsContentPro
     return (
       <NoLabelFilledTextField
         variant="filled"
+        fullSize={fullSize}
         placeholder={t("application:fileManager.enterUrl")}
         disabled={loading}
         fullWidth
@@ -96,6 +97,11 @@ const LinkPropsContent = ({ prop, onChange, loading, readOnly }: PropsContentPro
             top: "50%",
             transform: "translateY(-50%)",
             opacity: 0.7,
+            ...(!fullSize
+              ? {
+                  padding: 0,
+                }
+              : {}),
             "&:hover": {
               opacity: 1,
             },

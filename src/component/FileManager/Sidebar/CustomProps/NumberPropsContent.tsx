@@ -4,7 +4,7 @@ import { useTranslation } from "react-i18next";
 import { NoLabelFilledTextField } from "../../../Common/StyledComponents.tsx";
 import { PropsContentProps } from "./CustomPropsItem.tsx";
 
-const NumberPropsContent = ({ prop, onChange, loading, readOnly }: PropsContentProps) => {
+const NumberPropsContent = ({ prop, onChange, loading, readOnly, fullSize }: PropsContentProps) => {
   const { t } = useTranslation();
   const [value, setValue] = useState(prop.value);
 
@@ -41,6 +41,7 @@ const NumberPropsContent = ({ prop, onChange, loading, readOnly }: PropsContentP
       onChange={(e) => setValue(e.target.value)}
       value={value ?? ""}
       onBlur={onBlur}
+      fullSize={fullSize}
       required
     />
   );

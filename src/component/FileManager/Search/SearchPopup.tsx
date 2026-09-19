@@ -158,7 +158,7 @@ const SearchPopup = () => {
             setFullTextLoading(false);
           });
       }, 500),
-    [fullTextSearchEnabled, isLoggedIn, dispatch],
+    [fullTextSearchEnabled, isLoggedIn, path, dispatch],
   );
 
   useEffect(() => {

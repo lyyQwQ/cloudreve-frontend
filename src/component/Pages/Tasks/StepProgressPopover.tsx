@@ -29,6 +29,7 @@ export const ProgressKeys = {
   ffmpeg: "ffmpeg",
   worker_transfer: "worker_transfer",
   worker_transcode: "worker_transcode",
+  rebuild_index: "rebuild_index",
 };
 
 const ProgressBar = ({ pkey, p }: { pkey: string; p: TaskProgress }) => {
@@ -197,7 +198,17 @@ const ProgressBar = ({ pkey, p }: { pkey: string; p: TaskProgress }) => {
     );
   }
 
-  if (pkey === ProgressKeys.download) {
+  if (pkey == ProgressKeys.rebuild_index) {
+    return (
+      <StepProgressBar
+        title={t("setting.ftsIndexedFiles")}
+        secondary={`${p.current} / ${p.total}`}
+        progress={(100 * p.current) / Math.max(p.total, 1)}
+      />
+    );
+  }
+
+  if (pkey == ProgressKeys.download) {
     return (
       <StepProgressBar
         title={t("setting.downloaded")}

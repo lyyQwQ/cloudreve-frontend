@@ -4,7 +4,7 @@ import { useTranslation } from "react-i18next";
 import { NoLabelFilledTextField } from "../../../Common/StyledComponents.tsx";
 import { PropsContentProps } from "./CustomPropsItem.tsx";
 
-const TextPropsContent = ({ prop, onChange, loading, readOnly }: PropsContentProps) => {
+const TextPropsContent = ({ prop, onChange, loading, readOnly, fullSize }: PropsContentProps) => {
   const { t } = useTranslation();
   const [value, setValue] = useState(prop.value);
 
@@ -25,6 +25,7 @@ const TextPropsContent = ({ prop, onChange, loading, readOnly }: PropsContentPro
   return (
     <NoLabelFilledTextField
       variant="filled"
+      fullSize={fullSize}
       placeholder={t("application:fileManager.clickToEdit")}
       disabled={loading}
       fullWidth

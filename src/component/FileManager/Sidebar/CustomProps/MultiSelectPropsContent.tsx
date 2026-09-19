@@ -3,10 +3,18 @@ import { useEffect, useState } from "react";
 import { useTranslation } from "react-i18next";
 import { PropsContentProps } from "./CustomPropsItem.tsx";
 
-export const NoLabelFilledSelect = styled(Select)(({ theme }) => ({
+export const NoLabelFilledSelect = styled(Select)<{ fullSize?: boolean }>(({ theme, fullSize }) => ({
   "& .MuiSelect-select": {
     paddingTop: theme.spacing(1),
     paddingBottom: theme.spacing(1),
+    ...(!fullSize
+      ? {
+          paddingLeft: 0,
+          paddingRight: 0,
+          paddingTop: theme.spacing(0.5),
+          paddingBottom: theme.spacing(0.5),
+        }
+      : {}),
     fontSize: theme.typography.body2.fontSize,
     "&.Mui-disabled": {
       borderBottomStyle: "none",
@@ -16,6 +24,12 @@ export const NoLabelFilledSelect = styled(Select)(({ theme }) => ({
     },
   },
   "&.MuiInputBase-root.MuiFilledInput-root.MuiSelect-root": {
+    ...(!fullSize
+      ? {
+          borderRadius: 0,
+          backgroundColor: "initial",
+        }
+      : {}),
     "&.Mui-disabled": {
       borderBottomStyle: "none",
       "&::before": {
@@ -25,7 +39,7 @@ export const NoLabelFilledSelect = styled(Select)(({ theme }) => ({
   },
 }));
 
-const MultiSelectPropsContent = ({ prop, onChange, loading, readOnly }: PropsContentProps) => {
+const MultiSelectPropsContent = ({ prop, onChange, loading, readOnly, fullSize }: PropsContentProps) => {
   const { t } = useTranslation();
   const [values, setValues] = useState<string[]>(() => {
     if (prop.value) {
@@ -86,6 +100,7 @@ const MultiSelectPropsContent = ({ prop, onChange, loading, readOnly }: PropsCon
         onClick={(e) => e.stopPropagation()}
         multiple
         displayEmpty
+        fullSize={fullSize}
         renderValue={(selected) => {
           const selectedArray = Array.isArray(selected) ? selected : [];
           if (selectedArray.length === 0) {

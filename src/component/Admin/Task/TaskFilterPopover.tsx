@@ -130,6 +130,11 @@ const TaskFilterPopover = ({
               TaskType.explicit_entity_recycle,
               TaskType.upload_sentinel_check,
               TaskType.import,
+              TaskType.full_text_rebuild,
+              TaskType.full_text_index,
+              TaskType.full_text_copy,
+              TaskType.full_text_change_owner,
+              TaskType.full_text_delete,
             ].map((type) => (
               <SquareMenuItem key={type} value={type}>
                 <ListItemText

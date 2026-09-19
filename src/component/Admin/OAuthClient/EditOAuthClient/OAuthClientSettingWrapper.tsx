@@ -26,7 +26,7 @@ const defaultClient: GetOAuthClientResponse = {
   id: 0,
   name: "",
   redirect_uris: [],
-  scopes: [],
+  scopes: ["openid"],
   is_enabled: true,
   props: {
     refresh_token_ttl: 2592000, // 30 days default

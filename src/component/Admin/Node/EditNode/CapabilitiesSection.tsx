@@ -1,4 +1,5 @@
 import {
+  Alert,
   CircularProgress,
   Collapse,
   FormControl,
@@ -224,6 +225,72 @@ const CapabilitiesSection = () => {
       }));
     },
     [setNode],
+  );
+
+  const onURLValidationDisabledChange = useCallback(
+    (e: React.ChangeEvent<HTMLInputElement>) => {
+      setNode((p: Node) => ({
+        ...p,
+        settings: {
+          ...p.settings,
+          url_validation: {
+            ...p.settings?.url_validation,
+            disabled: e.target.checked ? true : undefined,
+          },
+        },
+      }));
+    },
+    [setNode],
+  );
+
+  const onURLValidationAllowedHostsChange = useCallback(
+    (e: React.ChangeEvent<HTMLInputElement>) => {
+      const list = e.target.value
+        .split("\n")
+        .map((s) => s.trim())
+        .filter((s) => s !== "");
+      setNode((p: Node) => ({
+        ...p,
+        settings: {
+          ...p.settings,
+          url_validation: {
+            ...p.settings?.url_validation,
+            allowed_hosts: list.length ? list : undefined,
+          },
+        },
+      }));
+    },
+    [setNode],
+  );
+
+  const onURLValidationAllowedCIDRsChange = useCallback(
+    (e: React.ChangeEvent<HTMLInputElement>) => {
+      const list = e.target.value
+        .split("\n")
+        .map((s) => s.trim())
+        .filter((s) => s !== "");
+      setNode((p: Node) => ({
+        ...p,
+        settings: {
+          ...p.settings,
+          url_validation: {
+            ...p.settings?.url_validation,
+            allowed_cidrs: list.length ? list : undefined,
+          },
+        },
+      }));
+    },
+    [setNode],
+  );
+
+  const urlValidation = values.settings?.url_validation;
+  const allowedHostsValue = useMemo(
+    () => (urlValidation?.allowed_hosts ?? []).join("\n"),
+    [urlValidation?.allowed_hosts],
+  );
+  const allowedCIDRsValue = useMemo(
+    () => (urlValidation?.allowed_cidrs ?? []).join("\n"),
+    [urlValidation?.allowed_cidrs],
   );
 
   const onEditedConfigAria2Blur = useCallback(
@@ -553,6 +620,52 @@ const CapabilitiesSection = () => {
                 <NoMarginHelperText>{t("node.waitForSeedingDes")}</NoMarginHelperText>
               </FormControl>
             </SettingForm>
+
+            <SettingForm title={t("node.urlValidation")} lgWidth={5}>
+              <FormControl fullWidth>
+                <FormControlLabel
+                  control={
+                    <Switch checked={urlValidation?.disabled || false} onChange={onURLValidationDisabledChange} />
+                  }
+                  label={t("node.urlValidationDisable")}
+                />
+                <NoMarginHelperText>{t("node.urlValidationDisableDes")}</NoMarginHelperText>
+                {urlValidation?.disabled && (
+                  <Alert severity="warning" sx={{ mt: 1 }}>
+                    {t("node.urlValidationDisabledWarning")}
+                  </Alert>
+                )}
+              </FormControl>
+            </SettingForm>
+            <Collapse in={!urlValidation?.disabled} unmountOnExit>
+              <SettingSectionContent>
+                <SettingForm title={t("node.allowedHosts")} lgWidth={5}>
+                  <FormControl fullWidth>
+                    <DenseFilledTextField
+                      multiline
+                      rows={3}
+                      value={allowedHostsValue}
+                      onChange={onURLValidationAllowedHostsChange}
+                      placeholder={"nas.lan\n192.168.1.50"}
+                    />
+                    <NoMarginHelperText>{t("node.allowedHostsDes")}</NoMarginHelperText>
+                  </FormControl>
+                </SettingForm>
+                <SettingForm title={t("node.allowedCIDRs")} lgWidth={5}>
+                  <FormControl fullWidth>
+                    <DenseFilledTextField
+                      multiline
+                      rows={3}
+                      value={allowedCIDRsValue}
+                      onChange={onURLValidationAllowedCIDRsChange}
+                      placeholder={"192.168.0.0/16\nfd00::/8"}
+                    />
+                    <NoMarginHelperText>{t("node.allowedCIDRsDes")}</NoMarginHelperText>
+                  </FormControl>
+                </SettingForm>
+              </SettingSectionContent>
+            </Collapse>
+
             <SettingForm lgWidth={5}>
               <SecondaryButton onClick={onTestDownloaderClick} variant="contained" loading={testDownloaderLoading}>
                 {t("node.testDownloader")}

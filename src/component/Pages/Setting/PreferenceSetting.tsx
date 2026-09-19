@@ -36,6 +36,8 @@ import {
 import { SquareMenuItem } from "../../FileManager/ContextMenu/ContextMenu.tsx";
 import { ColorCircle, SelectorBox } from "../../FileManager/FileInfo/ColorCircle/CircleColorSelector.tsx";
 import { SwitchPopover } from "../../Frame/NavBar/DarkThemeSwitcher.tsx";
+import CheckboxChecked from "../../Icons/CheckboxChecked.tsx";
+import FolderArrowRightOutlined from "../../Icons/FolderArrowRightOutlined.tsx";
 import RectangleLandscapeSync from "../../Icons/RectangleLandscapeSync.tsx";
 import RectangleLandscapeSyncOff from "../../Icons/RectangleLandscapeSyncOff.tsx";
 import SettingForm from "./SettingForm.tsx";
@@ -79,6 +81,9 @@ const PreferenceSetting = ({ setting, setSetting }: PreferenceSettingProps) => {
   const [showSaveButton, setShowSaveButton] = useState(false);
   const [autoExpandTreeView, setAutoExpandTreeView] = useState(
     SessionManager.getWithFallback(UserSettings.TreeViewAutoExpand),
+  );
+  const [folderClickAction, setFolderClickAction] = useState(
+    SessionManager.getWithFallback(UserSettings.FolderClickAction),
   );
 
   const onRetentionCheckChange = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -176,6 +181,13 @@ const PreferenceSetting = ({ setting, setSetting }: PreferenceSettingProps) => {
   const onAutoExpandTreeViewChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     setAutoExpandTreeView(e.target.checked);
     SessionManager.set(UserSettings.TreeViewAutoExpand, e.target.checked);
+  };
+
+  const onFolderClickActionChange = (_e: React.MouseEvent<HTMLElement>, value: string | null) => {
+    if (value) {
+      setFolderClickAction(value);
+      SessionManager.set(UserSettings.FolderClickAction, value);
+    }
   };
 
   return (
@@ -340,6 +352,26 @@ const PreferenceSetting = ({ setting, setSetting }: PreferenceSettingProps) => {
           label={t("application:setting.autoExpandTreeView")}
         />
         <FormHelperText>{t("setting.autoExpandTreeViewDes")}</FormHelperText>
+      </SettingForm>
+      <SettingForm title={t("setting.folderClickAction")} lgWidth={12}>
+        <ToggleButtonGroup
+          color="primary"
+          value={folderClickAction}
+          exclusive
+          onChange={onFolderClickActionChange}
+          size={"small"}
+          aria-label="Folder click action"
+        >
+          <ToggleButton value={"open"}>
+            <FolderArrowRightOutlined fontSize="small" sx={{ mr: 1 }} />
+            {t("setting.folderClickOpen")}
+          </ToggleButton>
+          <ToggleButton value={"select"}>
+            <CheckboxChecked fontSize="small" sx={{ mr: 1 }} />
+            {t("setting.folderClickSelect")}
+          </ToggleButton>
+        </ToggleButtonGroup>
+        <FormHelperText>{t("setting.folderClickActionDes")}</FormHelperText>
       </SettingForm>
     </Stack>
   );

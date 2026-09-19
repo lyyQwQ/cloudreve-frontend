@@ -11,6 +11,7 @@ import {
   openFileContextMenu,
   openShareDialog,
   renameFile,
+  restoreFile,
 } from "../../../redux/thunks/file.ts";
 import { openViewers } from "../../../redux/thunks/viewer.ts";
 import useActionDisplayOpt from "../../FileManager/ContextMenu/useActionDisplayOpt.ts";
@@ -21,6 +22,7 @@ import DeleteOutlined from "../../Icons/DeleteOutlined.tsx";
 import Dismiss from "../../Icons/Dismiss.tsx";
 import Download from "../../Icons/Download.tsx";
 import FolderArrowRightOutlined from "../../Icons/FolderArrowRightOutlined.tsx";
+import HistoryOutlined from "../../Icons/HistoryOutlined.tsx";
 import MoreHorizontal from "../../Icons/MoreHorizontal.tsx";
 import Open from "../../Icons/Open.tsx";
 import RenameOutlined from "../../Icons/RenameOutlined.tsx";
@@ -126,6 +128,13 @@ const FileSelectedActions = forwardRef(({ targets }: FileSelectedActionsProps, r
               <Tooltip title={t("application:fileManager.move")}>
                 <ActionButton onClick={() => dispatch(dialogBasedMoveCopy(0, targets, false))}>
                   <FolderArrowRightOutlined fontSize={"small"} />
+                </ActionButton>
+              </Tooltip>
+            )}
+            {displayOpt.showRestore && (
+              <Tooltip title={t("application:fileManager.restore")}>
+                <ActionButton onClick={() => dispatch(restoreFile(FileManagerIndex.main, targets))}>
+                  <HistoryOutlined fontSize={"small"} />
                 </ActionButton>
               </Tooltip>
             )}

@@ -96,6 +96,24 @@ const UserSession = () => {
                 <NoMarginHelperText>{t("settings.webauthnDes")}</NoMarginHelperText>
               </FormControl>
             </SettingForm>
+            <SettingForm lgWidth={5}>
+              <FormControl fullWidth>
+                <FormControlLabel
+                  control={
+                    <Switch
+                      checked={isTrueVal(values.expose_user_email)}
+                      onChange={(e) =>
+                        setSettings({
+                          expose_user_email: e.target.checked ? "1" : "0",
+                        })
+                      }
+                    />
+                  }
+                  label={t("settings.exposeUserEmail")}
+                />
+                <NoMarginHelperText>{t("settings.exposeUserEmailDes")}</NoMarginHelperText>
+              </FormControl>
+            </SettingForm>
             <SettingForm title={t("settings.defaultGroup")} lgWidth={5}>
               <FormControl>
                 <GroupSelectionInput

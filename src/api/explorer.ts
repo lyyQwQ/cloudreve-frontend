@@ -170,6 +170,7 @@ export const Metadata = {
   thumbDisabled: "thumb:disabled",
   restore_uri: "sys:restore_uri",
   expected_collect_time: "sys:expected_collect_time",
+  full_text_index: "sys:fulltext_index",
 
   // Exif
   gps_lng: "exif:longitude",

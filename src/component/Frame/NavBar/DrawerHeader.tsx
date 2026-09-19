@@ -1,6 +1,7 @@
 import { ChevronLeft } from "@mui/icons-material";
 import { Box, Fade, IconButton, styled, useMediaQuery, useTheme } from "@mui/material";
 import { useState } from "react";
+import { useNavigate } from "react-router-dom";
 import { setDrawerOpen } from "../../../redux/globalStateSlice.ts";
 import { useAppDispatch } from "../../../redux/hooks.ts";
 import Logo from "../../Common/Logo.tsx";
@@ -18,6 +19,7 @@ const DrawerHeader = ({ disabled }: { disabled?: boolean }) => {
   const theme = useTheme();
   const isMobile = useMediaQuery(theme.breakpoints.down("sm"));
   const dispatch = useAppDispatch();
+  const navigate = useNavigate();
 
   const [showCollapse, setShowCollapse] = useState(false);
 
@@ -26,7 +28,7 @@ const DrawerHeader = ({ disabled }: { disabled?: boolean }) => {
       onMouseEnter={() => setShowCollapse(disabled ? false : true)}
       onMouseLeave={() => setShowCollapse(false)}
     >
-      <Box sx={{ width: "100%", pl: 2 }}>
+      <Box sx={{ width: "100%", pl: 2, cursor: "pointer" }} onClick={() => navigate("/home")}>
         <Logo
           sx={{
             height: "auto",

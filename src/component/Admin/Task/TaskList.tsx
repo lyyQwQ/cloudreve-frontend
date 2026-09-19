@@ -33,6 +33,7 @@ import PageContainer from "../../Pages/PageContainer";
 import PageHeader from "../../Pages/PageHeader";
 import TablePagination from "../Common/TablePagination";
 import EntityDialog from "../Entity/EntityDialog/EntityDialog";
+import FileDialog from "../File/FileDialog/FileDialog";
 import { OrderByQuery, OrderDirectionQuery, PageQuery, PageSizeQuery } from "../StoragePolicy/StoragePolicySetting";
 import UserDialog from "../User/UserDialog/UserDialog";
 import TaskCleanupDialog from "./TaskCleanupDialog";
@@ -76,6 +77,8 @@ const TaskList = () => {
   const [userDialogID, setUserDialogID] = useState<number | undefined>(undefined);
   const [openEntity, setOpenEntity] = useState<number | undefined>(undefined);
   const [openEntityDialogOpen, setOpenEntityDialogOpen] = useState(false);
+  const [openFileID, setOpenFileID] = useState<number | undefined>(undefined);
+  const [openFileDialogOpen, setOpenFileDialogOpen] = useState(false);
   const [openTask, setOpenTask] = useState<number | undefined>(undefined);
   const [openTaskDialogOpen, setOpenTaskDialogOpen] = useState(false);
   const [deleteLoading, setDeleteLoading] = useState(false);
@@ -192,6 +195,11 @@ const TaskList = () => {
     setOpenEntityDialogOpen(true);
   };
 
+  const handleOpenFile = (fileID: number) => {
+    setOpenFileID(fileID);
+    setOpenFileDialogOpen(true);
+  };
+
   const handleOpenTask = (taskID: number) => {
     setOpenTask(taskID);
     setOpenTaskDialogOpen(true);
@@ -201,6 +209,7 @@ const TaskList = () => {
     <PageContainer>
       <UserDialog open={userDialogOpen} onClose={() => setUserDialogOpen(false)} userID={userDialogID} />
       <EntityDialog open={openEntityDialogOpen} onClose={() => setOpenEntityDialogOpen(false)} entityID={openEntity} />
+      <FileDialog open={openFileDialogOpen} onClose={() => setOpenFileDialogOpen(false)} fileID={openFileID} />
       <TaskDialog open={openTaskDialogOpen} onClose={() => setOpenTaskDialogOpen(false)} taskID={openTask} />
       <TaskCleanupDialog
         open={cleanupDialogOpen}
@@ -302,6 +311,7 @@ const TaskList = () => {
                     onSelect={handleSelect}
                     openUserDialog={handleUserDialogOpen}
                     openEntity={handleOpenEntity}
+                    openFile={handleOpenFile}
                     onDetails={handleOpenTask}
                   />
                 ))}

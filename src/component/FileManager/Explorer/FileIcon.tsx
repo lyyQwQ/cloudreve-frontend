@@ -34,6 +34,7 @@ const StyledBadge = styled(Badge)<StyledBadgeProps>(({ iconVariant }) => ({
 const variantTop = {
   default: 18,
   small: 15,
+  medium: 24,
   large: 70,
   largeMobile: 52,
   shareSingle: 26,
@@ -42,6 +43,7 @@ const variantTop = {
 const variantAvatarSize = {
   default: 16,
   small: 13,
+  medium: 20,
   large: 32,
   largeMobile: 24,
   shareSingle: 20,

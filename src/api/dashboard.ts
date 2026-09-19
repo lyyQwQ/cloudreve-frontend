@@ -144,6 +144,7 @@ export interface StoragePolicy extends CommonMixin {
   };
   entities_count?: number;
   entities_size?: number;
+  hash_id?: string;
 }
 
 export enum NodeType {
@@ -190,12 +191,19 @@ export interface Aria2Setting {
   temp_path?: string;
 }
 
+export interface URLValidationSetting {
+  disabled?: boolean;
+  allowed_hosts?: string[];
+  allowed_cidrs?: string[];
+}
+
 export interface NodeSetting {
   provider?: DownloaderProvider;
   qbittorrent?: QBittorrentSetting;
   aria2?: Aria2Setting;
   interval?: number;
   wait_for_seeding?: boolean;
+  url_validation?: URLValidationSetting;
 }
 
 export enum NodeStatus {

@@ -64,7 +64,7 @@ function createStoreHarness(state: any) {
 }
 
 describe("DeleteConfirmation HLS prompt", () => {
-  it("shows prompt + checkbox when selected target has hls:available=1", () => {
+  it("explains automatic lifecycle when selected target has hls:available=1", () => {
     const target: any = {
       id: "v1",
       name: "demo.mp4",
@@ -92,7 +92,7 @@ describe("DeleteConfirmation HLS prompt", () => {
     );
 
     expect(screen.getByTestId("delete-hls-prompt")).toBeInTheDocument();
-    expect(screen.getByTestId("delete-hls-checkbox")).toBeInTheDocument();
+    expect(screen.queryByTestId("delete-hls-checkbox")).toBeNull();
   });
 
   it("does not show prompt when no selected target has hls metadata", () => {

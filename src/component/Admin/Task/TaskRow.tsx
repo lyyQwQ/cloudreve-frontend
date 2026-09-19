@@ -23,6 +23,7 @@ export interface TaskRowProps {
   onSelect?: (id: number) => void;
   openUserDialog?: (id: number) => void;
   openEntity?: (entityID: number) => void;
+  openFile?: (fileID: number) => void;
   openTask?: (taskID: number) => void;
 }
 
@@ -36,6 +37,7 @@ const TaskRow = ({
   onSelect,
   openUserDialog,
   openEntity,
+  openFile,
 }: TaskRowProps) => {
   const navigate = useNavigate();
   const { t } = useTranslation("dashboard");
@@ -125,7 +127,7 @@ const TaskRow = ({
       <NoWrapTableCell>
         <NoWrapTypography variant="inherit">{task?.id}</NoWrapTypography>
       </NoWrapTableCell>
-      <TableCell>{task && <TaskContent task={task} openEntity={openEntity} />}</TableCell>
+      <TableCell>{task && <TaskContent task={task} openEntity={openEntity} openFile={openFile} />}</TableCell>
       <NoWrapTableCell>
         <TaskSummaryStatus
           simplified

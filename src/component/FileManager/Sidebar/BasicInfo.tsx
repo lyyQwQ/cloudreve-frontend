@@ -113,6 +113,7 @@ const BasicInfo = ({ target }: BasicInfoProps) => {
   const dispatch = useAppDispatch();
 
   const showEncryptionStatus = useAppSelector((state) => state.siteConfig?.explorer?.config?.show_encryption_status);
+  const ftsEnabled = useAppSelector((state) => state.siteConfig?.explorer?.config?.full_text_search);
 
   // null: not valid, undefined: not loaded, FolderSummary: loaded
   const [folderSummary, setFolderSummary] = useState<FolderSummary | undefined | null>(null);
@@ -300,6 +301,14 @@ const BasicInfo = ({ target }: BasicInfoProps) => {
           }
         />
       )}
+      <InfoRow
+        title={t("application:fileManager.createdAt")}
+        content={<TimeBadge variant={"body2"} datetime={target.created_at} />}
+      />
+      <InfoRow
+        title={t("application:fileManager.modifiedAt")}
+        content={<TimeBadge variant={"body2"} datetime={target.updated_at} />}
+      />
       {target.type == FileType.folder && !isSymbolicLink && (
         <>
           {!folderSummary && (
@@ -343,6 +352,16 @@ const BasicInfo = ({ target }: BasicInfoProps) => {
           />
           {showEncryptionStatus && encryptionStatus && (
             <InfoRow title={t("application:fileManager.encryption")} content={encryptionStatus} />
+          )}
+          {ftsEnabled && (
+            <InfoRow
+              title={t("application:fileManager.ftsStatus")}
+              content={
+                target.metadata && target.metadata[Metadata.full_text_index]
+                  ? t("application:fileManager.ftsIndexed")
+                  : t("application:fileManager.ftsNotIndexed")
+              }
+            />
           )}
         </>
       )}

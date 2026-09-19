@@ -12,11 +12,13 @@ export const userTaskTypes: string[] = [
   TaskType.extract_archive,
   TaskType.remote_download,
   TaskType.import,
+  TaskType.full_text_rebuild,
 ];
 
 export interface TaskContentProps {
   task: Task;
   openEntity?: (entityID: number) => void;
+  openFile?: (fileID: number) => void;
 }
 
 const processUrl = (url: string, userHashId: string) => {
@@ -41,7 +43,7 @@ export const processTaskContent = (summary: TaskSummary, userHashId: string): Ta
   return summary;
 };
 
-export const TaskContent = memo(({ task, openEntity }: TaskContentProps) => {
+export const TaskContent = memo(({ task, openEntity, openFile }: TaskContentProps) => {
   const { t } = useTranslation("dashboard");
 
   if (userTaskTypes.includes(task.type ?? "")) {
@@ -62,6 +64,17 @@ export const TaskContent = memo(({ task, openEntity }: TaskContentProps) => {
       }
     },
     [openEntity],
+  );
+
+  const fileLinkClick = useCallback(
+    (fileID: number) => (e: React.MouseEvent<HTMLAnchorElement>) => {
+      e.preventDefault();
+      e.stopPropagation();
+      if (openFile) {
+        openFile(fileID);
+      }
+    },
+    [openFile],
   );
 
   const content = useMemo(() => {
@@ -88,6 +101,37 @@ export const TaskContent = memo(({ task, openEntity }: TaskContentProps) => {
       case TaskType.explicit_entity_recycle:
         return t("task.explicitEntityRecycle", {
           blobs: privateState?.entity_ids?.map((id: number) => `#${id}`).join(", "),
+        });
+      case TaskType.full_text_index:
+        return (
+          <Trans
+            ns="dashboard"
+            values={{ fileID: privateState?.file_id ?? 0 }}
+            i18nKey="task.fullTextIndex"
+            components={[<Link key={0} href={"#/"} onClick={fileLinkClick(privateState?.file_id ?? 0)} />]}
+          />
+        );
+      case TaskType.full_text_copy:
+        return (
+          <Trans
+            ns="dashboard"
+            values={{ fileID: privateState?.file_id ?? 0 }}
+            i18nKey="task.fullTextCopy"
+            components={[<Link key={0} href={"#/"} onClick={fileLinkClick(privateState?.file_id ?? 0)} />]}
+          />
+        );
+      case TaskType.full_text_change_owner:
+        return (
+          <Trans
+            ns="dashboard"
+            values={{ fileID: privateState?.file_id ?? 0 }}
+            i18nKey="task.fullTextChangeOwner"
+            components={[<Link key={0} href={"#/"} onClick={fileLinkClick(privateState?.file_id ?? 0)} />]}
+          />
+        );
+      case TaskType.full_text_delete:
+        return t("task.fullTextDelete", {
+          count: privateState?.file_ids?.length ?? 0,
         });
       default:
         return "";

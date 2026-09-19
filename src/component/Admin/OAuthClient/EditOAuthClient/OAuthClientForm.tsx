@@ -59,12 +59,6 @@ interface ScopeInfo {
 }
 
 const scopeDefinitions: Record<string, ScopeInfo> = {
-  profile: {
-    name: "oauth.scope.profile",
-    description: "oauth.scope.profileDesc",
-    icon: PersonOutlined,
-    category: "profile",
-  },
   offline_access: {
     name: "oauth.scope.offlineAccess",
     description: "oauth.scope.offlineAccessDesc",
@@ -572,8 +566,16 @@ const OAuthClientForm = () => {
                               primary={
                                 <Box sx={{ display: "flex", alignItems: "center", gap: 1, flexWrap: "wrap" }}>
                                   <span>
-                                    {scopeInfo ? t("application:" + scopeInfo.name, { defaultValue: scope }) : scope}
+                                    {scopeInfo
+                                      ? t("application:" + scopeInfo.name, { defaultValue: scope })
+                                      : scope + " (OIDC)"}
                                   </span>
+                                  <Chip
+                                    label={hasWrite && hasWriteScope(scope) ? scope.replace(".Read", ".Write") : scope}
+                                    size="small"
+                                    variant="outlined"
+                                    sx={{ height: 18, fontSize: "0.7rem" }}
+                                  />
                                   {required && (
                                     <Chip
                                       label={t("oauth.required")}
@@ -672,96 +674,43 @@ const OAuthClientForm = () => {
             </Typography>
             <SettingSectionContent>
               <SettingForm lgWidth={5}>
-                <BorderedCard sx={{ overflow: "hidden" }}>
-                  <Stack spacing={2}>
-                    <Box>
-                      <Typography variant="caption" color="text.secondary">
-                        {t("oauth.clientId")}
-                      </Typography>
-                      <Box sx={{ display: "flex", alignItems: "center", gap: 1, minWidth: 0 }}>
-                        <Box sx={{ flex: 1, minWidth: 0, overflow: "auto" }}>
-                          <Code>{values.guid}</Code>
-                        </Box>
-                        <IconButton
-                          size="small"
-                          onClick={() => onCopyToClipboard(values.guid || "")}
-                          sx={{ flexShrink: 0 }}
-                        >
-                          <CopyOutlined fontSize="small" />
-                        </IconButton>
-                      </Box>
-                    </Box>
-                    <Divider />
-                    <Box>
-                      <Typography variant="caption" color="text.secondary">
-                        {t("oauth.authorizeEndpoint")}
-                      </Typography>
-                      <Box sx={{ display: "flex", alignItems: "center", gap: 1, minWidth: 0 }}>
-                        <Box sx={{ flex: 1, minWidth: 0, overflow: "auto" }}>
-                          <Code>{`${window.location.origin}/session/authorize`}</Code>
-                        </Box>
-                        <IconButton
-                          size="small"
-                          onClick={() => onCopyToClipboard(`${window.location.origin}/session/authorize`)}
-                          sx={{ flexShrink: 0 }}
-                        >
-                          <CopyOutlined fontSize="small" />
-                        </IconButton>
-                      </Box>
-                    </Box>
-                    <Box>
-                      <Typography variant="caption" color="text.secondary">
-                        {t("oauth.tokenEndpoint")}
-                      </Typography>
-                      <Box sx={{ display: "flex", alignItems: "center", gap: 1, minWidth: 0 }}>
-                        <Box sx={{ flex: 1, minWidth: 0, overflow: "auto" }}>
-                          <Code>{`${window.location.origin}/api/v4/session/oauth/token`}</Code>
-                        </Box>
-                        <IconButton
-                          size="small"
-                          onClick={() => onCopyToClipboard(`${window.location.origin}/api/v4/session/oauth/token`)}
-                          sx={{ flexShrink: 0 }}
-                        >
-                          <CopyOutlined fontSize="small" />
-                        </IconButton>
-                      </Box>
-                    </Box>
-                    <Box>
-                      <Typography variant="caption" color="text.secondary">
-                        {t("oauth.refreshEndpoint")}
-                      </Typography>
-                      <Box sx={{ display: "flex", alignItems: "center", gap: 1, minWidth: 0 }}>
-                        <Box sx={{ flex: 1, minWidth: 0, overflow: "auto" }}>
-                          <Code>{`${window.location.origin}/api/v4/session/token/refresh`}</Code>
-                        </Box>
-                        <IconButton
-                          size="small"
-                          onClick={() => onCopyToClipboard(`${window.location.origin}/api/v4/session/token/refresh`)}
-                          sx={{ flexShrink: 0 }}
-                        >
-                          <CopyOutlined fontSize="small" />
-                        </IconButton>
-                      </Box>
-                    </Box>
-                    <Box>
-                      <Typography variant="caption" color="text.secondary">
-                        {t("oauth.userinfoEndpoint")}
-                      </Typography>
-                      <Box sx={{ display: "flex", alignItems: "center", gap: 1, minWidth: 0 }}>
-                        <Box sx={{ flex: 1, minWidth: 0, overflow: "auto" }}>
-                          <Code>{`${window.location.origin}/api/v4/session/oauth/userinfo`}</Code>
-                        </Box>
-                        <IconButton
-                          size="small"
-                          onClick={() => onCopyToClipboard(`${window.location.origin}/api/v4/session/oauth/userinfo`)}
-                          sx={{ flexShrink: 0 }}
-                        >
-                          <CopyOutlined fontSize="small" />
-                        </IconButton>
-                      </Box>
-                    </Box>
-                  </Stack>
-                </BorderedCard>
+                <Stack spacing={2}>
+                  {[
+                    { label: t("oauth.clientId"), value: values.guid || "" },
+                    { label: t("oauth.authorizeEndpoint"), value: `${window.location.origin}/session/authorize` },
+                    { label: t("oauth.tokenEndpoint"), value: `${window.location.origin}/api/v4/session/oauth/token` },
+                    {
+                      label: t("oauth.refreshEndpoint"),
+                      value: `${window.location.origin}/api/v4/session/token/refresh`,
+                    },
+                    {
+                      label: t("oauth.userinfoEndpoint"),
+                      value: `${window.location.origin}/api/v4/session/oauth/userinfo`,
+                    },
+                    { label: t("oauth.scopes"), value: (values.scopes || []).join(" "), multiline: true },
+                  ].map(({ label, value, multiline }) => (
+                    <DenseFilledTextField
+                      key={label}
+                      label={label}
+                      value={value}
+                      fullWidth
+                      multiline={multiline}
+                      rows={multiline ? 4 : undefined}
+                      slotProps={{
+                        input: {
+                          readOnly: true,
+                          endAdornment: (
+                            <InputAdornment position="end">
+                              <IconButton size="small" onClick={() => onCopyToClipboard(value)}>
+                                <CopyOutlined fontSize="small" />
+                              </IconButton>
+                            </InputAdornment>
+                          ),
+                        },
+                      }}
+                    />
+                  ))}
+                </Stack>
               </SettingForm>
             </SettingSectionContent>
           </SettingSection>

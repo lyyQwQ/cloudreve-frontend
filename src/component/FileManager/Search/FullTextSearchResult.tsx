@@ -90,7 +90,7 @@ const FullTextSearchResult = ({ results, loading, hasMore, onLoadMore }: FullTex
         />
       ))}
       {loading &&
-        [0, 1, 2].map((i) => (
+        [0].map((i) => (
           <ListItem key={i} dense sx={{ px: 1 }}>
             <Box sx={{ display: "flex", alignItems: "center", width: "100%", gap: 1, py: 0.5 }}>
               <Skeleton variant="rounded" width={32} height={32} sx={{ flexShrink: 0 }} />

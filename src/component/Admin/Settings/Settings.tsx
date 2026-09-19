@@ -186,6 +186,7 @@ const Settings = () => {
                     "email_active",
                     "default_group",
                     "authn_enabled",
+                    "expose_user_email",
                     "avatar_path",
                     "avatar_size",
                     "avatar_size_l",

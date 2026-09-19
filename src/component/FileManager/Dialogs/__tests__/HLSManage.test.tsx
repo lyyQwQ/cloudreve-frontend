@@ -1,4 +1,4 @@
-import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
+import { afterEach, beforeEach, beforeAll, describe, expect, it, vi } from "vitest";
 import { cleanup, fireEvent, render, screen, waitFor } from "@testing-library/react";
 import { Provider } from "react-redux";
 import { MemoryRouter } from "react-router-dom";
@@ -51,6 +51,9 @@ vi.mock("notistack", async (importOriginal) => {
     }),
   };
 });
+
+import i18n from "../../../../i18n.ts";
+import english from "../../../../../public/locales/en-US/application.json";
 
 import { AppError, Code } from "../../../../api/request.ts";
 import { TaskStatus, TaskType } from "../../../../api/workflow.ts";
@@ -107,6 +110,10 @@ function renderDialog(state = defaultState()) {
 }
 
 describe("HLSManageDialog", () => {
+  beforeAll(async () => {
+    await i18n.changeLanguage("en-US");
+    i18n.addResourceBundle("en-US", "application", english, true, true);
+  });
   beforeEach(() => {
     getHLSStatusMock.mockReset();
     deleteHLSArtifactMock.mockReset();

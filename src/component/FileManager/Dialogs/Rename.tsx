@@ -1,15 +1,15 @@
-import { Trans, useTranslation } from "react-i18next";
 import { DialogContent, Stack } from "@mui/material";
-import { useAppDispatch, useAppSelector } from "../../../redux/hooks.ts";
 import { ChangeEvent, useCallback, useContext, useEffect, useRef, useState } from "react";
+import { Trans, useTranslation } from "react-i18next";
+import { FileType } from "../../../api/explorer.ts";
 import { closeRenameFileModal, setRenameFileModalError } from "../../../redux/fileManagerSlice.ts";
-import DraggableDialog, { StyledDialogContentText } from "../../Dialogs/DraggableDialog.tsx";
+import { useAppDispatch, useAppSelector } from "../../../redux/hooks.ts";
 import { renameDialogPromisePool } from "../../../redux/thunks/dialog.ts";
 import { validateFileName } from "../../../redux/thunks/file.ts";
-import { FileType } from "../../../api/explorer.ts";
+import DraggableDialog, { StyledDialogContentText } from "../../Dialogs/DraggableDialog.tsx";
 
-import { FmIndexContext } from "../FmIndexContext.tsx";
 import { FilledTextField } from "../../Common/StyledComponents.tsx";
+import { FmIndexContext } from "../FmIndexContext.tsx";
 
 const Rename = () => {
   const { t } = useTranslation();

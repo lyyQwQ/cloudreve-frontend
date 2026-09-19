@@ -3,6 +3,7 @@ import { memo, useCallback, useEffect } from "react";
 import { useAppDispatch } from "../../../../redux/hooks.ts";
 import { navigateReconcile } from "../../../../redux/thunks/filemanager.ts";
 import { NoWrapTypography } from "../../../Common/StyledComponents.tsx";
+import useActionDisplayOpt from "../../ContextMenu/useActionDisplayOpt.ts";
 import { FileBlockProps } from "../Explorer.tsx";
 import { useFileBlockState } from "../GridView/GridFile.tsx";
 import Cell from "./Cell.tsx";
@@ -12,7 +13,8 @@ const RowContainer = styled(Box)<{
   transparent?: boolean;
   isDropOver?: boolean;
   disabled?: boolean;
-}>(({ theme, disabled, transparent, isDropOver, selected }) => {
+  taller?: boolean;
+}>(({ theme, disabled, transparent, isDropOver, selected, taller }) => {
   let bgColor = "initial";
   let bgColorHover = theme.palette.action.hover;
 
@@ -21,7 +23,7 @@ const RowContainer = styled(Box)<{
     bgColorHover = bgColor;
   }
   return {
-    minHeight: "36px",
+    minHeight: taller ? "60px" : "36px",
     borderBottom: `1px solid ${theme.palette.divider}`,
     display: "flex",
     backgroundColor: bgColor,
@@ -44,7 +46,7 @@ const Column = styled(Box)<{ w: number }>(({ theme, w }) => ({
 }));
 
 const Row = memo((props: FileBlockProps) => {
-  const { file, columns, search, isDragging, isDropOver } = props;
+  const { file, columns, search, isDragging, isDropOver, showThumb } = props;
   const dispatch = useAppDispatch();
 
   const {
@@ -55,7 +57,6 @@ const Row = memo((props: FileBlockProps) => {
     uploading,
     ref,
     inView,
-    showLock,
     fileTag,
     onClick,
     onDoubleClicked,
@@ -68,6 +69,8 @@ const Row = memo((props: FileBlockProps) => {
     thumbWidth,
     thumbHeight,
   } = useFileBlockState(props);
+
+  const targetDisplayOptions = useActionDisplayOpt([file]);
 
   useEffect(() => {
     if (!inView) {
@@ -93,6 +96,7 @@ const Row = memo((props: FileBlockProps) => {
       ref={setRefFunc}
       selected={!!isSelected}
       data-testid={file.id ? `fm-file-${file.id}` : undefined}
+      taller={showThumb}
       onMouseDown={stopPop}
       onClick={onClick}
       onDoubleClick={onDoubleClicked}
@@ -111,14 +115,15 @@ const Row = memo((props: FileBlockProps) => {
           >
             {!file.placeholder && (
               <Cell
+                actionDisplayOpt={targetDisplayOptions}
                 isSelected={!!isSelected}
                 search={search}
                 column={column}
                 file={file}
                 uploading={uploading}
                 fileTag={fileTag}
-                showLock={showLock}
                 noThumb={noThumb}
+                showThumb={showThumb}
                 thumbWidth={thumbWidth}
                 thumbHeight={thumbHeight}
               />

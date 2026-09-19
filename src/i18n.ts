@@ -97,6 +97,10 @@ export const languages = [
     code: "pl-PL",
     displayName: "Polski",
   },
+  {
+    code: "ar-AR",
+    displayName: "العربية",
+  },
 ];
 
 export default i18n;

@@ -275,10 +275,6 @@ const HLSManageDialog = () => {
     >
       <DialogContent data-testid="hls-manage-dialog" sx={{ pt: 1 }}>
         <Stack spacing={1.5}>
-          <Typography variant={"body2"} color={"text.secondary"} sx={{ wordBreak: "break-word" }}>
-            {t("application:fileManager.hlsManageFileId")}: {fileId ?? ""}
-          </Typography>
-
           <Typography
             variant={"body2"}
             color={"text.secondary"}
@@ -355,9 +351,6 @@ const HLSManageDialog = () => {
               </Typography>
               <Typography variant={"body2"} color={"text.secondary"}>
                 {t("application:fileManager.hlsManageCodec")}: {String(status?.artifact?.codec ?? "")}
-              </Typography>
-              <Typography variant={"body2"} color={"text.secondary"} sx={{ wordBreak: "break-word" }}>
-                {t("application:fileManager.hlsManageStoragePath")}: {String(status?.artifact?.storage_path ?? "")}
               </Typography>
 
               <Stack direction={"row"} spacing={1} justifyContent={"flex-end"}>

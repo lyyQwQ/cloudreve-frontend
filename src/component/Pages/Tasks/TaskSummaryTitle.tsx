@@ -112,6 +112,14 @@ const TaskSummaryTitle = ({ type, summary, isInDashboard = false }: TaskSummaryT
       return <Typography variant="inherit">{t("dashboard:task.subtitleBurn")}</Typography>;
     case TaskType.video_hls_slice:
       return <Typography variant="inherit">{t("dashboard:task.hlsSlice")}</Typography>;
+    case TaskType.full_text_rebuild:
+      return (
+        <Typography variant={"inherit"}>
+          {t("setting.rebuildFTSIndex", {
+            total: summary?.props.total ?? "-",
+          })}
+        </Typography>
+      );
     default:
       return (
         <Trans

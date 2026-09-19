@@ -3,6 +3,7 @@ import {
   Box,
   ButtonBase,
   Fade,
+  InputBase,
   Skeleton,
   styled,
   Tooltip,
@@ -33,6 +34,7 @@ import { FmIndexContext } from "../../FmIndexContext.tsx";
 import { getFileTags } from "../../Sidebar/Tags.tsx";
 import { FileBlockProps } from "../Explorer.tsx";
 import UploadingTag from "../UploadingTag.tsx";
+import { useInlineRename } from "../useInlineRename.ts";
 
 const StyledButtonBase = styled(ButtonBase)<{
   selected: boolean;
@@ -287,6 +289,18 @@ const GridFile = memo((props: FileBlockProps) => {
     thumbHeight,
   } = useFileBlockState(props);
 
+  const {
+    isEditing,
+    editValue,
+    inputRef,
+    onNameClick,
+    onNameDoubleClick,
+    onInputKeyDown,
+    onInputBlur,
+    onInputChange,
+    stopPropagation,
+  } = useInlineRename({ file, isSelected: !!isSelected, uploading, isTouch });
+
   const popupState = usePopupState({
     variant: "popover",
     popupId: "thumbPreview" + file.id,
@@ -357,11 +371,39 @@ const GridFile = memo((props: FileBlockProps) => {
         onMouseLeave={hoverStateOff}
       >
         <Content>
-          <Header>
+          <Header
+            onClick={isEditing ? stopPropagation : undefined}
+            onDoubleClick={isEditing ? stopPropagation : undefined}
+            onMouseDown={isEditing ? stopPropagation : undefined}
+            onMouseMove={isEditing ? stopPropagation : undefined}
+            onDragStart={isEditing ? stopPropagation : undefined}
+          >
             <FileSmallIcon selected={!!isSelected} file={file} loading={isLoadingIndicator} />
-            {!isLoadingIndicator && (
+            {!isLoadingIndicator && isEditing && (
+              <InputBase
+                inputRef={inputRef}
+                value={editValue}
+                onChange={onInputChange}
+                onKeyDown={onInputKeyDown}
+                onBlur={onInputBlur}
+                size="small"
+                fullWidth
+                sx={{
+                  flex: 1,
+                  fontSize: "0.875rem",
+                  padding: "14px 12px 14px 0",
+                  "& .MuiInputBase-input": {
+                    py: 0,
+                    px: 0.5,
+                    border: `1px solid ${theme.palette.primary.main}`,
+                    borderRadius: 0.5,
+                  },
+                }}
+              />
+            )}
+            {!isLoadingIndicator && !isEditing && (
               <Tooltip title={file.name}>
-                <FileNameText variant="body2">
+                <FileNameText variant="body2" onClick={onNameClick} onDoubleClick={onNameDoubleClick}>
                   {search?.name ? (
                     <Highlighter
                       highlightClassName="highlight-marker"
@@ -375,10 +417,10 @@ const GridFile = memo((props: FileBlockProps) => {
                 </FileNameText>
               </Tooltip>
             )}
-            {!uploading && fileTag && fileTag.length > 0 && (
+            {!isEditing && !uploading && fileTag && fileTag.length > 0 && (
               <FileTagSummary sx={{ p: "14px 12px 14px 0", maxWidth: "50%" }} tags={fileTag} />
             )}
-            {uploading && <UploadingTag sx={{ p: "14px 12px 14px 0", maxWidth: "50%" }} />}
+            {!isEditing && uploading && <UploadingTag sx={{ p: "14px 12px 14px 0", maxWidth: "50%" }} />}
             {isLoadingIndicator && (
               <Skeleton
                 variant="text"

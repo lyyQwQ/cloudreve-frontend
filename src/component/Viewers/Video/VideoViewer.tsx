@@ -13,7 +13,7 @@ import Artplayer from "artplayer";
 import dayjs from "dayjs";
 import React, { lazy, Suspense, useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { useTranslation } from "react-i18next";
-import { getFileEntityUrl } from "../../../api/api.ts";
+import { getFileEntityUrl, getHLSStatus } from "../../../api/api.ts";
 import { FileResponse } from "../../../api/explorer.ts";
 import { closeVideoViewer } from "../../../redux/globalStateSlice.ts";
 import { useAppDispatch, useAppSelector } from "../../../redux/hooks.ts";
@@ -124,9 +124,18 @@ const VideoViewer = () => {
     }
 
     if (!preferDirectPlayback && hlsAvailable && viewerState.file.id !== undefined && viewerState.file.id !== null) {
-      const hlsIndexUrl = `/api/v4/hls/${encodeURIComponent(String(viewerState.file.id))}/play/index.m3u8`;
-      art.switchUrl(hlsIndexUrl);
-      loadSubtitles();
+      dispatch(getHLSStatus({ file_id: viewerState.file.id, uri: getFileLinkedUri(viewerState.file) }))
+        .then((res) => {
+          if (!res.play_url) throw new Error("HLS playback unavailable");
+          const current = art.currentTime;
+          const until = Number(new URL(res.play_url, window.location.origin).searchParams.get("until"));
+          currentExpire.current = setTimeout(refreshSrc, Math.max(2000, until * 1000 - Date.now() - srcRefreshMargin));
+          art.switchUrl(res.play_url).then(() => {
+            art.currentTime = current;
+          });
+          loadSubtitles();
+        })
+        .catch(() => setPreferDirectPlayback(true));
       return;
     }
 

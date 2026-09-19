@@ -106,6 +106,7 @@ import {
   DownloadWorkflowService,
   ImportWorkflowService,
   ListTaskService,
+  RebuildFTSIndexWorkflowService,
   SetDownloadFilesService,
   TaskListResponse,
   TaskProgresses,
@@ -357,6 +358,22 @@ export function sendDeleteFiles(req: DeleteFileService): ThunkResponse {
         {
           ...defaultOpts,
           skipBatchError: req.uris.length === 1,
+        },
+      ),
+    );
+  };
+}
+
+export function sendEmptyTrash(): ThunkResponse {
+  return async (dispatch, _getState) => {
+    return await dispatch(
+      send(
+        "/file/trash",
+        {
+          method: "DELETE",
+        },
+        {
+          ...defaultOpts,
         },
       ),
     );
@@ -728,12 +745,12 @@ export function createBatchHLSTasks(req: BatchFileIDsRequest): ThunkResponse<Bat
   };
 }
 
-export function getHLSStatus(req: { file_id: string | number }): ThunkResponse<GetHLSStatusResponse> {
+export function getHLSStatus(req: { file_id: string | number; uri?: string }): ThunkResponse<GetHLSStatusResponse> {
   return async (dispatch, _getState) => {
     const fileId = encodeURIComponent(String(req.file_id));
     return await dispatch(
       send(
-        `/hls/${fileId}`,
+        `/hls/${fileId}${req.uri ? `?uri=${encodeURIComponent(req.uri)}` : ""}`,
         {
           method: "GET",
           validateStatus: () => true,
@@ -2299,6 +2316,23 @@ export function sendFullTextSearch(query: string, offset?: number): ThunkRespons
         {
           method: "GET",
           params,
+        },
+        {
+          ...defaultOpts,
+        },
+      ),
+    );
+  };
+}
+
+export function sendRebuildFTSIndex(req: RebuildFTSIndexWorkflowService): ThunkResponse<TaskResponse> {
+  return async (dispatch, _getState) => {
+    return await dispatch(
+      send(
+        "/workflow/rebuildFtsIndex",
+        {
+          data: req,
+          method: "POST",
         },
         {
           ...defaultOpts,
