@@ -17,14 +17,22 @@ If you are developing a production application, we recommend updating the config
 export default {
   // other rules...
   parserOptions: {
-    ecmaVersion: 'latest',
-    sourceType: 'module',
-    project: ['./tsconfig.json', './tsconfig.node.json'],
+    ecmaVersion: "latest",
+    sourceType: "module",
+    project: ["./tsconfig.json", "./tsconfig.node.json"],
     tsconfigRootDir: __dirname,
   },
-}
+};
 ```
 
 - Replace `plugin:@typescript-eslint/recommended` to `plugin:@typescript-eslint/recommended-type-checked` or `plugin:@typescript-eslint/strict-type-checked`
 - Optionally add `plugin:@typescript-eslint/stylistic-type-checked`
 - Install [eslint-plugin-react](https://github.com/jsx-eslint/eslint-plugin-react) and add `plugin:react/recommended` & `plugin:react/jsx-runtime` to the `extends` list
+
+## 视频播放器维护边界
+
+播放器实例只在文件标识 `option.id` 或实际播放类型变化时重建；HLS 回退到原格式仍需重建。父组件传入的配置对象和回调可能每次渲染都会产生新引用，不能将这些引用直接作为创建实例 effect 的依赖，否则 `getInstance → setArt → render` 会形成重建和取址循环。
+
+异步 HLS 回调通过最新属性引用执行，避免为了更新回调而销毁实例。普通配置作为实例创建时的快照；播放地址和字幕样式仍由现有播放器 API 更新。
+
+回归测试：`npm test -- src/component/Viewers/Video/Artplayer.test.tsx`。覆盖普通重渲染保留播放状态、文件/类型切换释放旧实例，以及 HLS 故障使用最新回调且只处理一次。

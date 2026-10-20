@@ -138,18 +138,36 @@ export default function Player({
   onHlsFatalError,
   ...rest
 }: PlayerProps) {
-  const artRef = useRef<Artplayer>();
+  const artRef = useRef<HTMLDivElement>(null);
+  const latest = useRef({ option, chapters, getInstance, m3u8UrlTransform, getEntityUrl, onHlsFatalError });
+
+  // 回调随父组件状态更新，但不能因此销毁正在播放的实例。
+  useEffect(() => {
+    latest.current = { option, chapters, getInstance, m3u8UrlTransform, getEntityUrl, onHlsFatalError };
+  });
   const ext = fileExtension(option.title);
   const type = option.type ?? ext;
 
   useEffect(() => {
+    const { option, chapters, getInstance } = latest.current;
     const opts = {
       ...option,
       plugins: [...option.plugins],
       container: artRef.current,
       customType: {
         ...option.customType,
-        m3u8: playM3u8(m3u8UrlTransform, getEntityUrl, onHlsFatalError),
+        m3u8: playM3u8(
+          latest.current.m3u8UrlTransform
+            ? (url, isPlaylist) => latest.current.m3u8UrlTransform?.(url, isPlaylist) ?? Promise.resolve(url)
+            : undefined,
+          latest.current.getEntityUrl ? (url) => latest.current.getEntityUrl?.(url) ?? Promise.resolve(url) : undefined,
+          (errorType) => {
+            if (latest.current.onHlsFatalError) {
+              return latest.current.onHlsFatalError(errorType);
+            }
+            art.notice.show = i18next.t("application:fileManager.hlsManageNoArtifact");
+          },
+        ),
         flv: playFlv,
       },
       type,
@@ -200,7 +218,8 @@ export default function Player({
         art.destroy(false);
       }
     };
-  }, [chapters, getEntityUrl, getInstance, m3u8UrlTransform, onHlsFatalError, option, type]);
+    // 内联 option/getInstance 每次渲染都会变化；仅文件切换、HLS 回退需要重建。
+  }, [option.id, type]);
 
   return <Box ref={artRef} {...rest}></Box>;
 }
