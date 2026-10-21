@@ -38,7 +38,7 @@ const RowContainer = styled(Box)<{
   };
 });
 
-const Column = styled(Box)<{ w: number }>(({ theme, w }) => ({
+const Column = styled(Box)<{ w: number }>(({ w }) => ({
   display: "flex",
   alignItems: "center",
   width: `${w}px`,

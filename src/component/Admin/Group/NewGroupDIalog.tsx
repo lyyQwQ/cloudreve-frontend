@@ -3,7 +3,7 @@ import { useEffect, useRef, useState } from "react";
 import { useTranslation } from "react-i18next";
 import { useNavigate } from "react-router-dom";
 import { upsertGroup } from "../../../api/api";
-import { GroupEnt } from "../../../api/dashboard";
+import { GroupEnt, GroupUpsertInput } from "../../../api/dashboard";
 import { GroupPermission } from "../../../api/user";
 import { useAppDispatch } from "../../../redux/hooks";
 import Boolset from "../../../util/boolset";
@@ -22,9 +22,8 @@ const defaultGroupBs = new Boolset("");
 defaultGroupBs.sets({
   [GroupPermission.share]: true,
   [GroupPermission.share_download]: true,
-  [GroupPermission.set_anonymous_permission]: true,
 });
-const defaultGroup: GroupEnt = {
+const defaultGroup: GroupUpsertInput = {
   name: "",
   permissions: defaultGroupBs.toString(),
   max_storage: 1024 << 20, // 1GB
@@ -49,7 +48,7 @@ const NewGroupDialog = ({ open, onClose }: NewGroupDialogProps) => {
   const navigate = useNavigate();
   const [copyFrom, setCopyFrom] = useState<string>("0");
   const [loading, setLoading] = useState(false);
-  const [group, setGroup] = useState<GroupEnt>({ ...defaultGroup });
+  const [group, setGroup] = useState<GroupUpsertInput>({ ...defaultGroup });
   const formRef = useRef<HTMLFormElement>(null);
   const copyFromSrc = useRef<GroupEnt | undefined>(undefined);
 

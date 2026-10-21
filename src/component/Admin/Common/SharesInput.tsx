@@ -10,7 +10,7 @@ import LinkDismiss from "../../Icons/LinkDismiss.tsx";
 
 export interface SharesInputProps {}
 
-const SharesInput = (props: SharesInputProps) => {
+const SharesInput = (_props: SharesInputProps) => {
   const theme = useTheme();
   const { t } = useTranslation();
   const [options, setOptions] = useState<number[]>([]);

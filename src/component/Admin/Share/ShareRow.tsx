@@ -170,7 +170,7 @@ const ShareRow = ({
         <NoWrapTypography variant="inherit">{share?.downloads ?? 0}</NoWrapTypography>
       </NoWrapTableCell>
       <NoWrapTableCell>
-        <NoWrapTypography variant="inherit">{share?.price}</NoWrapTypography>
+        <NoWrapTypography variant="inherit" />
       </NoWrapTableCell>
       <TableCell>
         <ShareExpires expires={share?.expires} remain_downloads={share?.remain_downloads} />

@@ -154,7 +154,7 @@ const PreferenceSetting = ({ setting, setSetting }: PreferenceSettingProps) => {
       });
   };
 
-  const onDisableViewSyncChange = (e: React.MouseEvent<HTMLElement>, enabled: boolean) => {
+  const onDisableViewSyncChange = (_e: React.MouseEvent<HTMLElement>, enabled: boolean) => {
     setSetting({ ...setting, disable_view_sync: !enabled });
     setLoading(true);
     dispatch(
@@ -233,7 +233,7 @@ const PreferenceSetting = ({ setting, setSetting }: PreferenceSettingProps) => {
       </SettingForm>
       <SettingForm title={t("setting.themeColor")} lgWidth={12}>
         <SelectorBox sx={{ gap: 1 }}>
-          {Object.keys(themeOptions).map((color, index) => (
+          {Object.keys(themeOptions).map((color) => (
             <ColorCircle
               size={30}
               color={color}

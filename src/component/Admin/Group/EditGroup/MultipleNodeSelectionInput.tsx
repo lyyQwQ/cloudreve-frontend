@@ -24,7 +24,7 @@ const MultipleNodeSelectionInput = () => {
           },
         },
       }}
-      renderValue={(selected) => {
+      renderValue={() => {
         return (
           <ListItemText
             primary={<em>{t("group.allNodes")}</em>}

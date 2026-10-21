@@ -131,7 +131,7 @@ export default function Photo({
           loadLivePhoto(file, originalUrl);
         }
       })
-      .catch((e) => {
+      .catch(() => {
         if (mountedRef.current) {
           onPhotoLoad({
             broken: true,

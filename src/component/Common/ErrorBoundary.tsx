@@ -17,7 +17,7 @@ function ErrorBoundary() {
           <pre>
             <code>{error.toString()}</code>
           </pre>
-          {error.stack && (
+          {error instanceof Error && error.stack && (
             <pre>
               <code>{error.stack}</code>
             </pre>

@@ -1,7 +1,7 @@
 import { Button, Skeleton, styled, SvgIconProps, Tooltip } from "@mui/material";
 import { bindHover, bindPopover } from "material-ui-popup-state";
 import { usePopupState } from "material-ui-popup-state/hooks";
-import { useCallback, useContext, useEffect, useMemo, useState } from "react";
+import { type ComponentType, useCallback, useContext, useEffect, useMemo, useState } from "react";
 import { useTranslation } from "react-i18next";
 import { Share } from "../../../api/explorer.ts";
 import { useAppDispatch } from "../../../redux/hooks.ts";
@@ -53,7 +53,7 @@ export interface BreadcrumbButtonProps {
 
 export interface StartIcon {
   Element?: (props: { [key: string]: any }) => JSX.Element;
-  Icons?: ((props: SvgIconProps) => JSX.Element)[];
+  Icons?: ComponentType<SvgIconProps>[];
 }
 
 export const useBreadcrumbButtons = ({

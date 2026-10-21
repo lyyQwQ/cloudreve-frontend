@@ -7,9 +7,9 @@ import CrUri, { Filesystem } from "../../../util/uri.ts";
 import SideNavItem from "../../Frame/NavBar/SideNavItem.tsx";
 import { FmIndexContext } from "../FmIndexContext.tsx";
 import { useBreadcrumbButtons } from "../TopBar/BreadcrumbButton.tsx";
-import TreeFile from "./TreeFile.tsx";
+import TreeFile, { type TreeFileProps } from "./TreeFile.tsx";
 
-export interface TreeFilesProps {
+export interface TreeFilesProps extends Omit<TreeFileProps, "nodeId" | "ref"> {
   path: string;
   elements?: string[];
   notLoaded?: boolean;
@@ -18,17 +18,13 @@ export interface TreeFilesProps {
   labelOverwrite?: string;
   pinned?: boolean;
   canDrop?: boolean;
-  [key: string]: any;
 }
 
 export const pinedPrefix = "Pined";
 
 const TreeFiles = React.memo(
-  React.forwardRef(
-    (
-      { path: p, level, elements, labelOverwrite, notLoaded, pinned, flatten, canDrop, ...rest }: TreeFilesProps,
-      ref: React.Ref<HTMLLIElement>,
-    ) => {
+  React.forwardRef<HTMLLIElement, TreeFilesProps>(
+    ({ path: p, level, elements, labelOverwrite, notLoaded, pinned, flatten, canDrop, ...rest }, ref) => {
       const { t } = useTranslation();
       const fmIndex = useContext(FmIndexContext);
       const parentsCache = useAppSelector((state) => state.fileManager[fmIndex].tree[p]);

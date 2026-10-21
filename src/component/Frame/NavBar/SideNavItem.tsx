@@ -1,4 +1,4 @@
-import { Box, ButtonBase, darken, lighten, styled } from "@mui/material";
+import { Box, ButtonBase, ButtonBaseProps, darken, lighten, styled } from "@mui/material";
 import * as React from "react";
 import { NoWrapTypography } from "../../Common/StyledComponents.tsx";
 
@@ -21,15 +21,12 @@ const StyledButtonBase = styled(ButtonBase)<{
     "background-color 250ms cubic-bezier(0.4, 0, 0.2, 1) 0ms,box-shadow 250ms cubic-bezier(0.4, 0, 0.2, 1) 0ms,border 250ms cubic-bezier(0.4, 0, 0.2, 1) 0ms",
 }));
 
-export interface SideNavItemBaseProps {
+export interface SideNavItemBaseProps extends ButtonBaseProps {
   active?: boolean;
-  [key: string]: any;
 }
-export const SideNavItemBase = React.forwardRef(
-  ({ active, ...rest }: SideNavItemBaseProps, ref: React.Ref<HTMLElement>) => {
-    return <StyledButtonBase active={active} {...rest} ref={ref} />;
-  },
-);
+export const SideNavItemBase = React.forwardRef<HTMLButtonElement, SideNavItemBaseProps>(({ active, ...rest }, ref) => {
+  return <StyledButtonBase active={active} {...rest} ref={ref} />;
+});
 
 const StyledSideNavItem = styled(SideNavItemBase)<{ level?: number }>(({ theme, level }) => ({
   "&:hover": {
@@ -46,20 +43,12 @@ export interface SideNavItemProps extends SideNavItemBaseProps {
   icon?: React.ReactNode;
   label?: string | React.ReactNode;
   level?: number;
-  [key: string]: any;
 }
 
-const SideNavItem = React.forwardRef(
-  ({ icon, label, level, sx, ...rest }: SideNavItemProps, ref: React.Ref<HTMLElement>) => {
+const SideNavItem = React.forwardRef<HTMLButtonElement, SideNavItemProps>(
+  ({ icon, label, level, sx, ...rest }, ref) => {
     return (
-      <StyledSideNavItem
-        level={level}
-        sx={{
-          ...sx,
-        }}
-        {...rest}
-        ref={ref}
-      >
+      <StyledSideNavItem level={level} sx={sx} {...rest} ref={ref}>
         <Box
           sx={{
             width: 20,

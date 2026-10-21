@@ -43,7 +43,6 @@ const GalleryImage = memo((props: FileBlockProps) => {
     uploading,
     ref,
     inView,
-    showLock,
     fileTag,
     onClick,
     onDoubleClicked,
@@ -87,7 +86,7 @@ const GalleryImage = memo((props: FileBlockProps) => {
       return;
     }
 
-    if ((file.metadata && file.metadata[Metadata.thumbDisabled] !== undefined) || showLock) {
+    if (file.metadata && file.metadata[Metadata.thumbDisabled] !== undefined) {
       // No thumb available
       setThumbSrc(null);
       return;

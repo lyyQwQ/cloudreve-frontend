@@ -1,6 +1,6 @@
-import { SvgIconProps, Typography } from "@mui/material";
+import { Typography, TypographyProps } from "@mui/material";
 
-export interface EmojiIconProps extends SvgIconProps {
+export interface EmojiIconProps extends Omit<TypographyProps, "children"> {
   emoji: string;
 }
 

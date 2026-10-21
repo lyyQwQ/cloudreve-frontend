@@ -46,7 +46,7 @@ const MultiTemplatesMenuItems = ({ viewer }: MultiTemplatesMenuItemsProps) => {
   );
 };
 
-const NewFileTemplateMenuItems = (props: SubMenuItemsProps) => {
+const NewFileTemplateMenuItems = (_props: SubMenuItemsProps) => {
   const { t } = useTranslation();
   const dispatch = useAppDispatch();
 

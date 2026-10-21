@@ -341,8 +341,15 @@ export interface FinishOauthCallbackService {
   state: string;
 }
 
+// 写入只需要策略 ID，不要求构造完整的存储策略响应。
+export interface GroupUpsertInput extends Omit<GroupEnt, "edges"> {
+  edges: {
+    storage_policies?: Pick<StoragePolicy, "id">;
+  };
+}
+
 export interface UpsertGroupService {
-  group: GroupEnt;
+  group: GroupUpsertInput;
 }
 
 export interface TestNodeService {

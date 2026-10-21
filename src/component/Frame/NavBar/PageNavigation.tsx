@@ -253,7 +253,6 @@ export const AdminPageNavigation = memo(() => {
 });
 
 const PageNavigation = () => {
-  const shopNavEnabled = useAppSelector((state) => state.siteConfig.basic.config.shop_nav_enabled);
   const appPromotionEnabled = useAppSelector((state) => state.siteConfig.basic.config.app_promotion);
   const user = SessionManager.currentLoginOrNull();
   const isAdmin = useMemo(() => {

@@ -25,7 +25,7 @@ window.recaptchaOptions = {
 const ReCaptchaV2 = ({ onStateChange, generation, ...rest }: ReCaptchaV2Props) => {
   const theme = useTheme();
 
-  const captchaRef = useRef();
+  const captchaRef = useRef<ReCAPTCHA>(null);
   const reCaptchaKey = useAppSelector((state) => state.siteConfig.basic.config.captcha_ReCaptchaKey);
 
   const refreshCaptcha = async () => {
@@ -45,14 +45,16 @@ const ReCaptchaV2 = ({ onStateChange, generation, ...rest }: ReCaptchaV2Props) =
 
   return (
     <Box sx={{ textAlign: "center" }}>
-      <ReCAPTCHA
-        style={{ display: "inline-block" }}
-        ref={captchaRef}
-        sitekey={reCaptchaKey}
-        onChange={onCompleted}
-        theme={theme.palette.mode}
-        {...rest}
-      />
+      {reCaptchaKey && (
+        <ReCAPTCHA
+          style={{ display: "inline-block" }}
+          ref={captchaRef}
+          sitekey={reCaptchaKey}
+          onChange={onCompleted}
+          theme={theme.palette.mode}
+          {...rest}
+        />
+      )}
     </Box>
   );
 };

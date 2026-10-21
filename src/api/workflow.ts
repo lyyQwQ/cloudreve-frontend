@@ -135,6 +135,7 @@ export enum ListTaskCategory {
 }
 
 export enum TaskType {
+  relocate = "relocate",
   create_archive = "create_archive",
   extract_archive = "extract_archive",
   remote_download = "remote_download",

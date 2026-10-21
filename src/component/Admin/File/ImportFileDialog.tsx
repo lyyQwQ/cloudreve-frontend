@@ -37,6 +37,9 @@ const defaultForm: ImportTaskForm = {
   extractMediaMeta: false,
 };
 
+const isStringArray = (value: unknown): value is string[] =>
+  Array.isArray(value) && value.every((item) => typeof item === "string");
+
 export const ImportFileDialog = ({ open, onClose }: ImportFileDialogProps) => {
   const { t } = useTranslation("dashboard");
   const dispatch = useAppDispatch();
@@ -44,6 +47,7 @@ export const ImportFileDialog = ({ open, onClose }: ImportFileDialogProps) => {
   const [loading, setLoading] = useState(false);
   const [formState, setFormState] = useState<ImportTaskForm>({ ...defaultForm });
   const formRef = useRef<HTMLFormElement>(null);
+  const importWarnings = t("file.importWarnings", { returnObjects: true });
 
   useEffect(() => {
     if (open) {
@@ -119,9 +123,8 @@ export const ImportFileDialog = ({ open, onClose }: ImportFileDialogProps) => {
             <Alert severity="warning" sx={{ fontSize: (theme) => theme.typography.body2.fontSize }}>
               <AlertTitle>{t("file.importWarning")}</AlertTitle>
               <ul style={{ paddingInlineStart: "20px" }}>
-                {t("file.importWarnings", { returnObjects: true }).map((warning, index) => (
-                  <li key={index}>{warning.toString()}</li>
-                ))}
+                {isStringArray(importWarnings) &&
+                  importWarnings.map((warning, index) => <li key={index}>{warning}</li>)}
               </ul>
             </Alert>
             <SettingForm lgWidth={12} title={t("file.storagePolicy")}>

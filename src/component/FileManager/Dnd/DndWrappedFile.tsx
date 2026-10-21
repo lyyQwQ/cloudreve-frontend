@@ -66,7 +66,7 @@ export const useFileDrag = ({ file, includeSelected, dropUri }: UseFileDragProps
       }
 
       const crUri = new CrUri(file.path);
-      return file.owned && crUri.fs() !== Filesystem.share;
+      return !!file.owned && crUri.fs() !== Filesystem.share;
     },
     collect: (monitor) => ({
       isDragging: monitor.isDragging(),

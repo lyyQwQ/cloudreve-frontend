@@ -32,7 +32,6 @@ import NumberPropsContent from "./NumberPropsContent.tsx";
 import RatingPropsItem from "./RatingPropsItem.tsx";
 import SelectPropsContent from "./SelectPropsContent.tsx";
 import TextPropsContent from "./TextPropsContent.tsx";
-import UserPropsContent from "./UserPropsContent.tsx";
 
 export interface CustomPropsCardProps {
   prop: CustomPropsItem;
@@ -51,7 +50,7 @@ export interface PropsContentProps {
   fullSize?: boolean;
 }
 
-const PropsCard = styled(StyledButtonBase)(({ theme }) => ({
+const PropsCard = styled(StyledButtonBase)(() => ({
   flexDirection: "column",
   alignItems: "flex-start",
   gap: 9,

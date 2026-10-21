@@ -41,7 +41,7 @@ const GiftCodeStatusChip = ({ used }: { used: boolean }) => {
   );
 };
 
-const GiftCodes = ({ storageProductsConfig, groupProductsConfig }: GiftCodesProps) => {
+const GiftCodes = (_props: GiftCodesProps) => {
   const { t } = useTranslation("dashboard");
   const dispatch = useDispatch<ThunkDispatch<any, any, AnyAction>>();
   const { enqueueSnackbar } = useSnackbar();

@@ -189,12 +189,12 @@ function processSize(size: number | string) {
 function noop() {}
 
 function MonacoEditor({
-  width,
-  height,
+  width = "100%",
+  height = "100%",
   minHeight,
-  value,
-  defaultValue,
-  language,
+  value = null,
+  defaultValue = "",
+  language = "javascript",
   theme,
   options,
   overrideServices,
@@ -298,9 +298,12 @@ function MonacoEditor({
       }
 
       const model = editor.current.getModel();
+      if (!model) {
+        return;
+      }
       __prevent_trigger_change_event.current = true;
       editor.current.pushUndoStop();
-      // pushEditOperations says it expects a cursorComputer, but doesn't seem to need one.
+      // 外部值更新不指定光标位置，遵循 Monaco 的空光标计算结果契约。
       model.pushEditOperations(
         [],
         [
@@ -309,7 +312,7 @@ function MonacoEditor({
             text: value,
           },
         ],
-        undefined,
+        () => null,
       );
       editor.current.pushUndoStop();
       __prevent_trigger_change_event.current = false;
@@ -319,7 +322,9 @@ function MonacoEditor({
   useEffect(() => {
     if (editor.current) {
       const model = editor.current.getModel();
-      monaco.editor.setModelLanguage(model, language);
+      if (model) {
+        monaco.editor.setModelLanguage(model, language);
+      }
     }
   }, [language]);
 
@@ -327,7 +332,8 @@ function MonacoEditor({
     if (editor.current) {
       // Don't pass in the model on update because monaco crashes if we pass the model
       // a second time. See https://github.com/microsoft/monaco-editor/issues/2027
-      const { model: _model, ...optionsWithoutModel } = options;
+      const optionsWithoutModel = { ...options };
+      delete optionsWithoutModel.model;
       editor.current.updateOptions({
         ...(className ? { extraEditorClassName: className } : {}),
         ...optionsWithoutModel,
@@ -346,7 +352,7 @@ function MonacoEditor({
   }, [fixedWidth, fixedHeight]);
 
   useEffect(() => {
-    monaco.editor.setTheme(theme);
+    monaco.editor.setTheme(theme ?? "vs");
   }, [theme]);
 
   useEffect(() => {

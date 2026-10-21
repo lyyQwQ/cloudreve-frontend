@@ -13,6 +13,7 @@ import {
   ListItemTextProps,
   Paper,
   Select,
+  SelectProps,
   styled,
   Tab,
   TableCell,
@@ -37,11 +38,12 @@ export const StyledTableContainerPaper = styled(Paper)(({ theme }) => ({
   border: `1px solid ${theme.palette.divider}`,
 }));
 
+// 样式包装不改变底层组件契约，保留 component/ref 的多态推断。
 export const NoWrapTypography = styled(Typography)({
   textOverflow: "ellipsis",
   whiteSpace: "nowrap",
   overflow: "hidden",
-});
+}) as typeof Typography;
 
 export const BadgeText = styled(NoWrapTypography)({
   marginLeft: "8px",
@@ -155,6 +157,7 @@ export const NoLabelFilledTextField = styled(FilledTextField)<{ fullSize?: boole
   }),
 );
 
+// styled 会擦除泛型；恢复选项类型，避免调用方将 unknown 强转为领域对象。
 export const DenseAutocomplete = styled(Autocomplete)(({ theme }) => ({
   "& .MuiOutlinedInput-root": {
     paddingTop: "6px",
@@ -171,13 +174,13 @@ export const DenseAutocomplete = styled(Autocomplete)(({ theme }) => ({
   "& .MuiOutlinedInput-root .MuiAutocomplete-input": {
     padding: "5.5px 4px 5.5px 5px",
   },
-}));
+})) as typeof Autocomplete;
 
 export const NoWrapTableCell = styled(TableCell)({
   whiteSpace: "nowrap",
 });
 
-export const StyledCheckbox = styled(Checkbox)(({ theme }) => ({
+export const StyledCheckbox = styled(Checkbox)(() => ({
   width: 16,
   height: 16,
 }));
@@ -204,7 +207,7 @@ export const NoWrapBox = styled(Box)({
   overflow: "hidden",
 });
 
-export const DenseSelect = styled(Select)(({ theme }) => ({
+export const DenseSelect = styled(Select)(() => ({
   minHeight: "39px",
   "& .MuiOutlinedInput-input": {
     display: "flex",
@@ -219,7 +222,7 @@ export const DenseSelect = styled(Select)(({ theme }) => ({
   "& .MuiListItemIcon-root": {
     minWidth: 36,
   },
-}));
+})) as <Value = unknown>(props: SelectProps<Value>) => React.JSX.Element;
 
 export const StyledTab = styled(Tab)(({ theme }) => ({
   padding: "8px 0px",
@@ -265,7 +268,7 @@ export const StyledTab = styled(Tab)(({ theme }) => ({
   },
 }));
 
-export const StyledTabs = styled(Tabs)(({ theme }) => ({
+export const StyledTabs = styled(Tabs)(() => ({
   minHeight: 36,
   overflow: "initial",
   "& .MuiTabs-flexContainer": {

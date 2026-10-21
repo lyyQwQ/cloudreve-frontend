@@ -217,7 +217,7 @@ const FileNameCell = memo((props: CellProps) => {
         {search?.name ? (
           <Highlighter
             highlightClassName="highlight-marker"
-            searchWords={search?.name}
+            searchWords={search?.name ?? []}
             autoEscape={true}
             textToHighlight={file.name}
           />

@@ -12,7 +12,7 @@ import { DefaultCloseAction } from "../../../Common/Snackbar/snackbar.tsx";
 import Fingerprint from "../../../Icons/Fingerprint.tsx";
 import { LoginResponse } from "../../../../api/user.ts";
 
-export interface PasskeyLoginButtonProps extends ButtonProps {
+export interface PasskeyLoginButtonProps extends Omit<ButtonProps, "loading"> {
   autoComplete?: boolean;
   onLoginSuccess?: (response: LoginResponse) => void;
 }
@@ -34,7 +34,7 @@ export default function PasskeyLoginButton({ autoComplete, onLoginSuccess, ...re
       window.PublicKeyCredential &&
       PublicKeyCredential.isConditionalMediationAvailable
     ) {
-      PublicKeyCredential.isConditionalMediationAvailable().then((v) => {
+      PublicKeyCredential.isConditionalMediationAvailable().then(() => {
         if (!abortRef.current.signal.aborted) startLogin(true)();
       });
     }

@@ -257,6 +257,7 @@ export default class UploadManager {
             policy: this.policy as StoragePolicy,
             dst: getDirectoryUploadDst(dst, file),
             file: file,
+            blob: file,
             size: file.size,
             overwrite: this.overwrite,
             name: getName ? getName(file) : file.name,

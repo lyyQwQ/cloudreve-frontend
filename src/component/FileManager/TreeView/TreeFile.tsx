@@ -113,15 +113,26 @@ const UnpinButton = (props: UnpinButton) => {
 };
 
 const CustomContent = React.memo(
-  React.forwardRef(function CustomContent(props: CustomContentProps, ref) {
+  React.forwardRef<HTMLButtonElement, CustomContentProps>(function CustomContent(props, ref) {
     const dispatch = useAppDispatch();
     const fmIndex = useContext(FmIndexContext);
     const [loading, setLoading] = useState(false);
     const [showDelete, setShowDelete] = useState(false);
     const { classes, className, label, nodeId, icon: iconProp, expansionIcon, displayIcon, file, fileIcon } = props;
 
-    const { disabled, expanded, selected, focused, handleExpansion, handleSelection, preventSelection } =
-      useTreeItem(nodeId);
+    const {
+      disabled,
+      expanded,
+      selected,
+      focused,
+      handleExpansion,
+      handleSelection: treeHandleSelection,
+      preventSelection,
+    } = useTreeItem(nodeId);
+    // 库实现只读取两类事件共有的修饰键，后续聚焦和选择方法均接收 SyntheticEvent。
+    const handleSelection = treeHandleSelection as (
+      event: React.MouseEvent<HTMLElement> | React.KeyboardEvent<HTMLElement>,
+    ) => void;
 
     const uri = useMemo(() => {
       // Trim 'pinedPrefix' if exist in prefix
@@ -139,7 +150,7 @@ const CustomContent = React.memo(
     };
 
     const handleExpansionClick = useCallback(
-      async (event: React.SyntheticEvent) => {
+      async (event: React.MouseEvent<HTMLDivElement>) => {
         event.stopPropagation();
         let timeOutID: NodeJS.Timeout | undefined;
         handleExpansion(event);
@@ -162,7 +173,7 @@ const CustomContent = React.memo(
     );
 
     const handleSelectionClick = useCallback(
-      (event: React.SyntheticEvent) => {
+      (event: React.MouseEvent<HTMLElement> | React.KeyboardEvent<HTMLElement>) => {
         event.stopPropagation();
         handleSelection(event);
         dispatch(navigateToPath(fmIndex, uri, file));
@@ -238,7 +249,7 @@ const CustomContent = React.memo(
     }, [props.pinned]);
 
     const onKeyDown = useCallback(
-      (event: React.KeyboardEvent<HTMLDivElement>) => {
+      (event: React.KeyboardEvent<HTMLButtonElement>) => {
         if (event.key === "Enter" || event.key === " ") {
           event.preventDefault();
           handleSelectionClick(event);
@@ -253,8 +264,8 @@ const CustomContent = React.memo(
     });
 
     const mergedRef = useCallback(
-      (val: any) => {
-        mergeRefs(ref as React.Ref<HTMLDivElement>, drop, drag)(val);
+      (val: HTMLButtonElement | null) => {
+        mergeRefs(ref, drop, drag)(val);
       },
       [ref, drop, drag],
     );
@@ -283,7 +294,6 @@ const CustomContent = React.memo(
         onClick={handleSelectionClick}
         ref={mergedRef}
       >
-        {/* eslint-disable-next-line jsx-a11y/click-events-have-key-events,jsx-a11y/no-static-element-interactions */}
         <div onClick={handleExpansionClick} className={classes.iconContainer}>
           {icon && !loading && <CaretDownIcon expanded={expanded} />}
           {icon && loading && <FacebookCircularProgress size={15} sx={{ pt: 0.5 }} />}
@@ -297,7 +307,7 @@ const CustomContent = React.memo(
 );
 
 const TreeFile = React.memo(
-  React.forwardRef(function CustomTreeItem(props: TreeFileProps, ref: React.Ref<HTMLLIElement>) {
+  React.forwardRef<HTMLLIElement, TreeFileProps>(function CustomTreeItem(props, ref) {
     const { level, file, notLoaded, fileIcon, loading, pinned, canDrop } = props;
     const contentProps = useMemo(() => {
       return { level, file, notLoaded, fileIcon, loading, pinned, canDrop };

@@ -20,7 +20,7 @@ import Add from "../../../Icons/Add";
 import DraggableDialog from "../../../Dialogs/DraggableDialog.tsx";
 import { SquareMenuItem } from "../../../FileManager/ContextMenu/ContextMenu.tsx";
 import SettingForm from "../../../Pages/Setting/SettingForm.tsx";
-import MagicVarDialog from "../../Common/MagicVarDialog.tsx";
+import MagicVarDialog, { type MagicVar } from "../../Common/MagicVarDialog.tsx";
 import { NoMarginHelperText } from "../Settings.tsx";
 
 const MonacoEditor = lazy(() => import("../../../Viewers/CodeViewer/MonacoEditor.tsx"));
@@ -38,7 +38,7 @@ interface EmailTemplateEditorProps {
   magicVars: MagicVar[];
 }
 
-const EmailTemplateEditor: React.FC<EmailTemplateEditorProps> = ({ value, onChange, templateType, magicVars }) => {
+const EmailTemplateEditor: React.FC<EmailTemplateEditorProps> = ({ value, onChange, magicVars }) => {
   const theme = useTheme();
   const { t } = useTranslation("dashboard");
   const [templates, setTemplates] = useState<TemplateItem[]>([]);
@@ -79,7 +79,7 @@ const EmailTemplateEditor: React.FC<EmailTemplateEditorProps> = ({ value, onChan
     }
   }, [templates, onChange]);
 
-  const handleTabChange = (event: React.SyntheticEvent, newValue: number) => {
+  const handleTabChange = (_event: React.SyntheticEvent, newValue: number) => {
     setCurrentTab(newValue);
   };
 
@@ -180,10 +180,7 @@ const EmailTemplateEditor: React.FC<EmailTemplateEditorProps> = ({ value, onChan
                 </Typography>
                 {index != 0 && (
                   <Box>
-                    <SecondaryButton
-                      variant="contained"
-                      onClick={() => (setPreferredLanguage(index))}
-                    >
+                    <SecondaryButton variant="contained" onClick={() => setPreferredLanguage(index)}>
                       {t("settings.setAsPreferredLanguage")}
                     </SecondaryButton>
                   </Box>
@@ -256,9 +253,7 @@ const EmailTemplateEditor: React.FC<EmailTemplateEditorProps> = ({ value, onChan
                   </Box>
                 )}
                 {index === 0 && (
-                  <NoMarginHelperText>
-                    {t("settings.cannotRemovePreferredLanguageDes")}
-                  </NoMarginHelperText>
+                  <NoMarginHelperText>{t("settings.cannotRemovePreferredLanguageDes")}</NoMarginHelperText>
                 )}
               </FormControl>
             </Box>
