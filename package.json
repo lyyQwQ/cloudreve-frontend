@@ -20,12 +20,12 @@
   "dependencies": {
     "@emotion/react": "^11.11.1",
     "@emotion/styled": "^11.11.0",
-    "@excalidraw/excalidraw": "^0.18.0",
+    "@excalidraw/excalidraw": "^0.18.1",
     "@fontsource/roboto": "^5.0.8",
     "@giscus/react": "^3.1.0",
     "@iconify/react": "^6.0.0",
     "@marsidev/react-turnstile": "^1.1.0",
-    "@mdxeditor/editor": "^3.39.0",
+    "@mdxeditor/editor": "^4.3.3",
     "@mui/icons-material": "^6.0.0",
     "@mui/lab": "^6.0.0-beta.30",
     "@mui/material": "^6.4.6",
@@ -39,7 +39,7 @@
     "artplayer": "5.2.2",
     "artplayer-plugin-chapter": "^1.0.0",
     "artplayer-plugin-hls-control": "^1.0.1",
-    "axios": "^1.12.2",
+    "axios": "^1.20.0",
     "dayjs": "^1.11.10",
     "fuse.js": "^7.0.0",
     "heic-to": "^1.1.14",
@@ -47,11 +47,11 @@
     "i18next": "^23.7.11",
     "i18next-browser-languagedetector": "^7.2.0",
     "i18next-chained-backend": "^4.6.2",
-    "i18next-http-backend": "^2.4.2",
+    "i18next-http-backend": "^4.0.4",
     "i18next-localstorage-backend": "^4.2.0",
     "leaflet": "^1.9.4",
     "livephotoskit": "^1.5.6",
-    "lodash": "^4.17.21",
+    "lodash": "^4.18.1",
     "mapbox-gl": "^3.15.0",
     "material-ui-popup-state": "^5.0.10",
     "monaco-editor": "^0.49.0",
@@ -79,13 +79,13 @@
     "react-leaflet": "^4.2.1",
     "react-reader": "^2.0.10",
     "react-redux": "^9.0.4",
-    "react-router-dom": "^6.21.0",
+    "react-router-dom": "^6.30.6",
     "react-transition-group": "^4.4.5",
     "react-virtuoso": "^4.10.4",
     "recharts": "^2.15.1",
     "redux": "^5.0.0",
     "streamsaver": "^2.0.6",
-    "styled-components": "^6.1.11",
+    "styled-components": "^6.6.0",
     "timeago-react": "^3.0.6"
   },
   "devDependencies": {
@@ -128,5 +128,15 @@
     "*.{js,jsx,ts,tsx,json,css,scss,md}": [
       "prettier --write"
     ]
+  },
+  "overrides": {
+    "@xmldom/xmldom": "0.9.12",
+    "sass": "1.93.2",
+    "lodash-es": "4.18.1",
+    "nanoid": "5.1.16",
+    "picomatch": "2.3.2",
+    "source-map-js": "1.2.2",
+    "katex": "0.18.2",
+    "protocol-buffers-schema": "3.6.1"
   }
 }

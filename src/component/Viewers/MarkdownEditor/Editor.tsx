@@ -32,7 +32,6 @@ import {
   MDXEditor,
   quotePlugin,
   Separator,
-  ShowSandpackInfo,
   StrikeThroughSupSubToggles,
   tablePlugin,
   thematicBreakPlugin,
@@ -126,10 +125,6 @@ const MarkdownEditor = (props: MarkdownEditorProps) => {
                           {
                             when: (editor) => editor?.editorType === "codeblock",
                             contents: () => <ChangeCodeMirrorLanguage />,
-                          },
-                          {
-                            when: (editor) => editor?.editorType === "sandpack",
-                            contents: () => <ShowSandpackInfo />,
                           },
                           {
                             fallback: () => (
